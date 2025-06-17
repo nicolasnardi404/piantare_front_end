@@ -11,6 +11,7 @@ import Login from "./components/Login";
 import Layout from "./components/Layout";
 import Map from "./components/Map";
 import Users from "./components/Users";
+import Home from "./pages/Home";
 import ProtectedRoute from "./components/ProtectedRoute";
 import "./App.css";
 
@@ -19,9 +20,51 @@ const theme = createTheme({
   palette: {
     primary: {
       main: "#2e7d32", // Green shade
+      light: "#4caf50",
+      dark: "#1b5e20",
     },
     secondary: {
       main: "#ffd700", // Gold shade
+      light: "#ffeb3b",
+      dark: "#fbc02d",
+    },
+    background: {
+      default: "#f5f5f5",
+      paper: "#ffffff",
+    },
+  },
+  typography: {
+    h1: {
+      fontWeight: 700,
+      letterSpacing: "-0.02em",
+    },
+    h2: {
+      fontWeight: 600,
+      letterSpacing: "-0.01em",
+    },
+    h3: {
+      fontWeight: 600,
+    },
+    button: {
+      textTransform: "none",
+      fontWeight: 600,
+    },
+  },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          borderRadius: 8,
+        },
+      },
+    },
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          borderRadius: 12,
+          boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+        },
+      },
     },
   },
 });
@@ -33,20 +76,11 @@ function App() {
       <AuthProvider>
         <Router>
           <Routes>
+            {/* Public routes */}
+            <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
 
             {/* Protected routes */}
-            <Route
-              path="/"
-              element={
-                <ProtectedRoute>
-                  <Layout>
-                    <Navigate to="/map" replace />
-                  </Layout>
-                </ProtectedRoute>
-              }
-            />
-
             <Route
               path="/map"
               element={
