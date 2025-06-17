@@ -16,7 +16,6 @@ import {
 import {
   Menu as MenuIcon,
   Map as MapIcon,
-  Business as BusinessIcon,
   People as PeopleIcon,
   ExitToApp as LogoutIcon,
 } from "@mui/icons-material";
@@ -39,12 +38,6 @@ const Layout = ({ children }) => {
       label: "Map",
       icon: <MapIcon />,
       roles: ["FARMER", "COMPANY", "ADMIN"],
-    },
-    {
-      path: "/companies",
-      label: "Companies",
-      icon: <BusinessIcon />,
-      roles: ["ADMIN"],
     },
     {
       path: "/users",

@@ -17,36 +17,34 @@ import {
   TableRow,
   IconButton,
   Alert,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
+  Tabs,
+  Tab,
 } from "@mui/material";
 import {
   Add as AddIcon,
   Edit as EditIcon,
   Delete as DeleteIcon,
 } from "@mui/icons-material";
-import { users, companies } from "../services/api";
+import { users } from "../services/api";
+import { useAuth } from "../context/AuthContext";
 
 const Users = () => {
+  const { user: currentUser } = useAuth();
   const [userList, setUserList] = useState([]);
-  const [companyList, setCompanyList] = useState([]);
   const [error, setError] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [activeTab, setActiveTab] = useState(0); // 0 for farmers, 1 for companies
   const [formData, setFormData] = useState({
     email: "",
     password: "",
     name: "",
-    role: "FARMER",
-    companyId: "",
+    companyName: "", // Only used when creating a company
   });
 
   useEffect(() => {
     loadUsers();
-    loadCompanies();
   }, []);
 
   const loadUsers = async () => {
@@ -58,15 +56,6 @@ const Users = () => {
     }
   };
 
-  const loadCompanies = async () => {
-    try {
-      const response = await companies.getAll();
-      setCompanyList(response.data);
-    } catch (err) {
-      setError("Failed to load companies");
-    }
-  };
-
   const handleOpenDialog = (user = null) => {
     if (user) {
       setIsEditMode(true);
@@ -75,8 +64,7 @@ const Users = () => {
         email: user.email,
         password: "",
         name: user.name,
-        role: user.role,
-        companyId: user.company?.id || "",
+        companyName: user.role === "COMPANY" ? user.company?.name || "" : "",
       });
     } else {
       setIsEditMode(false);
@@ -85,8 +73,7 @@ const Users = () => {
         email: "",
         password: "",
         name: "",
-        role: "FARMER",
-        companyId: "",
+        companyName: "",
       });
     }
     setIsDialogOpen(true);
@@ -98,25 +85,45 @@ const Users = () => {
       email: "",
       password: "",
       name: "",
-      role: "FARMER",
-      companyId: "",
+      companyName: "",
     });
+    setError("");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const submitData = { ...formData };
-    if (submitData.role !== "COMPANY") {
-      delete submitData.companyId;
-    }
+    try {
+      if (!isEditMode && !formData.password) {
+        setError("Password is required for new users");
+        return;
+      }
 
-    if (isEditMode) {
-      await users.update(selectedUser.id, submitData);
-    } else {
-      await users.create(submitData);
+      const submitData = { ...formData };
+      const isCompany = activeTab === 1;
+
+      if (isCompany && !submitData.companyName) {
+        setError("Company name is required");
+        return;
+      }
+
+      // Add role based on active tab
+      submitData.role = isCompany ? "COMPANY" : "FARMER";
+
+      if (isEditMode) {
+        if (!submitData.password) {
+          delete submitData.password;
+        }
+        delete submitData.companyName; // Remove companyName as it's not needed for updates
+        await users.update(selectedUser.id, submitData);
+      } else {
+        await users.create(submitData);
+      }
+
+      handleCloseDialog();
+      loadUsers();
+    } catch (err) {
+      setError(err.response?.data?.error || "Failed to save user");
     }
-    handleCloseDialog();
-    loadUsers();
   };
 
   const handleDelete = async (id) => {
@@ -130,17 +137,44 @@ const Users = () => {
     }
   };
 
+  const handleTabChange = (event, newValue) => {
+    setActiveTab(newValue);
+    setFormData({
+      email: "",
+      password: "",
+      name: "",
+      companyName: "",
+    });
+  };
+
+  const filteredUsers = userList.filter((user) =>
+    activeTab === 0 ? user.role === "FARMER" : user.role === "COMPANY"
+  );
+
+  if (currentUser?.role !== "ADMIN") {
+    return <div>Access denied</div>;
+  }
+
   return (
     <Box sx={{ p: 3 }}>
+      <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 3 }}>
+        <Tabs value={activeTab} onChange={handleTabChange}>
+          <Tab label="Farmers" />
+          <Tab label="Companies" />
+        </Tabs>
+      </Box>
+
       <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
-        <Typography variant="h4">Users</Typography>
+        <Typography variant="h4">
+          {activeTab === 0 ? "Farmers" : "Companies"}
+        </Typography>
         <Button
           variant="contained"
           color="primary"
           startIcon={<AddIcon />}
           onClick={() => handleOpenDialog()}
         >
-          Add User
+          Add {activeTab === 0 ? "Farmer" : "Company"}
         </Button>
       </Box>
 
@@ -156,18 +190,16 @@ const Users = () => {
             <TableRow>
               <TableCell>Name</TableCell>
               <TableCell>Email</TableCell>
-              <TableCell>Role</TableCell>
-              <TableCell>Company</TableCell>
+              {activeTab === 1 && <TableCell>Company Name</TableCell>}
               <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {userList.map((user) => (
+            {filteredUsers.map((user) => (
               <TableRow key={user.id}>
                 <TableCell>{user.name}</TableCell>
                 <TableCell>{user.email}</TableCell>
-                <TableCell>{user.role}</TableCell>
-                <TableCell>{user.company?.name || "-"}</TableCell>
+                {activeTab === 1 && <TableCell>{user.company?.name}</TableCell>}
                 <TableCell>
                   <IconButton
                     color="primary"
@@ -189,12 +221,16 @@ const Users = () => {
       </TableContainer>
 
       <Dialog open={isDialogOpen} onClose={handleCloseDialog}>
-        <DialogTitle>{isEditMode ? "Edit User" : "Add New User"}</DialogTitle>
+        <DialogTitle>
+          {isEditMode ? "Edit" : "Add New"}{" "}
+          {activeTab === 0 ? "Farmer" : "Company"}
+        </DialogTitle>
         <DialogContent>
           <TextField
             margin="dense"
             label="Name"
             fullWidth
+            required
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
           />
@@ -203,6 +239,7 @@ const Users = () => {
             label="Email"
             type="email"
             fullWidth
+            required
             value={formData.email}
             onChange={(e) =>
               setFormData({ ...formData, email: e.target.value })
@@ -210,47 +247,26 @@ const Users = () => {
           />
           <TextField
             margin="dense"
-            label="Password"
+            label={isEditMode ? "New Password (optional)" : "Password"}
             type="password"
             fullWidth
+            required={!isEditMode}
             value={formData.password}
             onChange={(e) =>
               setFormData({ ...formData, password: e.target.value })
             }
           />
-          <FormControl fullWidth margin="dense">
-            <InputLabel>Role</InputLabel>
-            <Select
-              value={formData.role}
-              label="Role"
+          {activeTab === 1 && (
+            <TextField
+              margin="dense"
+              label="Company Name"
+              fullWidth
+              required
+              value={formData.companyName}
               onChange={(e) =>
-                setFormData({ ...formData, role: e.target.value })
+                setFormData({ ...formData, companyName: e.target.value })
               }
-            >
-              <MenuItem value="FARMER">Farmer</MenuItem>
-              <MenuItem value="COMPANY">Company</MenuItem>
-              {userList.find((u) => u.role === "ADMIN") && (
-                <MenuItem value="ADMIN">Admin</MenuItem>
-              )}
-            </Select>
-          </FormControl>
-          {formData.role === "COMPANY" && (
-            <FormControl fullWidth margin="dense">
-              <InputLabel>Company</InputLabel>
-              <Select
-                value={formData.companyId}
-                label="Company"
-                onChange={(e) =>
-                  setFormData({ ...formData, companyId: e.target.value })
-                }
-              >
-                {companyList.map((company) => (
-                  <MenuItem key={company.id} value={company.id}>
-                    {company.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+            />
           )}
         </DialogContent>
         <DialogActions>

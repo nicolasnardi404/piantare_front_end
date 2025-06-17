@@ -10,7 +10,6 @@ import CssBaseline from "@mui/material/CssBaseline";
 import Login from "./components/Login";
 import Layout from "./components/Layout";
 import Map from "./components/Map";
-import Companies from "./components/Companies";
 import Users from "./components/Users";
 import ProtectedRoute from "./components/ProtectedRoute";
 import "./App.css";
@@ -54,17 +53,6 @@ function App() {
                 <ProtectedRoute>
                   <Layout>
                     <Map />
-                  </Layout>
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/companies"
-              element={
-                <ProtectedRoute roles={["ADMIN"]}>
-                  <Layout>
-                    <Companies />
                   </Layout>
                 </ProtectedRoute>
               }
