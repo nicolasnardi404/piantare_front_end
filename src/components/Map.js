@@ -38,6 +38,7 @@ import { styled } from "@mui/material/styles";
 import "leaflet/dist/leaflet.css";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import SearchIcon from "@mui/icons-material/Search";
+import PlantUpdates from "./PlantUpdates";
 
 const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8000";
 
@@ -983,7 +984,7 @@ const Map = () => {
       <Dialog
         open={isDetailModalOpen}
         onClose={() => setIsDetailModalOpen(false)}
-        maxWidth="md"
+        maxWidth="lg"
         fullWidth
       >
         {selectedPlant && (
@@ -996,7 +997,7 @@ const Map = () => {
             <DialogContent>
               <Grid container spacing={3}>
                 {selectedPlant.imageUrl && (
-                  <Grid item xs={12}>
+                  <Grid item xs={12} md={6}>
                     <Box
                       sx={{
                         width: "100%",
@@ -1019,7 +1020,7 @@ const Map = () => {
                     </Box>
                   </Grid>
                 )}
-                <Grid item xs={12}>
+                <Grid item xs={12} md={selectedPlant.imageUrl ? 6 : 12}>
                   <Typography
                     variant="subtitle1"
                     sx={{ fontWeight: 600, mb: 1 }}
@@ -1029,44 +1030,50 @@ const Map = () => {
                   <Typography variant="body1">
                     {selectedPlant.description || "Sem descrição disponível"}
                   </Typography>
+
+                  <Box sx={{ mt: 3 }}>
+                    <Grid container spacing={2}>
+                      <Grid item xs={12} sm={6}>
+                        <Typography
+                          variant="subtitle2"
+                          sx={{ color: "text.secondary" }}
+                        >
+                          Localização
+                        </Typography>
+                        <Typography variant="body2">
+                          Latitude: {selectedPlant.latitude.toFixed(6)}
+                          <br />
+                          Longitude: {selectedPlant.longitude.toFixed(6)}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={12} sm={6}>
+                        <Typography
+                          variant="subtitle2"
+                          sx={{ color: "text.secondary" }}
+                        >
+                          Adicionado por
+                        </Typography>
+                        <Typography variant="body2">
+                          {selectedPlant.addedBy.name}
+                        </Typography>
+                        {selectedPlant.company && (
+                          <>
+                            <Typography
+                              variant="subtitle2"
+                              sx={{ color: "text.secondary", mt: 1 }}
+                            >
+                              Empresa
+                            </Typography>
+                            <Typography variant="body2">
+                              {selectedPlant.company.name}
+                            </Typography>
+                          </>
+                        )}
+                      </Grid>
+                    </Grid>
+                  </Box>
                 </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Typography
-                    variant="subtitle2"
-                    sx={{ color: "text.secondary" }}
-                  >
-                    Localização
-                  </Typography>
-                  <Typography variant="body2">
-                    Latitude: {selectedPlant.latitude.toFixed(6)}
-                    <br />
-                    Longitude: {selectedPlant.longitude.toFixed(6)}
-                  </Typography>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Typography
-                    variant="subtitle2"
-                    sx={{ color: "text.secondary" }}
-                  >
-                    Adicionado por
-                  </Typography>
-                  <Typography variant="body2">
-                    {selectedPlant.addedBy.name}
-                  </Typography>
-                  {selectedPlant.company && (
-                    <>
-                      <Typography
-                        variant="subtitle2"
-                        sx={{ color: "text.secondary", mt: 1 }}
-                      >
-                        Empresa
-                      </Typography>
-                      <Typography variant="body2">
-                        {selectedPlant.company.name}
-                      </Typography>
-                    </>
-                  )}
-                </Grid>
+
                 {user?.role === "ADMIN" && !selectedPlant.company && (
                   <Grid item xs={12}>
                     <Divider sx={{ my: 2 }} />
@@ -1143,6 +1150,11 @@ const Map = () => {
                     </Box>
                   </Grid>
                 )}
+
+                <Grid item xs={12}>
+                  <Divider sx={{ my: 2 }} />
+                  <PlantUpdates plantId={selectedPlant.id} />
+                </Grid>
               </Grid>
             </DialogContent>
             <DialogActions>
