@@ -12,6 +12,9 @@ import {
   useScrollTrigger,
   Avatar,
   useTheme,
+  Stack,
+  AppBar,
+  Toolbar,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { Link } from "react-router-dom";
@@ -31,6 +34,11 @@ import HandshakeIcon from "@mui/icons-material/Handshake";
 import DescriptionIcon from "@mui/icons-material/Description";
 import SearchIcon from "@mui/icons-material/Search";
 import AssessmentIcon from "@mui/icons-material/Assessment";
+import LoginIcon from "@mui/icons-material/Login";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import InfoIcon from "@mui/icons-material/Info";
+import ContactSupportIcon from "@mui/icons-material/ContactSupport";
+import VolunteerActivismIcon from "@mui/icons-material/VolunteerActivism";
 
 const HeroSection = styled(Box)(({ theme }) => ({
   minHeight: "80vh",
@@ -198,6 +206,52 @@ const MapWrapper = styled(Box)(({ theme }) => ({
   },
 }));
 
+const TopBar = styled(AppBar)(({ theme }) => ({
+  background: "transparent",
+  boxShadow: "none",
+  position: "absolute",
+  top: 0,
+  zIndex: 1,
+}));
+
+const LoginButton = styled(Button)(({ theme }) => ({
+  backgroundColor: "rgba(255, 255, 255, 0.1)",
+  color: "white",
+  backdropFilter: "blur(10px)",
+  borderRadius: theme.spacing(2),
+  padding: theme.spacing(1, 3),
+  textTransform: "none",
+  fontSize: "0.9rem",
+  border: "1px solid rgba(255, 255, 255, 0.2)",
+  transition: "all 0.3s ease",
+  "&:hover": {
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    transform: "translateY(-2px)",
+  },
+  "& .MuiButton-startIcon": {
+    marginRight: theme.spacing(1),
+  },
+}));
+
+const NavButton = styled(Button)(({ theme }) => ({
+  backgroundColor: "rgba(255, 255, 255, 0.1)",
+  color: "white",
+  backdropFilter: "blur(10px)",
+  borderRadius: theme.spacing(2),
+  padding: theme.spacing(1.5, 3),
+  textTransform: "none",
+  fontSize: "1rem",
+  border: "1px solid rgba(255, 255, 255, 0.2)",
+  transition: "all 0.3s ease",
+  "&:hover": {
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    transform: "translateY(-2px)",
+  },
+  "& .MuiButton-startIcon": {
+    marginRight: theme.spacing(1),
+  },
+}));
+
 function ScrollTriggeredSection({ children, threshold = 0.3 }) {
   const [isVisible, setIsVisible] = useState(false);
   const [element, setElement] = useState(null);
@@ -271,6 +325,17 @@ const Home = () => {
     <Box>
       <Fade in={true} timeout={1000}>
         <HeroSection>
+          <TopBar>
+            <Toolbar sx={{ justifyContent: "flex-end" }}>
+              <LoginButton
+                component={Link}
+                to="/login"
+                startIcon={<LoginIcon />}
+              >
+                Entrar
+              </LoginButton>
+            </Toolbar>
+          </TopBar>
           <Container>
             <Typography
               variant="h1"
@@ -295,23 +360,23 @@ const Home = () => {
             >
               Conectando Agricultores e Empresas para Cultivar a Biodiversidade
             </Typography>
-            <Button
-              component={Link}
-              to="/map"
-              variant="contained"
-              size="large"
-              sx={{
-                backgroundColor: "white",
-                color: "primary.main",
-                "&:hover": {
-                  backgroundColor: "rgba(255,255,255,0.9)",
-                },
-                px: 4,
-                py: 2,
-              }}
+            <Stack
+              direction={{ xs: "column", sm: "row" }}
+              spacing={2}
+              justifyContent="center"
+              alignItems="center"
             >
-              Explorar Mapa
-            </Button>
+              <NavButton component={Link} to="/about" startIcon={<InfoIcon />}>
+                Sobre
+              </NavButton>
+              <NavButton
+                component={Link}
+                to="/support"
+                startIcon={<VolunteerActivismIcon />}
+              >
+                Apoie
+              </NavButton>
+            </Stack>
           </Container>
         </HeroSection>
       </Fade>

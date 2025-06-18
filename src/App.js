@@ -12,6 +12,7 @@ import Layout from "./components/Layout";
 import Map from "./components/Map";
 import Users from "./components/Users";
 import Home from "./pages/Home";
+import About from "./pages/About";
 import FarmerDashboard from "./components/FarmerDashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 import "./App.css";
@@ -90,6 +91,7 @@ function App() {
             {/* Public routes */}
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/about" element={<About />} />
 
             {/* Protected routes */}
             <Route
