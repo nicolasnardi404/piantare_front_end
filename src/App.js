@@ -16,6 +16,7 @@ import About from "./pages/About";
 import FarmerDashboard from "./components/FarmerDashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Profile from "./components/Profile";
+import CompanyProfile from "./components/CompanyProfile";
 import "./App.css";
 
 // Create a theme instance with translations for user-visible text
@@ -128,9 +129,19 @@ function App() {
             <Route
               path="/profile"
               element={
-                <ProtectedRoute allowedRoles={["FARMER"]}>
+                <ProtectedRoute roles={["FARMER"]}>
                   <Layout>
                     <Profile />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/company-profile"
+              element={
+                <ProtectedRoute roles={["COMPANY"]}>
+                  <Layout>
+                    <CompanyProfile />
                   </Layout>
                 </ProtectedRoute>
               }

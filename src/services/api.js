@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:8000/api";
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8000/api";
 
 const api = axios.create({
   baseURL: API_URL,
@@ -25,6 +25,8 @@ export const companies = {
   create: (companyData) => api.post("/companies", companyData),
   update: (id, companyData) => api.put(`/companies/${id}`, companyData),
   delete: (id) => api.delete(`/companies/${id}`),
+  getProfile: () => api.get("/companies/profile"),
+  updateProfile: (data) => api.put("/companies/profile", data),
 };
 
 export const users = {
@@ -40,6 +42,15 @@ export const plantLocations = {
   getOne: (id) => api.get(`/plant-locations/${id}`),
   assignCompany: (id, data) =>
     api.put(`/plant-locations/${id}/assign-company`, data),
+};
+
+export const uploads = {
+  uploadFile: (formData) =>
+    api.post("/uploads/upload", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }),
 };
 
 export default api;

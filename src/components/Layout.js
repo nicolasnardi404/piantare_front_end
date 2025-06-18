@@ -135,6 +135,15 @@ const Layout = ({ children }) => {
           },
         ]
       : []),
+    ...(user?.role === "COMPANY"
+      ? [
+          {
+            text: "Perfil da Empresa",
+            icon: <PersonIcon />,
+            path: "/company-profile",
+          },
+        ]
+      : []),
     {
       text: "Mapa",
       icon: <MapIcon />,
