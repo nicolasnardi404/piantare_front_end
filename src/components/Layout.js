@@ -22,6 +22,7 @@ import {
   People as PeopleIcon,
   ExitToApp as LogoutIcon,
   Dashboard as DashboardIcon,
+  Person as PersonIcon,
 } from "@mui/icons-material";
 import { useAuth } from "../context/AuthContext";
 
@@ -126,6 +127,11 @@ const Layout = ({ children }) => {
             text: "Dashboard",
             icon: <DashboardIcon />,
             path: "/dashboard",
+          },
+          {
+            text: "Perfil",
+            icon: <PersonIcon />,
+            path: "/profile",
           },
         ]
       : []),

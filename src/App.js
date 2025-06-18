@@ -15,6 +15,7 @@ import Home from "./pages/Home";
 import About from "./pages/About";
 import FarmerDashboard from "./components/FarmerDashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Profile from "./components/Profile";
 import "./App.css";
 
 // Create a theme instance with translations for user-visible text
@@ -120,6 +121,16 @@ function App() {
                 <ProtectedRoute roles={["ADMIN"]}>
                   <Layout>
                     <Users translations={translations} />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute allowedRoles={["FARMER"]}>
+                  <Layout>
+                    <Profile />
                   </Layout>
                 </ProtectedRoute>
               }
