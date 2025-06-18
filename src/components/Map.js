@@ -166,10 +166,8 @@ const Map = () => {
   const [locations, setLocations] = useState([]);
   const [error, setError] = useState("");
   const [isAddingLocation, setIsAddingLocation] = useState(false);
-  const [isAssigningCompany, setIsAssigningCompany] = useState(false);
-  const [selectedLocation, setSelectedLocation] = useState(null);
-  const [companyList, setCompanyList] = useState([]);
   const [selectedCompanyId, setSelectedCompanyId] = useState("");
+  const [companyList, setCompanyList] = useState([]);
   const [newLocation, setNewLocation] = useState({
     latitude: null,
     longitude: null,
@@ -187,6 +185,13 @@ const Map = () => {
     preview: null,
     uploading: false,
     error: null,
+  });
+  const [selectedPlant, setSelectedPlant] = useState(null);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [farmerStats, setFarmerStats] = useState({
+    totalPlants: 0,
+    speciesCount: {},
+    recentPlants: [],
   });
 
   // São Paulo coordinates as default center
@@ -230,6 +235,33 @@ const Map = () => {
     }
   }, [locations, user]);
 
+  // Calculate farmer statistics whenever locations change
+  useEffect(() => {
+    if (user?.role === "FARMER") {
+      // Filter plants added by this farmer
+      const farmerPlants = locations.filter(
+        (loc) => loc.addedBy.id === user.userId
+      );
+
+      // Calculate species count
+      const speciesCount = farmerPlants.reduce((acc, plant) => {
+        acc[plant.species] = (acc[plant.species] || 0) + 1;
+        return acc;
+      }, {});
+
+      // Sort plants by most recent first
+      const sortedPlants = [...farmerPlants].sort((a, b) => {
+        return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+      });
+
+      setFarmerStats({
+        totalPlants: farmerPlants.length,
+        speciesCount,
+        recentPlants: sortedPlants,
+      });
+    }
+  }, [locations, user]);
+
   const loadLocations = async () => {
     try {
       const response = await plantLocations.getAll();
@@ -250,13 +282,6 @@ const Map = () => {
     }
   };
 
-  const handleLocationClick = (location) => {
-    if (user?.role === "COMPANY" && !location.company) {
-      setSelectedLocation(location);
-      setIsAssigningCompany(true);
-    }
-  };
-
   const handleMapClick = (location) => {
     if (user?.role === "FARMER") {
       setNewLocation({
@@ -268,12 +293,9 @@ const Map = () => {
     }
   };
 
-  const handleAdminAssign = (location) => {
-    if (user?.role === "ADMIN") {
-      setSelectedLocation(location);
-      setSelectedCompanyId("");
-      setIsAssigningCompany(true);
-    }
+  const handleMarkerClick = (location) => {
+    setSelectedPlant(location);
+    setIsDetailModalOpen(true);
   };
 
   const handleAddLocation = async () => {
@@ -358,17 +380,14 @@ const Map = () => {
 
   const handleAssignCompany = async () => {
     try {
-      const companyId =
-        user?.role === "ADMIN" ? selectedCompanyId : user.companyId;
-
-      if (!companyId) {
+      if (!selectedCompanyId) {
         setError("Please select a company");
         return;
       }
 
-      await plantLocations.assignCompany(selectedLocation.id, { companyId });
-      setIsAssigningCompany(false);
-      setSelectedLocation(null);
+      await plantLocations.assignCompany(selectedPlant.id, {
+        companyId: selectedCompanyId,
+      });
       setSelectedCompanyId("");
       loadLocations();
       setError("");
@@ -616,6 +635,179 @@ const Map = () => {
     );
   };
 
+  const renderFarmerReport = () => {
+    if (user?.role !== "FARMER") return null;
+
+    return (
+      <Box sx={{ mt: 4, mb: 2 }}>
+        <Typography
+          variant="h5"
+          sx={{
+            mb: 3,
+            fontWeight: 600,
+            background: "linear-gradient(135deg, #2e7d32, #81c784)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            display: "inline-block",
+            position: "relative",
+            "&::after": {
+              content: '""',
+              position: "absolute",
+              bottom: "-8px",
+              left: 0,
+              width: "60%",
+              height: "3px",
+              background: "linear-gradient(90deg, #4caf50, transparent)",
+              borderRadius: "2px",
+            },
+          }}
+        >
+          Minhas Plantas
+        </Typography>
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={4}>
+            <ReportCard>
+              <CardContent>
+                <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
+                  Visão Geral
+                </Typography>
+                <StatBox>
+                  <Typography
+                    variant="h2"
+                    color="primary"
+                    sx={{
+                      fontWeight: 700,
+                      textShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                    }}
+                  >
+                    {farmerStats.totalPlants}
+                  </Typography>
+                  <Typography
+                    variant="body1"
+                    color="text.secondary"
+                    sx={{ fontWeight: 500 }}
+                  >
+                    Total de Plantas Cadastradas
+                  </Typography>
+                </StatBox>
+              </CardContent>
+            </ReportCard>
+          </Grid>
+          <Grid item xs={12} md={8}>
+            <ReportCard>
+              <CardContent>
+                <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
+                  Minhas Espécies
+                </Typography>
+                <Box
+                  sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}
+                >
+                  {Object.entries(farmerStats.speciesCount).map(
+                    ([species, count]) => (
+                      <Box
+                        key={species}
+                        sx={{
+                          display: "flex",
+                          flexDirection: "column",
+                          padding: "12px",
+                          borderRadius: "12px",
+                          backgroundColor: "rgba(76, 175, 80, 0.04)",
+                          border: "1px solid rgba(76, 175, 80, 0.1)",
+                          transition: "all 0.2s ease-in-out",
+                          position: "relative",
+                          overflow: "hidden",
+                          "&:hover": {
+                            backgroundColor: "rgba(76, 175, 80, 0.08)",
+                            transform: "translateX(4px)",
+                          },
+                          "&::before": {
+                            content: '""',
+                            position: "absolute",
+                            left: 0,
+                            top: 0,
+                            bottom: 0,
+                            width: "4px",
+                            background:
+                              "linear-gradient(to bottom, #4caf50, #81c784)",
+                            borderRadius: "4px",
+                            opacity: 0.8,
+                          },
+                        }}
+                      >
+                        <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            mb: 0.5,
+                          }}
+                        >
+                          <Typography
+                            variant="subtitle2"
+                            sx={{
+                              color: "text.primary",
+                              fontWeight: 600,
+                              fontSize: "0.95rem",
+                            }}
+                          >
+                            {species}
+                          </Typography>
+                          <Box
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 1,
+                              color: "primary.main",
+                            }}
+                          >
+                            <Typography
+                              variant="body2"
+                              sx={{
+                                fontWeight: 700,
+                                backgroundColor: "rgba(76, 175, 80, 0.12)",
+                                padding: "4px 12px",
+                                borderRadius: "12px",
+                                fontSize: "0.875rem",
+                              }}
+                            >
+                              {count}
+                            </Typography>
+                          </Box>
+                        </Box>
+                        <Box
+                          sx={{
+                            width: "100%",
+                            height: "4px",
+                            backgroundColor: "rgba(76, 175, 80, 0.08)",
+                            borderRadius: "2px",
+                            overflow: "hidden",
+                          }}
+                        >
+                          <Box
+                            sx={{
+                              width: `${
+                                (count / farmerStats.totalPlants) * 100
+                              }%`,
+                              height: "100%",
+                              background:
+                                "linear-gradient(90deg, #4caf50, #81c784)",
+                              borderRadius: "2px",
+                              transition: "width 0.3s ease-in-out",
+                            }}
+                          />
+                        </Box>
+                      </Box>
+                    )
+                  )}
+                </Box>
+              </CardContent>
+            </ReportCard>
+          </Grid>
+        </Grid>
+      </Box>
+    );
+  };
+
   return (
     <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
       {error && (
@@ -624,7 +816,7 @@ const Map = () => {
         </Alert>
       )}
 
-      <Box sx={{ flexGrow: 1, height: "calc(100vh - 200px)" }}>
+      <Box sx={{ flexGrow: 1, height: "calc(100vh - 200px)", mb: 4 }}>
         <MapContainer
           center={defaultPosition}
           zoom={13}
@@ -636,67 +828,60 @@ const Map = () => {
           />
           <AddMarkerToClick onLocationSelected={handleMapClick} />
 
-          {/* Display existing locations */}
           {locations.map((location) => (
             <Marker
               key={location.id}
               position={[location.latitude, location.longitude]}
               eventHandlers={{
-                click: () => {
-                  if (user?.role === "ADMIN") {
-                    handleAdminAssign(location);
-                  } else if (user?.role === "COMPANY" && !location.company) {
-                    handleLocationClick(location);
-                  }
+                click: () => handleMarkerClick(location),
+                mouseover: (e) => {
+                  e.target.openPopup();
+                },
+                mouseout: (e) => {
+                  e.target.closePopup();
                 },
               }}
             >
               <Popup>
-                <Box sx={{ maxWidth: 300 }}>
-                  <Typography
-                    variant="subtitle1"
-                    sx={{ fontWeight: 600, mb: 1 }}
-                  >
+                <Box
+                  sx={{
+                    p: 1,
+                    minWidth: 200,
+                    backgroundColor: "rgba(255, 255, 255, 0.95)",
+                    borderRadius: 1,
+                  }}
+                >
+                  <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
                     {location.species}
                   </Typography>
-
-                  {location.imageUrl && (
-                    <Box sx={{ mb: 2, borderRadius: 1, overflow: "hidden" }}>
-                      <img
-                        src={location.imageUrl}
-                        alt={location.species}
-                        style={{
-                          width: "100%",
-                          height: 200,
-                          objectFit: "cover",
-                        }}
-                      />
-                    </Box>
-                  )}
-
-                  <Typography variant="body2" sx={{ mb: 1 }}>
+                  <Typography variant="body2" sx={{ mt: 1 }}>
                     {location.description}
                   </Typography>
-
                   <Typography
                     variant="caption"
-                    sx={{ display: "block", color: "text.secondary" }}
+                    sx={{ display: "block", mt: 1, color: "text.secondary" }}
                   >
                     Added by: {location.addedBy.name}
                   </Typography>
-
                   {location.company && (
                     <Typography
                       variant="caption"
-                      sx={{
-                        display: "block",
-                        color: "text.secondary",
-                        mt: 0.5,
-                      }}
+                      sx={{ display: "block", color: "text.secondary" }}
                     >
                       Company: {location.company.name}
                     </Typography>
                   )}
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      display: "block",
+                      mt: 1,
+                      color: "primary.main",
+                      fontStyle: "italic",
+                    }}
+                  >
+                    Click for more details
+                  </Typography>
                 </Box>
               </Popup>
             </Marker>
@@ -711,7 +896,181 @@ const Map = () => {
         </MapContainer>
       </Box>
 
+      {renderFarmerReport()}
       {renderCompanyReport()}
+
+      {/* Plant Detail Modal */}
+      <Dialog
+        open={isDetailModalOpen}
+        onClose={() => setIsDetailModalOpen(false)}
+        maxWidth="md"
+        fullWidth
+      >
+        {selectedPlant && (
+          <>
+            <DialogTitle>
+              <Typography variant="h6" component="div" sx={{ fontWeight: 600 }}>
+                {selectedPlant.species}
+              </Typography>
+            </DialogTitle>
+            <DialogContent>
+              <Grid container spacing={3}>
+                {selectedPlant.imageUrl && (
+                  <Grid item xs={12}>
+                    <Box
+                      sx={{
+                        width: "100%",
+                        height: 400,
+                        position: "relative",
+                        borderRadius: 1,
+                        overflow: "hidden",
+                        backgroundColor: "grey.100",
+                      }}
+                    >
+                      <img
+                        src={selectedPlant.imageUrl}
+                        alt={selectedPlant.species}
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                        }}
+                      />
+                    </Box>
+                  </Grid>
+                )}
+                <Grid item xs={12}>
+                  <Typography
+                    variant="subtitle1"
+                    sx={{ fontWeight: 600, mb: 1 }}
+                  >
+                    Description
+                  </Typography>
+                  <Typography variant="body1">
+                    {selectedPlant.description || "No description available"}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Typography
+                    variant="subtitle2"
+                    sx={{ color: "text.secondary" }}
+                  >
+                    Location
+                  </Typography>
+                  <Typography variant="body2">
+                    Lat: {selectedPlant.latitude.toFixed(6)}
+                    <br />
+                    Long: {selectedPlant.longitude.toFixed(6)}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Typography
+                    variant="subtitle2"
+                    sx={{ color: "text.secondary" }}
+                  >
+                    Added by
+                  </Typography>
+                  <Typography variant="body2">
+                    {selectedPlant.addedBy.name}
+                  </Typography>
+                  {selectedPlant.company && (
+                    <>
+                      <Typography
+                        variant="subtitle2"
+                        sx={{ color: "text.secondary", mt: 1 }}
+                      >
+                        Company
+                      </Typography>
+                      <Typography variant="body2">
+                        {selectedPlant.company.name}
+                      </Typography>
+                    </>
+                  )}
+                </Grid>
+                {user?.role === "ADMIN" && !selectedPlant.company && (
+                  <Grid item xs={12}>
+                    <Divider sx={{ my: 2 }} />
+                    <Typography
+                      variant="subtitle1"
+                      sx={{ fontWeight: 600, mb: 2 }}
+                    >
+                      Admin Controls
+                    </Typography>
+                    <FormControl fullWidth>
+                      <InputLabel>Assign to Company</InputLabel>
+                      <Select
+                        value={selectedCompanyId}
+                        label="Assign to Company"
+                        onChange={(e) => setSelectedCompanyId(e.target.value)}
+                      >
+                        <MenuItem value="">
+                          <em>None</em>
+                        </MenuItem>
+                        {companyList.map((company) => (
+                          <MenuItem key={company.id} value={company.id}>
+                            {company.name}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          mt: 1,
+                          color: "text.secondary",
+                          display: "block",
+                        }}
+                      >
+                        Select a company to assign this plant to
+                      </Typography>
+                    </FormControl>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      sx={{ mt: 2 }}
+                      onClick={async () => {
+                        await handleAssignCompany();
+                        setIsDetailModalOpen(false);
+                      }}
+                      disabled={!selectedCompanyId}
+                    >
+                      Assign Company
+                    </Button>
+                  </Grid>
+                )}
+                {user?.role === "ADMIN" && selectedPlant.company && (
+                  <Grid item xs={12}>
+                    <Divider sx={{ my: 2 }} />
+                    <Box
+                      sx={{
+                        p: 2,
+                        bgcolor: "success.light",
+                        borderRadius: 1,
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1,
+                      }}
+                    >
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          color: "success.dark",
+                          fontWeight: 500,
+                        }}
+                      >
+                        ✓ This plant is already assigned to{" "}
+                        {selectedPlant.company.name}
+                      </Typography>
+                    </Box>
+                  </Grid>
+                )}
+              </Grid>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setIsDetailModalOpen(false)}>Close</Button>
+            </DialogActions>
+          </>
+        )}
+      </Dialog>
 
       {/* Add Plant Dialog */}
       <Dialog
@@ -815,51 +1174,6 @@ const Map = () => {
             disabled={imageUpload.uploading}
           >
             {imageUpload.uploading ? "Uploading..." : "Add Plant"}
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* Assign Company Dialog */}
-      <Dialog
-        open={isAssigningCompany}
-        onClose={() => {
-          setIsAssigningCompany(false);
-          setSelectedLocation(null);
-          setSelectedCompanyId("");
-        }}
-      >
-        <DialogTitle>Assign Plant to Company</DialogTitle>
-        <DialogContent>
-          <Box mt={2}>
-            <Typography variant="subtitle1">Plant Details:</Typography>
-            <Typography>Species: {selectedLocation?.species}</Typography>
-            <Typography>Added by: {selectedLocation?.addedBy.name}</Typography>
-          </Box>
-          {user?.role === "ADMIN" && (
-            <FormControl fullWidth margin="dense">
-              <InputLabel>Select Company</InputLabel>
-              <Select
-                value={selectedCompanyId}
-                label="Select Company"
-                onChange={(e) => setSelectedCompanyId(e.target.value)}
-              >
-                {companyList.map((company) => (
-                  <MenuItem key={company.id} value={company.id}>
-                    {company.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setIsAssigningCompany(false)}>Cancel</Button>
-          <Button
-            onClick={handleAssignCompany}
-            variant="contained"
-            color="primary"
-          >
-            Assign to Company
           </Button>
         </DialogActions>
       </Dialog>
