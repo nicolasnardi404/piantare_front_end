@@ -15,7 +15,7 @@ import Home from "./pages/Home";
 import ProtectedRoute from "./components/ProtectedRoute";
 import "./App.css";
 
-// Create a theme instance
+// Create a theme instance with translations for user-visible text
 const theme = createTheme({
   palette: {
     primary: {
@@ -69,6 +69,16 @@ const theme = createTheme({
   },
 });
 
+// Add translations object for user-visible text
+const translations = {
+  farmers: "Agricultores",
+  companies: "Empresas",
+  plants: "Plantas",
+  map: "Mapa",
+  users: "Usuários",
+  login: "Entrar",
+};
+
 function App() {
   return (
     <ThemeProvider theme={theme}>
@@ -97,7 +107,7 @@ function App() {
               element={
                 <ProtectedRoute roles={["ADMIN"]}>
                   <Layout>
-                    <Users />
+                    <Users translations={translations} />
                   </Layout>
                 </ProtectedRoute>
               }

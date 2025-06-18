@@ -32,7 +32,7 @@ import {
 import { users, plantLocations, companies } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 
-const Users = () => {
+const Users = ({ translations }) => {
   const { user: currentUser } = useAuth();
   const [userList, setUserList] = useState([]);
   const [plantsList, setPlantsList] = useState([]);
@@ -61,7 +61,7 @@ const Users = () => {
       const response = await users.getAll();
       setUserList(response.data);
     } catch (err) {
-      setError("Failed to load users");
+      setError("Falha ao carregar usuários");
     }
   };
 
@@ -70,7 +70,7 @@ const Users = () => {
       const response = await plantLocations.getAll();
       setPlantsList(response.data);
     } catch (err) {
-      setError("Failed to load plants");
+      setError("Falha ao carregar plantas");
     }
   };
 
@@ -79,7 +79,7 @@ const Users = () => {
       const response = await companies.getAll();
       setCompanyList(response.data);
     } catch (err) {
-      setError("Failed to load companies");
+      setError("Falha ao carregar empresas");
     }
   };
 
@@ -121,7 +121,7 @@ const Users = () => {
     e.preventDefault();
     try {
       if (!isEditMode && !formData.password) {
-        setError("Password is required for new users");
+        setError("Senha é obrigatória para novos usuários");
         return;
       }
 
@@ -129,7 +129,7 @@ const Users = () => {
       const isCompany = activeTab === 1;
 
       if (isCompany && !submitData.companyName) {
-        setError("Company name is required");
+        setError("Nome da empresa é obrigatório");
         return;
       }
 
@@ -149,17 +149,17 @@ const Users = () => {
       handleCloseDialog();
       loadUsers();
     } catch (err) {
-      setError(err.response?.data?.error || "Failed to save user");
+      setError(err.response?.data?.error || "Falha ao salvar usuário");
     }
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this user?")) {
+    if (window.confirm("Tem certeza que deseja excluir este usuário?")) {
       try {
         await users.delete(id);
         loadUsers();
       } catch (err) {
-        setError("Failed to delete user");
+        setError("Falha ao excluir usuário");
       }
     }
   };
@@ -167,7 +167,7 @@ const Users = () => {
   const handleAssignCompany = async (plantId) => {
     try {
       if (!selectedCompanyId) {
-        setError("Please select a company");
+        setError("Por favor, selecione uma empresa");
         return;
       }
 
@@ -178,7 +178,7 @@ const Users = () => {
       setSelectedCompanyId("");
       setError("");
     } catch (err) {
-      setError("Failed to assign company to plant");
+      setError("Falha ao atribuir empresa à planta");
     }
   };
 
@@ -198,7 +198,7 @@ const Users = () => {
   );
 
   if (currentUser?.role !== "ADMIN") {
-    return <div>Access denied</div>;
+    return <div>Acesso negado</div>;
   }
 
   const renderContent = () => {
@@ -211,7 +211,9 @@ const Users = () => {
               sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}
             >
               <Typography variant="h4">
-                {activeTab === 0 ? "Farmers" : "Companies"}
+                {activeTab === 0
+                  ? translations.farmers
+                  : translations.companies}
               </Typography>
               <Button
                 variant="contained"
@@ -219,7 +221,10 @@ const Users = () => {
                 startIcon={<AddIcon />}
                 onClick={() => handleOpenDialog()}
               >
-                Add {activeTab === 0 ? "Farmer" : "Company"}
+                Adicionar{" "}
+                {activeTab === 0
+                  ? translations.farmers
+                  : translations.companies}
               </Button>
             </Box>
 
@@ -227,10 +232,10 @@ const Users = () => {
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell>Name</TableCell>
+                    <TableCell>Nome</TableCell>
                     <TableCell>Email</TableCell>
-                    {activeTab === 1 && <TableCell>Company Name</TableCell>}
-                    <TableCell>Actions</TableCell>
+                    {activeTab === 1 && <TableCell>Nome da Empresa</TableCell>}
+                    <TableCell>Ações</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -266,18 +271,18 @@ const Users = () => {
         return (
           <>
             <Typography variant="h4" sx={{ mb: 3 }}>
-              All Plants
+              Todas as Plantas
             </Typography>
 
             <TableContainer component={Paper}>
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell>Species</TableCell>
-                    <TableCell>Added By</TableCell>
-                    <TableCell>Company</TableCell>
-                    <TableCell>Location</TableCell>
-                    <TableCell>Actions</TableCell>
+                    <TableCell>Espécie</TableCell>
+                    <TableCell>Adicionado Por</TableCell>
+                    <TableCell>Empresa</TableCell>
+                    <TableCell>Localização</TableCell>
+                    <TableCell>Ações</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -290,7 +295,7 @@ const Users = () => {
                           plant.company.name
                         ) : (
                           <Typography color="text.secondary">
-                            Not assigned
+                            Não atribuída
                           </Typography>
                         )}
                       </TableCell>
@@ -308,7 +313,7 @@ const Users = () => {
                               setIsDialogOpen(true);
                             }}
                           >
-                            Assign Company
+                            Atribuir Empresa
                           </Button>
                         )}
                       </TableCell>
@@ -325,13 +330,13 @@ const Users = () => {
                 setSelectedCompanyId("");
               }}
             >
-              <DialogTitle>Assign Plant to Company</DialogTitle>
+              <DialogTitle>Atribuir Planta à Empresa</DialogTitle>
               <DialogContent>
                 <FormControl fullWidth sx={{ mt: 2 }}>
-                  <InputLabel>Select Company</InputLabel>
+                  <InputLabel>Selecionar Empresa</InputLabel>
                   <Select
                     value={selectedCompanyId}
-                    label="Select Company"
+                    label="Selecionar Empresa"
                     onChange={(e) => setSelectedCompanyId(e.target.value)}
                   >
                     {companyList.map((company) => (
@@ -349,14 +354,14 @@ const Users = () => {
                     setSelectedCompanyId("");
                   }}
                 >
-                  Cancel
+                  Cancelar
                 </Button>
                 <Button
                   onClick={() => handleAssignCompany(selectedUser?.id)}
                   variant="contained"
                   color="primary"
                 >
-                  Assign
+                  Atribuir
                 </Button>
               </DialogActions>
             </Dialog>
@@ -371,9 +376,9 @@ const Users = () => {
     <Box sx={{ p: 3 }}>
       <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 3 }}>
         <Tabs value={activeTab} onChange={handleTabChange}>
-          <Tab label="Farmers" />
-          <Tab label="Companies" />
-          <Tab label="Plants" />
+          <Tab label={translations.farmers} />
+          <Tab label={translations.companies} />
+          <Tab label={translations.plants} />
         </Tabs>
       </Box>
 
@@ -389,13 +394,13 @@ const Users = () => {
       {activeTab !== 2 && (
         <Dialog open={isDialogOpen} onClose={handleCloseDialog}>
           <DialogTitle>
-            {isEditMode ? "Edit" : "Add New"}{" "}
-            {activeTab === 0 ? "Farmer" : "Company"}
+            {isEditMode ? "Editar" : "Adicionar"}{" "}
+            {activeTab === 0 ? translations.farmers : translations.companies}
           </DialogTitle>
           <DialogContent>
             <TextField
               margin="dense"
-              label="Name"
+              label="Nome"
               fullWidth
               required
               value={formData.name}
@@ -416,7 +421,7 @@ const Users = () => {
             />
             <TextField
               margin="dense"
-              label={isEditMode ? "New Password (optional)" : "Password"}
+              label={isEditMode ? "Nova Senha (opcional)" : "Senha"}
               type="password"
               fullWidth
               required={!isEditMode}
@@ -428,7 +433,7 @@ const Users = () => {
             {activeTab === 1 && (
               <TextField
                 margin="dense"
-                label="Company Name"
+                label="Nome da Empresa"
                 fullWidth
                 required
                 value={formData.companyName}
@@ -439,9 +444,9 @@ const Users = () => {
             )}
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleCloseDialog}>Cancel</Button>
+            <Button onClick={handleCloseDialog}>Cancelar</Button>
             <Button onClick={handleSubmit} variant="contained" color="primary">
-              {isEditMode ? "Update" : "Create"}
+              {isEditMode ? "Atualizar" : "Criar"}
             </Button>
           </DialogActions>
         </Dialog>

@@ -1,0 +1,18 @@
+.custom-tooltip {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: none !important;
+  border-radius: 8px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+  padding: 0 !important;
+  font-family: inherit !important;
+  backdrop-filter: blur(10px);
+  min-width: 200px;
+}
+
+.custom-tooltip::before {
+  display: none !important;
+}
+
+.leaflet-tooltip-top.custom-tooltip {
+  margin-top: -10px;
+} 
