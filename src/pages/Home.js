@@ -19,8 +19,11 @@ import {
 import { styled } from "@mui/material/styles";
 import { Link } from "react-router-dom";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import MarkerClusterGroup from "react-leaflet-markercluster";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import "leaflet.markercluster/dist/MarkerCluster.css";
+import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import api from "../services/api";
@@ -292,6 +295,60 @@ L.Icon.Default.mergeOptions({
   shadowUrl: require("leaflet/dist/images/marker-shadow.png"),
 });
 
+// Add these styles before the component
+const styles = `
+  .marker-cluster {
+    background-clip: padding-box;
+    border-radius: 20px;
+    background-color: rgba(76, 175, 80, 0.6);
+  }
+  
+  .marker-cluster div {
+    width: 30px;
+    height: 30px;
+    margin-left: 5px;
+    margin-top: 5px;
+    text-align: center;
+    border-radius: 15px;
+    font-size: 12px;
+    color: white;
+    font-weight: bold;
+    background-color: rgba(76, 175, 80, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .marker-cluster-small {
+    background-color: rgba(76, 175, 80, 0.6);
+  }
+  
+  .marker-cluster-small div {
+    background-color: rgba(76, 175, 80, 0.8);
+  }
+  
+  .marker-cluster-medium {
+    background-color: rgba(241, 211, 87, 0.6);
+  }
+  
+  .marker-cluster-medium div {
+    background-color: rgba(240, 194, 12, 0.8);
+  }
+  
+  .marker-cluster-large {
+    background-color: rgba(253, 156, 115, 0.6);
+  }
+  
+  .marker-cluster-large div {
+    background-color: rgba(241, 128, 23, 0.8);
+  }
+`;
+
+// Add style tag to document
+const styleSheet = document.createElement("style");
+styleSheet.innerText = styles;
+document.head.appendChild(styleSheet);
+
 const Home = () => {
   const [plants, setPlants] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -402,29 +459,58 @@ const Home = () => {
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               />
-              {plants.map((plant) => (
-                <Marker
-                  key={plant.id}
-                  position={[plant.latitude, plant.longitude]}
-                >
-                  <Popup>
-                    <Box sx={{ p: 1 }}>
-                      <Typography variant="h6" gutterBottom>
-                        {plant.species}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        Plantada por: {plant.addedBy.name}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        Data:{" "}
-                        {format(new Date(plant.createdAt), "dd/MM/yyyy", {
-                          locale: ptBR,
-                        })}
-                      </Typography>
-                    </Box>
-                  </Popup>
-                </Marker>
-              ))}
+              <MarkerClusterGroup
+                chunkedLoading
+                spiderfyOnMaxZoom={true}
+                showCoverageOnHover={true}
+                zoomToBoundsOnClick={true}
+                maxClusterRadius={50}
+                iconCreateFunction={(cluster) => {
+                  const count = cluster.getChildCount();
+                  let size = 40;
+                  let className = "marker-cluster-";
+
+                  if (count < 10) {
+                    className += "small";
+                  } else if (count < 100) {
+                    className += "medium";
+                    size = 50;
+                  } else {
+                    className += "large";
+                    size = 60;
+                  }
+
+                  return L.divIcon({
+                    html: `<div><span>${count}</span></div>`,
+                    className: `marker-cluster ${className}`,
+                    iconSize: L.point(size, size),
+                  });
+                }}
+              >
+                {plants.map((plant) => (
+                  <Marker
+                    key={plant.id}
+                    position={[plant.latitude, plant.longitude]}
+                  >
+                    <Popup>
+                      <Box sx={{ p: 1 }}>
+                        <Typography variant="h6" gutterBottom>
+                          {plant.species}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          Plantada por: {plant.addedBy.name}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          Data:{" "}
+                          {format(new Date(plant.createdAt), "dd/MM/yyyy", {
+                            locale: ptBR,
+                          })}
+                        </Typography>
+                      </Box>
+                    </Popup>
+                  </Marker>
+                ))}
+              </MarkerClusterGroup>
             </MapContainer>
           </MapWrapper>
         </ScrollTriggeredSection>

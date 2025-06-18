@@ -7,6 +7,7 @@ import {
   useMapEvents,
   useMap,
 } from "react-leaflet";
+import MarkerClusterGroup from "react-leaflet-markercluster";
 import L from "leaflet";
 import { useAuth } from "../context/AuthContext";
 import { plantLocations, companies } from "../services/api";
@@ -39,6 +40,10 @@ import "leaflet/dist/leaflet.css";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import SearchIcon from "@mui/icons-material/Search";
 import PlantUpdates from "./PlantUpdates";
+
+// Import marker cluster CSS
+import "leaflet.markercluster/dist/MarkerCluster.css";
+import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 
 const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8000";
 
@@ -909,64 +914,93 @@ const Map = () => {
           <AddMarkerToClick onLocationSelected={handleMapClick} />
           <MapSearch />
 
-          {locations.map((location) => (
-            <Marker
-              key={location.id}
-              position={[location.latitude, location.longitude]}
-              eventHandlers={{
-                click: () => handleMarkerClick(location),
-                mouseover: (e) => {
-                  e.target.openPopup();
-                },
-                mouseout: (e) => {
-                  e.target.closePopup();
-                },
-              }}
-            >
-              <Popup>
-                <Box
-                  sx={{
-                    p: 1,
-                    minWidth: 200,
-                    backgroundColor: "rgba(255, 255, 255, 0.95)",
-                    borderRadius: 1,
-                  }}
-                >
-                  <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-                    {location.species}
-                  </Typography>
-                  <Typography variant="body2" sx={{ mt: 1 }}>
-                    {location.description}
-                  </Typography>
-                  <Typography
-                    variant="caption"
-                    sx={{ display: "block", mt: 1, color: "text.secondary" }}
-                  >
-                    Added by: {location.addedBy.name}
-                  </Typography>
-                  {location.company && (
-                    <Typography
-                      variant="caption"
-                      sx={{ display: "block", color: "text.secondary" }}
-                    >
-                      Company: {location.company.name}
-                    </Typography>
-                  )}
-                  <Typography
-                    variant="caption"
+          <MarkerClusterGroup
+            chunkedLoading
+            spiderfyOnMaxZoom={true}
+            showCoverageOnHover={true}
+            zoomToBoundsOnClick={true}
+            maxClusterRadius={50}
+            iconCreateFunction={(cluster) => {
+              const count = cluster.getChildCount();
+              let size = 40;
+              let className = "marker-cluster-";
+
+              if (count < 10) {
+                className += "small";
+              } else if (count < 100) {
+                className += "medium";
+                size = 50;
+              } else {
+                className += "large";
+                size = 60;
+              }
+
+              return L.divIcon({
+                html: `<div><span>${count}</span></div>`,
+                className: `marker-cluster ${className}`,
+                iconSize: L.point(size, size),
+              });
+            }}
+          >
+            {locations.map((location) => (
+              <Marker
+                key={location.id}
+                position={[location.latitude, location.longitude]}
+                eventHandlers={{
+                  click: () => handleMarkerClick(location),
+                  mouseover: (e) => {
+                    e.target.openPopup();
+                  },
+                  mouseout: (e) => {
+                    e.target.closePopup();
+                  },
+                }}
+              >
+                <Popup>
+                  <Box
                     sx={{
-                      display: "block",
-                      mt: 1,
-                      color: "primary.main",
-                      fontStyle: "italic",
+                      p: 1,
+                      minWidth: 200,
+                      backgroundColor: "rgba(255, 255, 255, 0.95)",
+                      borderRadius: 1,
                     }}
                   >
-                    Click for more details
-                  </Typography>
-                </Box>
-              </Popup>
-            </Marker>
-          ))}
+                    <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                      {location.species}
+                    </Typography>
+                    <Typography variant="body2" sx={{ mt: 1 }}>
+                      {location.description}
+                    </Typography>
+                    <Typography
+                      variant="caption"
+                      sx={{ display: "block", mt: 1, color: "text.secondary" }}
+                    >
+                      Added by: {location.addedBy.name}
+                    </Typography>
+                    {location.company && (
+                      <Typography
+                        variant="caption"
+                        sx={{ display: "block", color: "text.secondary" }}
+                      >
+                        Company: {location.company.name}
+                      </Typography>
+                    )}
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        display: "block",
+                        mt: 1,
+                        color: "primary.main",
+                        fontStyle: "italic",
+                      }}
+                    >
+                      Click for more details
+                    </Typography>
+                  </Box>
+                </Popup>
+              </Marker>
+            ))}
+          </MarkerClusterGroup>
 
           {/* Display temporary marker for new location */}
           {newLocation.latitude && newLocation.longitude && (
@@ -1274,5 +1308,59 @@ const Map = () => {
     </Box>
   );
 };
+
+// Add these styles at the end of the file, before the export
+const styles = `
+  .marker-cluster {
+    background-clip: padding-box;
+    border-radius: 20px;
+    background-color: rgba(76, 175, 80, 0.6);
+  }
+  
+  .marker-cluster div {
+    width: 30px;
+    height: 30px;
+    margin-left: 5px;
+    margin-top: 5px;
+    text-align: center;
+    border-radius: 15px;
+    font-size: 12px;
+    color: white;
+    font-weight: bold;
+    background-color: rgba(76, 175, 80, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .marker-cluster-small {
+    background-color: rgba(76, 175, 80, 0.6);
+  }
+  
+  .marker-cluster-small div {
+    background-color: rgba(76, 175, 80, 0.8);
+  }
+  
+  .marker-cluster-medium {
+    background-color: rgba(241, 211, 87, 0.6);
+  }
+  
+  .marker-cluster-medium div {
+    background-color: rgba(240, 194, 12, 0.8);
+  }
+  
+  .marker-cluster-large {
+    background-color: rgba(253, 156, 115, 0.6);
+  }
+  
+  .marker-cluster-large div {
+    background-color: rgba(241, 128, 23, 0.8);
+  }
+`;
+
+// Add style tag to document
+const styleSheet = document.createElement("style");
+styleSheet.innerText = styles;
+document.head.appendChild(styleSheet);
 
 export default Map;
