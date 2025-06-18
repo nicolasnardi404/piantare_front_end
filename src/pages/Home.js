@@ -318,6 +318,55 @@ const Home = () => {
 
       <Container sx={{ py: 8 }}>
         <ScrollTriggeredSection>
+          <Grid container spacing={3} sx={{ mb: 4 }}>
+            <Grid item xs={12}>
+              <StatsCard>
+                <Typography variant="h4" color="primary" gutterBottom>
+                  {plants.length}
+                </Typography>
+                <Typography variant="subtitle1">
+                  Plantas Plantadas no Total
+                </Typography>
+              </StatsCard>
+            </Grid>
+          </Grid>
+
+          <MapWrapper>
+            <MapContainer center={center} zoom={4}>
+              <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              />
+              {plants.map((plant) => (
+                <Marker
+                  key={plant.id}
+                  position={[plant.latitude, plant.longitude]}
+                >
+                  <Popup>
+                    <Box sx={{ p: 1 }}>
+                      <Typography variant="h6" gutterBottom>
+                        {plant.species}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Plantada por: {plant.addedBy.name}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Data:{" "}
+                        {format(new Date(plant.createdAt), "dd/MM/yyyy", {
+                          locale: ptBR,
+                        })}
+                      </Typography>
+                    </Box>
+                  </Popup>
+                </Marker>
+              ))}
+            </MapContainer>
+          </MapWrapper>
+        </ScrollTriggeredSection>
+      </Container>
+
+      <Container sx={{ py: 8 }}>
+        <ScrollTriggeredSection>
           <Grid
             container
             spacing={4}
@@ -572,55 +621,6 @@ const Home = () => {
           </ScrollTriggeredSection>
         </Container>
       </Box>
-
-      <Container sx={{ py: 8 }}>
-        <ScrollTriggeredSection>
-          <Grid container spacing={3} sx={{ mb: 4 }}>
-            <Grid item xs={12}>
-              <StatsCard>
-                <Typography variant="h4" color="primary" gutterBottom>
-                  {plants.length}
-                </Typography>
-                <Typography variant="subtitle1">
-                  Plantas Plantadas no Total
-                </Typography>
-              </StatsCard>
-            </Grid>
-          </Grid>
-
-          <MapWrapper>
-            <MapContainer center={center} zoom={4}>
-              <TileLayer
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              />
-              {plants.map((plant) => (
-                <Marker
-                  key={plant.id}
-                  position={[plant.latitude, plant.longitude]}
-                >
-                  <Popup>
-                    <Box sx={{ p: 1 }}>
-                      <Typography variant="h6" gutterBottom>
-                        {plant.species}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        Plantada por: {plant.addedBy.name}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        Data:{" "}
-                        {format(new Date(plant.createdAt), "dd/MM/yyyy", {
-                          locale: ptBR,
-                        })}
-                      </Typography>
-                    </Box>
-                  </Popup>
-                </Marker>
-              ))}
-            </MapContainer>
-          </MapWrapper>
-        </ScrollTriggeredSection>
-      </Container>
     </Box>
   );
 };
