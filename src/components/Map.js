@@ -5,6 +5,7 @@ import {
   Marker,
   Popup,
   useMapEvents,
+  useMap,
 } from "react-leaflet";
 import L from "leaflet";
 import { useAuth } from "../context/AuthContext";
@@ -30,10 +31,13 @@ import {
   CardContent,
   Grid,
   Divider,
+  IconButton,
+  InputAdornment,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import "leaflet/dist/leaflet.css";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import SearchIcon from "@mui/icons-material/Search";
 
 const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8000";
 
@@ -161,6 +165,81 @@ const ImageUploadButton = styled(Button)(({ theme }) => ({
     borderStyle: "solid",
   },
 }));
+
+const SearchControl = styled(Paper)(({ theme }) => ({
+  position: "absolute",
+  top: "10px",
+  right: "10px",
+  zIndex: 1000,
+  padding: theme.spacing(1),
+  display: "flex",
+  alignItems: "center",
+  width: "300px",
+  backgroundColor: "rgba(255, 255, 255, 0.9)",
+  backdropFilter: "blur(4px)",
+  boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+  borderRadius: theme.spacing(1),
+}));
+
+function MapSearch() {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const map = useMap();
+
+  const handleSearch = async () => {
+    if (!searchQuery.trim()) return;
+
+    try {
+      const response = await axios.get(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
+          searchQuery
+        )}&limit=1`
+      );
+
+      if (response.data && response.data.length > 0) {
+        const location = response.data[0];
+        map.setView([location.lat, location.lon], 13);
+      }
+    } catch (error) {
+      console.error("Error searching location:", error);
+    }
+  };
+
+  return (
+    <SearchControl elevation={3}>
+      <TextField
+        fullWidth
+        size="small"
+        placeholder="Buscar cidade ou local..."
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        onKeyPress={(e) => {
+          if (e.key === "Enter") {
+            handleSearch();
+          }
+        }}
+        InputProps={{
+          endAdornment: (
+            <InputAdornment position="end">
+              <IconButton
+                size="small"
+                onClick={handleSearch}
+                sx={{ color: "primary.main" }}
+              >
+                <SearchIcon />
+              </IconButton>
+            </InputAdornment>
+          ),
+        }}
+        sx={{
+          "& .MuiOutlinedInput-root": {
+            backgroundColor: "white",
+          },
+        }}
+      />
+    </SearchControl>
+  );
+}
 
 const Map = () => {
   const [locations, setLocations] = useState([]);
@@ -827,6 +906,7 @@ const Map = () => {
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           />
           <AddMarkerToClick onLocationSelected={handleMapClick} />
+          <MapSearch />
 
           {locations.map((location) => (
             <Marker
@@ -944,10 +1024,10 @@ const Map = () => {
                     variant="subtitle1"
                     sx={{ fontWeight: 600, mb: 1 }}
                   >
-                    Description
+                    Descrição
                   </Typography>
                   <Typography variant="body1">
-                    {selectedPlant.description || "No description available"}
+                    {selectedPlant.description || "Sem descrição disponível"}
                   </Typography>
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -955,12 +1035,12 @@ const Map = () => {
                     variant="subtitle2"
                     sx={{ color: "text.secondary" }}
                   >
-                    Location
+                    Localização
                   </Typography>
                   <Typography variant="body2">
-                    Lat: {selectedPlant.latitude.toFixed(6)}
+                    Latitude: {selectedPlant.latitude.toFixed(6)}
                     <br />
-                    Long: {selectedPlant.longitude.toFixed(6)}
+                    Longitude: {selectedPlant.longitude.toFixed(6)}
                   </Typography>
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -968,7 +1048,7 @@ const Map = () => {
                     variant="subtitle2"
                     sx={{ color: "text.secondary" }}
                   >
-                    Added by
+                    Adicionado por
                   </Typography>
                   <Typography variant="body2">
                     {selectedPlant.addedBy.name}
@@ -979,7 +1059,7 @@ const Map = () => {
                         variant="subtitle2"
                         sx={{ color: "text.secondary", mt: 1 }}
                       >
-                        Company
+                        Empresa
                       </Typography>
                       <Typography variant="body2">
                         {selectedPlant.company.name}
@@ -994,17 +1074,17 @@ const Map = () => {
                       variant="subtitle1"
                       sx={{ fontWeight: 600, mb: 2 }}
                     >
-                      Admin Controls
+                      Controles de Administrador
                     </Typography>
                     <FormControl fullWidth>
-                      <InputLabel>Assign to Company</InputLabel>
+                      <InputLabel>Atribuir à Empresa</InputLabel>
                       <Select
                         value={selectedCompanyId}
-                        label="Assign to Company"
+                        label="Atribuir à Empresa"
                         onChange={(e) => setSelectedCompanyId(e.target.value)}
                       >
                         <MenuItem value="">
-                          <em>None</em>
+                          <em>Nenhuma</em>
                         </MenuItem>
                         {companyList.map((company) => (
                           <MenuItem key={company.id} value={company.id}>
@@ -1020,7 +1100,7 @@ const Map = () => {
                           display: "block",
                         }}
                       >
-                        Select a company to assign this plant to
+                        Selecione uma empresa para atribuir esta planta
                       </Typography>
                     </FormControl>
                     <Button
@@ -1033,7 +1113,7 @@ const Map = () => {
                       }}
                       disabled={!selectedCompanyId}
                     >
-                      Assign Company
+                      Atribuir à Empresa
                     </Button>
                   </Grid>
                 )}
@@ -1057,7 +1137,7 @@ const Map = () => {
                           fontWeight: 500,
                         }}
                       >
-                        ✓ This plant is already assigned to{" "}
+                        ✓ Esta planta já está atribuída à empresa{" "}
                         {selectedPlant.company.name}
                       </Typography>
                     </Box>
@@ -1066,7 +1146,9 @@ const Map = () => {
               </Grid>
             </DialogContent>
             <DialogActions>
-              <Button onClick={() => setIsDetailModalOpen(false)}>Close</Button>
+              <Button onClick={() => setIsDetailModalOpen(false)}>
+                Fechar
+              </Button>
             </DialogActions>
           </>
         )}
