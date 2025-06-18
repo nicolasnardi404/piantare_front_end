@@ -11,9 +11,16 @@ import {
   Grow,
   useScrollTrigger,
   Avatar,
+  useTheme,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { Link } from "react-router-dom";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import api from "../services/api";
 
 import YardIcon from "@mui/icons-material/Yard";
 import BusinessIcon from "@mui/icons-material/Business";
@@ -155,6 +162,42 @@ const ProcessSection = styled(Box)(({ theme }) => ({
   },
 }));
 
+const StatsCard = styled(Card)(({ theme }) => ({
+  height: "100%",
+  padding: theme.spacing(3),
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  background: "rgba(255, 255, 255, 0.9)",
+  backdropFilter: "blur(10px)",
+  border: "1px solid rgba(255, 255, 255, 0.3)",
+  boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1)",
+  borderRadius: theme.spacing(2),
+  position: "relative",
+  "&::before": {
+    content: '""',
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    height: "4px",
+    background: "linear-gradient(90deg, #4caf50, #81c784)",
+    borderRadius: "4px 4px 0 0",
+  },
+}));
+
+const MapWrapper = styled(Box)(({ theme }) => ({
+  height: "70vh",
+  width: "100%",
+  borderRadius: theme.spacing(2),
+  overflow: "hidden",
+  boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1)",
+  "& .leaflet-container": {
+    height: "100%",
+    width: "100%",
+  },
+}));
+
 function ScrollTriggeredSection({ children, threshold = 0.3 }) {
   const [isVisible, setIsVisible] = useState(false);
   const [element, setElement] = useState(null);
@@ -187,7 +230,43 @@ function ScrollTriggeredSection({ children, threshold = 0.3 }) {
   );
 }
 
+// Fix for Leaflet marker icons
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: require("leaflet/dist/images/marker-icon-2x.png"),
+  iconUrl: require("leaflet/dist/images/marker-icon.png"),
+  shadowUrl: require("leaflet/dist/images/marker-shadow.png"),
+});
+
 const Home = () => {
+  const [plants, setPlants] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const theme = useTheme();
+
+  useEffect(() => {
+    fetchPlants();
+  }, []);
+
+  const fetchPlants = async () => {
+    try {
+      const response = await api.get("/plant-locations/map");
+      setPlants(response.data);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching plants:", error);
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return <Typography>Carregando...</Typography>;
+  }
+
+  const center =
+    plants.length > 0
+      ? [plants[0].latitude, plants[0].longitude]
+      : [-14.235004, -51.92528]; // Brazil center
+
   return (
     <Box>
       <Fade in={true} timeout={1000}>
@@ -493,6 +572,55 @@ const Home = () => {
           </ScrollTriggeredSection>
         </Container>
       </Box>
+
+      <Container sx={{ py: 8 }}>
+        <ScrollTriggeredSection>
+          <Grid container spacing={3} sx={{ mb: 4 }}>
+            <Grid item xs={12}>
+              <StatsCard>
+                <Typography variant="h4" color="primary" gutterBottom>
+                  {plants.length}
+                </Typography>
+                <Typography variant="subtitle1">
+                  Plantas Plantadas no Total
+                </Typography>
+              </StatsCard>
+            </Grid>
+          </Grid>
+
+          <MapWrapper>
+            <MapContainer center={center} zoom={4}>
+              <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              />
+              {plants.map((plant) => (
+                <Marker
+                  key={plant.id}
+                  position={[plant.latitude, plant.longitude]}
+                >
+                  <Popup>
+                    <Box sx={{ p: 1 }}>
+                      <Typography variant="h6" gutterBottom>
+                        {plant.species}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Plantada por: {plant.addedBy.name}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Data:{" "}
+                        {format(new Date(plant.createdAt), "dd/MM/yyyy", {
+                          locale: ptBR,
+                        })}
+                      </Typography>
+                    </Box>
+                  </Popup>
+                </Marker>
+              ))}
+            </MapContainer>
+          </MapWrapper>
+        </ScrollTriggeredSection>
+      </Container>
     </Box>
   );
 };

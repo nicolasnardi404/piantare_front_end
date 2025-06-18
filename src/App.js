@@ -12,6 +12,7 @@ import Layout from "./components/Layout";
 import Map from "./components/Map";
 import Users from "./components/Users";
 import Home from "./pages/Home";
+import FarmerDashboard from "./components/FarmerDashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 import "./App.css";
 
@@ -92,6 +93,16 @@ function App() {
 
             {/* Protected routes */}
             <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute roles={["FARMER"]}>
+                  <Layout>
+                    <FarmerDashboard />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="/map"
               element={
                 <ProtectedRoute>
@@ -101,7 +112,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-
             <Route
               path="/users"
               element={
@@ -112,8 +122,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-
-            {/* Add more protected routes here as we create the components */}
           </Routes>
         </Router>
       </AuthProvider>

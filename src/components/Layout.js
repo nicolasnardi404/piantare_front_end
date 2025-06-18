@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import {
   AppBar,
   Box,
@@ -12,6 +12,8 @@ import {
   Toolbar,
   Typography,
   Button,
+  CssBaseline,
+  Divider,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import {
@@ -19,6 +21,7 @@ import {
   Map as MapIcon,
   People as PeopleIcon,
   ExitToApp as LogoutIcon,
+  Dashboard as DashboardIcon,
 } from "@mui/icons-material";
 import { useAuth } from "../context/AuthContext";
 
@@ -110,56 +113,74 @@ const Layout = ({ children }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
 
   const menuItems = [
+    ...(user?.role === "FARMER"
+      ? [
+          {
+            text: "Dashboard",
+            icon: <DashboardIcon />,
+            path: "/dashboard",
+          },
+        ]
+      : []),
     {
-      path: "/map",
-      label: "Mapa",
+      text: "Mapa",
       icon: <MapIcon />,
-      roles: ["FARMER", "COMPANY", "ADMIN"],
+      path: "/map",
     },
-    {
-      path: "/users",
-      label: "Usuários",
-      icon: <PeopleIcon />,
-      roles: ["ADMIN"],
-    },
+    ...(user?.role === "ADMIN"
+      ? [
+          {
+            text: "Usuários",
+            icon: <PeopleIcon />,
+            path: "/users",
+          },
+        ]
+      : []),
   ];
 
   const drawer = (
     <div>
-      <Toolbar />
+      <Toolbar>
+        <Typography variant="h6" noWrap component="div">
+          Plantas Milena
+        </Typography>
+      </Toolbar>
+      <Divider />
       <List>
-        {menuItems.map(
-          (item) =>
-            item.roles.includes(user?.role) && (
-              <ListItem
-                button
-                key={item.label}
-                onClick={() => navigate(item.path)}
-                sx={{
-                  "&:hover": {
-                    backgroundColor: "rgba(76, 175, 80, 0.08)",
-                  },
-                }}
-              >
-                <ListItemIcon sx={{ color: "primary.main" }}>
-                  {item.icon}
-                </ListItemIcon>
-                <ListItemText primary={item.label} />
-              </ListItem>
-            )
-        )}
+        {menuItems.map((item) => (
+          <ListItem
+            button
+            key={item.text}
+            onClick={() => navigate(item.path)}
+            selected={location.pathname === item.path}
+          >
+            <ListItemIcon>{item.icon}</ListItemIcon>
+            <ListItemText primary={item.text} />
+          </ListItem>
+        ))}
+      </List>
+      <Divider />
+      <List>
+        <ListItem button onClick={logout}>
+          <ListItemIcon>
+            <LogoutIcon />
+          </ListItemIcon>
+          <ListItemText primary="Sair" />
+        </ListItem>
       </List>
     </div>
   );
 
   return (
     <Box sx={{ display: "flex" }}>
+      <CssBaseline />
       <StyledAppBar
         position="fixed"
         sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
@@ -239,6 +260,7 @@ const Layout = ({ children }) => {
           mt: 8,
         }}
       >
+        <Toolbar />
         {children}
       </Box>
     </Box>
