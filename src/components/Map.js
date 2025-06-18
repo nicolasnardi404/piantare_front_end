@@ -10,6 +10,7 @@ import L from "leaflet";
 import { useAuth } from "../context/AuthContext";
 import { plantLocations, companies } from "../services/api";
 import { b2Service } from "../services/b2";
+import axios from "axios";
 import {
   Button,
   Dialog,
@@ -33,6 +34,8 @@ import {
 import { styled } from "@mui/material/styles";
 import "leaflet/dist/leaflet.css";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8000";
 
 // Fix for default marker icon
 delete L.Icon.Default.prototype._getIconUrl;
@@ -288,8 +291,21 @@ const Map = () => {
       if (imageUpload.file) {
         setImageUpload((prev) => ({ ...prev, uploading: true }));
         try {
-          imageUrl = await b2Service.uploadImage(imageUpload.file);
+          const formData = new FormData();
+          formData.append("file", imageUpload.file);
+
+          const response = await axios.post(
+            `${API_URL}/api/uploads/upload`,
+            formData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            }
+          );
+          imageUrl = response.data.url;
         } catch (err) {
+          console.error("Image upload error:", err);
           setImageUpload((prev) => ({
             ...prev,
             uploading: false,
@@ -636,16 +652,52 @@ const Map = () => {
               }}
             >
               <Popup>
-                <Typography variant="subtitle1">{location.species}</Typography>
-                <Typography variant="body2">{location.description}</Typography>
-                <Typography variant="caption">
-                  Added by: {location.addedBy.name}
-                </Typography>
-                {location.company && (
-                  <Typography variant="caption" display="block">
-                    Company: {location.company.name}
+                <Box sx={{ maxWidth: 300 }}>
+                  <Typography
+                    variant="subtitle1"
+                    sx={{ fontWeight: 600, mb: 1 }}
+                  >
+                    {location.species}
                   </Typography>
-                )}
+
+                  {location.imageUrl && (
+                    <Box sx={{ mb: 2, borderRadius: 1, overflow: "hidden" }}>
+                      <img
+                        src={location.imageUrl}
+                        alt={location.species}
+                        style={{
+                          width: "100%",
+                          height: 200,
+                          objectFit: "cover",
+                        }}
+                      />
+                    </Box>
+                  )}
+
+                  <Typography variant="body2" sx={{ mb: 1 }}>
+                    {location.description}
+                  </Typography>
+
+                  <Typography
+                    variant="caption"
+                    sx={{ display: "block", color: "text.secondary" }}
+                  >
+                    Added by: {location.addedBy.name}
+                  </Typography>
+
+                  {location.company && (
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        display: "block",
+                        color: "text.secondary",
+                        mt: 0.5,
+                      }}
+                    >
+                      Company: {location.company.name}
+                    </Typography>
+                  )}
+                </Box>
               </Popup>
             </Marker>
           ))}
