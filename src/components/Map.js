@@ -9,6 +9,7 @@ import {
 import L from "leaflet";
 import { useAuth } from "../context/AuthContext";
 import { plantLocations, companies } from "../services/api";
+import { b2Service } from "../services/b2";
 import {
   Button,
   Dialog,
@@ -31,6 +32,7 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import "leaflet/dist/leaflet.css";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 
 // Fix for default marker icon
 delete L.Icon.Default.prototype._getIconUrl;
@@ -138,6 +140,25 @@ const LocationChip = styled(Box)(({ theme }) => ({
   },
 }));
 
+const ImageUploadButton = styled(Button)(({ theme }) => ({
+  marginTop: theme.spacing(2),
+  marginBottom: theme.spacing(1),
+  padding: theme.spacing(2),
+  border: `2px dashed ${theme.palette.primary.main}`,
+  borderRadius: theme.spacing(1),
+  width: "100%",
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  gap: theme.spacing(1),
+  backgroundColor: "rgba(76, 175, 80, 0.04)",
+  transition: "all 0.2s ease-in-out",
+  "&:hover": {
+    backgroundColor: "rgba(76, 175, 80, 0.08)",
+    borderStyle: "solid",
+  },
+}));
+
 const Map = () => {
   const [locations, setLocations] = useState([]);
   const [error, setError] = useState("");
@@ -158,6 +179,12 @@ const Map = () => {
     recentPlants: [],
   });
   const { user } = useAuth();
+  const [imageUpload, setImageUpload] = useState({
+    file: null,
+    preview: null,
+    uploading: false,
+    error: null,
+  });
 
   // São Paulo coordinates as default center
   const defaultPosition = [-23.5505, -46.6333];
@@ -257,7 +284,26 @@ const Map = () => {
         return;
       }
 
-      await plantLocations.create(newLocation);
+      let imageUrl = null;
+      if (imageUpload.file) {
+        setImageUpload((prev) => ({ ...prev, uploading: true }));
+        try {
+          imageUrl = await b2Service.uploadImage(imageUpload.file);
+        } catch (err) {
+          setImageUpload((prev) => ({
+            ...prev,
+            uploading: false,
+            error: "Failed to upload image",
+          }));
+          return;
+        }
+      }
+
+      await plantLocations.create({
+        ...newLocation,
+        imageUrl,
+      });
+
       setIsAddingLocation(false);
       setNewLocation({
         latitude: null,
@@ -265,10 +311,32 @@ const Map = () => {
         species: "",
         description: "",
       });
+      setImageUpload({
+        file: null,
+        preview: null,
+        uploading: false,
+        error: null,
+      });
       loadLocations();
       setError("");
     } catch (err) {
       setError(err.response?.data?.error || "Failed to add plant location");
+    }
+  };
+
+  const handleImageSelect = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImageUpload({
+          file,
+          preview: reader.result,
+          uploading: false,
+          error: null,
+        });
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -604,6 +672,12 @@ const Map = () => {
             species: "",
             description: "",
           });
+          setImageUpload({
+            file: null,
+            preview: null,
+            uploading: false,
+            error: null,
+          });
         }}
       >
         <DialogTitle>Add New Plant Location</DialogTitle>
@@ -629,6 +703,56 @@ const Map = () => {
               setNewLocation({ ...newLocation, description: e.target.value })
             }
           />
+
+          <input
+            type="file"
+            accept="image/*"
+            id="image-upload"
+            style={{ display: "none" }}
+            onChange={handleImageSelect}
+          />
+          <label htmlFor="image-upload">
+            <ImageUploadButton
+              component="span"
+              disabled={imageUpload.uploading}
+            >
+              <CloudUploadIcon sx={{ fontSize: 32, mb: 1 }} />
+              {imageUpload.uploading
+                ? "Uploading..."
+                : imageUpload.preview
+                ? "Change Image"
+                : "Upload Plant Image"}
+            </ImageUploadButton>
+          </label>
+
+          {imageUpload.preview && (
+            <Box
+              sx={{
+                mt: 2,
+                position: "relative",
+                width: "100%",
+                height: 200,
+                borderRadius: 1,
+                overflow: "hidden",
+              }}
+            >
+              <img
+                src={imageUpload.preview}
+                alt="Preview"
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                }}
+              />
+            </Box>
+          )}
+
+          {imageUpload.error && (
+            <Alert severity="error" sx={{ mt: 2 }}>
+              {imageUpload.error}
+            </Alert>
+          )}
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setIsAddingLocation(false)}>Cancel</Button>
@@ -636,8 +760,9 @@ const Map = () => {
             onClick={handleAddLocation}
             variant="contained"
             color="primary"
+            disabled={imageUpload.uploading}
           >
-            Add Plant
+            {imageUpload.uploading ? "Uploading..." : "Add Plant"}
           </Button>
         </DialogActions>
       </Dialog>
