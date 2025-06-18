@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import {
   AppBar,
   Box,
@@ -13,6 +13,7 @@ import {
   Typography,
   Button,
 } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import {
   Menu as MenuIcon,
   Map as MapIcon,
@@ -22,6 +23,88 @@ import {
 import { useAuth } from "../context/AuthContext";
 
 const drawerWidth = 240;
+
+const StyledAppBar = styled(AppBar)(({ theme }) => ({
+  background: "linear-gradient(135deg, #2e7d32 0%, #4caf50 100%)",
+  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+}));
+
+const BrandTitle = styled(Typography)(({ theme }) => ({
+  fontSize: "2rem",
+  fontWeight: 800,
+  letterSpacing: "-0.03em",
+  background: `linear-gradient(
+    135deg,
+    ${theme.palette.primary.light} 0%,
+    #81c784 30%,
+    ${theme.palette.secondary.light} 70%,
+    ${theme.palette.primary.main} 100%
+  )`,
+  backgroundSize: "200% auto",
+  color: "transparent",
+  WebkitBackgroundClip: "text",
+  backgroundClip: "text",
+  textShadow: "2px 4px 8px rgba(0,0,0,0.2)",
+  position: "relative",
+  cursor: "pointer",
+  transition: "all 0.3s ease-in-out",
+  padding: "0.2em 0.5em",
+  "&::before": {
+    content: '""',
+    position: "absolute",
+    top: "50%",
+    left: 0,
+    right: 0,
+    height: "30%",
+    background: "rgba(255,255,255,0.1)",
+    transform: "translateY(-50%)",
+    filter: "blur(8px)",
+    zIndex: -1,
+  },
+  "&::after": {
+    content: '""',
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: "2px",
+    background:
+      "linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)",
+    transform: "scaleX(0.8)",
+    opacity: 0,
+    transition: "all 0.3s ease-in-out",
+  },
+  "&:hover": {
+    backgroundPosition: "right center",
+    transform: "translateY(-2px)",
+    "&::after": {
+      transform: "scaleX(1)",
+      opacity: 1,
+    },
+  },
+}));
+
+const StyledDrawer = styled(Drawer)(({ theme }) => ({
+  "& .MuiDrawer-paper": {
+    boxSizing: "border-box",
+    width: drawerWidth,
+    background: "linear-gradient(180deg, #f8f8f8 0%, #ffffff 100%)",
+    borderRight: "1px solid rgba(0, 0, 0, 0.08)",
+  },
+}));
+
+const MenuButton = styled(IconButton)(({ theme }) => ({
+  marginRight: theme.spacing(2),
+  [theme.breakpoints.up("sm")]: {
+    display: "none",
+  },
+}));
+
+const UserInfo = styled(Box)(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  gap: theme.spacing(2),
+}));
 
 const Layout = ({ children }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -35,13 +118,13 @@ const Layout = ({ children }) => {
   const menuItems = [
     {
       path: "/map",
-      label: "Map",
+      label: "Mapa",
       icon: <MapIcon />,
       roles: ["FARMER", "COMPANY", "ADMIN"],
     },
     {
       path: "/users",
-      label: "Users",
+      label: "Usuários",
       icon: <PeopleIcon />,
       roles: ["ADMIN"],
     },
@@ -58,8 +141,15 @@ const Layout = ({ children }) => {
                 button
                 key={item.label}
                 onClick={() => navigate(item.path)}
+                sx={{
+                  "&:hover": {
+                    backgroundColor: "rgba(76, 175, 80, 0.08)",
+                  },
+                }}
               >
-                <ListItemIcon>{item.icon}</ListItemIcon>
+                <ListItemIcon sx={{ color: "primary.main" }}>
+                  {item.icon}
+                </ListItemIcon>
                 <ListItemText primary={item.label} />
               </ListItem>
             )
@@ -70,69 +160,75 @@ const Layout = ({ children }) => {
 
   return (
     <Box sx={{ display: "flex" }}>
-      <AppBar
+      <StyledAppBar
         position="fixed"
         sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
       >
         <Toolbar>
-          <IconButton
+          <MenuButton
             color="inherit"
             aria-label="open drawer"
             edge="start"
             onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { sm: "none" } }}
           >
             <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-            Plantas Milena
-          </Typography>
+          </MenuButton>
+          <BrandTitle
+            variant="h6"
+            component={Link}
+            to="/"
+            sx={{
+              flexGrow: 1,
+              color: "inherit",
+              textDecoration: "none",
+            }}
+          >
+            Piantare
+          </BrandTitle>
           {user && (
-            <>
-              <Typography variant="body1" sx={{ mr: 2 }}>
-                {user.email}
-              </Typography>
-              <Button color="inherit" onClick={logout}>
+            <UserInfo>
+              <Typography variant="body1">{user.email}</Typography>
+              <Button
+                color="inherit"
+                onClick={logout}
+                sx={{
+                  "&:hover": {
+                    backgroundColor: "rgba(255, 255, 255, 0.1)",
+                  },
+                }}
+              >
                 <LogoutIcon />
               </Button>
-            </>
+            </UserInfo>
           )}
         </Toolbar>
-      </AppBar>
+      </StyledAppBar>
       <Box
         component="nav"
         sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
       >
-        <Drawer
+        <StyledDrawer
           variant="temporary"
           open={mobileOpen}
           onClose={handleDrawerToggle}
           ModalProps={{
-            keepMounted: true, // Better open performance on mobile.
+            keepMounted: true,
           }}
           sx={{
             display: { xs: "block", sm: "none" },
-            "& .MuiDrawer-paper": {
-              boxSizing: "border-box",
-              width: drawerWidth,
-            },
           }}
         >
           {drawer}
-        </Drawer>
-        <Drawer
+        </StyledDrawer>
+        <StyledDrawer
           variant="permanent"
           sx={{
             display: { xs: "none", sm: "block" },
-            "& .MuiDrawer-paper": {
-              boxSizing: "border-box",
-              width: drawerWidth,
-            },
           }}
           open
         >
           {drawer}
-        </Drawer>
+        </StyledDrawer>
       </Box>
       <Box
         component="main"
