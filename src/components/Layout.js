@@ -23,6 +23,7 @@ import {
   ExitToApp as LogoutIcon,
   Dashboard as DashboardIcon,
   Person as PersonIcon,
+  LocalFlorist as PlantIcon,
 } from "@mui/icons-material";
 import { useAuth } from "../context/AuthContext";
 
@@ -160,6 +161,11 @@ const Layout = ({ children }) => {
             text: "Usuários",
             icon: <PeopleIcon />,
             path: "/users",
+          },
+          {
+            text: "Catálogo de Plantas",
+            icon: <PlantIcon />,
+            path: "/admin/plants",
           },
         ]
       : []),

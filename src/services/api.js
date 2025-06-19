@@ -5,7 +5,8 @@ const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8000/api";
 const api = axios.create({
   baseURL: API_URL,
 });
-// Add token to requests if it exists
+
+// Add a request interceptor to include the auth token
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
   if (token) {
@@ -13,6 +14,19 @@ api.interceptors.request.use((config) => {
   }
   return config;
 });
+
+// Add a response interceptor to handle errors
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Redirect to login page if unauthorized
+      localStorage.removeItem("token");
+      window.location.href = "/login";
+    }
+    return Promise.reject(error);
+  }
+);
 
 export const auth = {
   login: (credentials) => api.post("/auth/login", credentials),
@@ -42,6 +56,14 @@ export const plantLocations = {
   assignCompany: (id, data) =>
     api.put(`/plant-locations/${id}/assign-company`, data),
   delete: (id) => api.delete(`/plant-locations/${id}`),
+};
+
+export const plants = {
+  getAll: () => api.get("/plants"),
+  getOne: (id) => api.get(`/plants/${id}`),
+  create: (plantData) => api.post("/plants", plantData),
+  update: (id, plantData) => api.put(`/plants/${id}`, plantData),
+  delete: (id) => api.delete(`/plants/${id}`),
 };
 
 export const uploads = {

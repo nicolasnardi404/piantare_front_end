@@ -10,7 +10,7 @@ import {
 import MarkerClusterGroup from "react-leaflet-markercluster";
 import L from "leaflet";
 import { useAuth } from "../context/AuthContext";
-import { plantLocations, companies } from "../services/api";
+import { plantLocations, companies, plants } from "../services/api";
 import { b2Service } from "../services/b2";
 import axios from "axios";
 import {
@@ -265,7 +265,7 @@ function LocationControl({ onLocationSelected }) {
   const [userLocation, setUserLocation] = useState(null);
   const [locationError, setLocationError] = useState(null);
   const map = useMap();
-  const { user, token } = useAuth();
+  const { user } = useAuth();
 
   const handleGetLocation = () => {
     setLoading(true);
@@ -432,33 +432,33 @@ const LocationButton = styled(IconButton)(({ theme }) => ({
 }));
 
 const Map = () => {
+  const { user, token } = useAuth();
   const [locations, setLocations] = useState([]);
-  const [error, setError] = useState("");
-  const [isAddingLocation, setIsAddingLocation] = useState(false);
+  const [companies, setCompanies] = useState([]);
   const [isAddMode, setIsAddMode] = useState(false);
-  const [selectedCompanyId, setSelectedCompanyId] = useState("");
-  const [companyList, setCompanyList] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [isAddingLocation, setIsAddingLocation] = useState(false);
   const [newLocation, setNewLocation] = useState({
     latitude: null,
     longitude: null,
-    species: "",
+    plantId: null,
     description: "",
   });
-  const [companyStats, setCompanyStats] = useState({
-    totalPlants: 0,
-    speciesCount: {},
-    recentPlants: [],
-  });
-  const { user, token } = useAuth();
+  const [availablePlants, setAvailablePlants] = useState([]);
+  const [error, setError] = useState("");
+  const [selectedPlant, setSelectedPlant] = useState(null);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [selectedCompanyId, setSelectedCompanyId] = useState("");
   const [imageUpload, setImageUpload] = useState({
     file: null,
     preview: null,
     uploading: false,
     error: null,
   });
-  const [selectedPlant, setSelectedPlant] = useState(null);
-  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [companyStats, setCompanyStats] = useState({
+    totalPlants: 0,
+    speciesCount: {},
+    recentPlants: [],
+  });
   const [farmerStats, setFarmerStats] = useState({
     totalPlants: 0,
     speciesCount: {},
@@ -473,6 +473,7 @@ const Map = () => {
     if (user?.role === "ADMIN") {
       loadCompanies();
     }
+    loadAvailablePlants();
   }, [user]);
 
   // Calculate company statistics whenever locations change
@@ -552,22 +553,31 @@ const Map = () => {
   const loadCompanies = async () => {
     try {
       const response = await companies.getAll();
-      setCompanyList(response.data);
+      setCompanies(response.data);
     } catch (err) {
       setError("Failed to load companies");
     }
   };
 
+  const loadAvailablePlants = async () => {
+    try {
+      const response = await plants.getAll();
+      setAvailablePlants(response.data.plants || []);
+    } catch (error) {
+      console.error("Error loading plants:", error);
+      setError("Failed to load available plants");
+      setAvailablePlants([]);
+    }
+  };
+
   const handleMapClick = (location) => {
-    if (
-      user?.role === "FARMER" &&
-      (isAddMode || location.fromCurrentLocation)
-    ) {
+    if (user?.role === "FARMER" && isAddMode) {
       setNewLocation({
         ...newLocation,
         latitude: location.latitude,
         longitude: location.longitude,
       });
+      setIsAddMode(false);
       setIsAddingLocation(true);
     }
   };
@@ -582,7 +592,7 @@ const Map = () => {
       if (
         !newLocation.latitude ||
         !newLocation.longitude ||
-        !newLocation.species
+        !newLocation.plantId
       ) {
         setError("Please fill in all required fields");
         return;
@@ -625,7 +635,7 @@ const Map = () => {
       setNewLocation({
         latitude: null,
         longitude: null,
-        species: "",
+        plantId: null,
         description: "",
       });
       setImageUpload({
@@ -643,18 +653,48 @@ const Map = () => {
 
   const handleImageSelect = (event) => {
     const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImageUpload({
-          file,
-          preview: reader.result,
-          uploading: false,
-          error: null,
-        });
-      };
-      reader.readAsDataURL(file);
+    if (!file) {
+      return;
     }
+
+    // Check file type
+    if (!file.type.startsWith("image/")) {
+      setImageUpload((prev) => ({
+        ...prev,
+        error: "Por favor selecione uma imagem válida",
+      }));
+      return;
+    }
+
+    // Check file size (max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      setImageUpload((prev) => ({
+        ...prev,
+        error: "A imagem deve ter menos que 10MB",
+      }));
+      return;
+    }
+
+    // Create preview
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImageUpload({
+        file,
+        preview: reader.result,
+        uploading: false,
+        error: null,
+      });
+    };
+    reader.onerror = () => {
+      setImageUpload((prev) => ({
+        ...prev,
+        error: "Erro ao carregar a imagem",
+      }));
+    };
+    reader.readAsDataURL(file);
+
+    // Clear the input value to allow selecting the same file again
+    event.target.value = "";
   };
 
   const handleAssignCompany = async () => {
@@ -1151,13 +1191,24 @@ const Map = () => {
                 <Tooltip
                   title={
                     isAddMode
-                      ? "Desativar modo de adicionar planta"
-                      : "Ativar modo de adicionar planta"
+                      ? "Cancel adding plant"
+                      : "Click to add a new plant"
                   }
                   placement="left"
                 >
                   <LocationButton
-                    onClick={() => setIsAddMode(!isAddMode)}
+                    onClick={() => {
+                      setIsAddMode(!isAddMode);
+                      if (isAddingLocation) {
+                        setIsAddingLocation(false);
+                        setNewLocation({
+                          latitude: null,
+                          longitude: null,
+                          plantId: null,
+                          description: "",
+                        });
+                      }
+                    }}
                     color={isAddMode ? "primary" : "default"}
                     sx={{
                       backgroundColor: isAddMode
@@ -1171,7 +1222,7 @@ const Map = () => {
                       },
                     }}
                   >
-                    <YardIcon />
+                    {isAddMode ? <GrassIcon /> : <YardIcon />}
                   </LocationButton>
                 </Tooltip>
               )}
@@ -1266,269 +1317,182 @@ const Map = () => {
             ))}
           </MarkerClusterGroup>
 
-          {/* Display temporary marker for new location */}
-          {newLocation.latitude && newLocation.longitude && (
-            <Marker
-              position={[newLocation.latitude, newLocation.longitude]}
-              icon={redIcon}
-            >
-              <Popup>
-                <Box sx={{ p: 1, minWidth: 200 }}>
-                  <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-                    Nova Localização
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    sx={{ mt: 1, color: "text.secondary" }}
-                  >
-                    Clique no botão abaixo para adicionar uma planta neste local
-                  </Typography>
-                  <Button
-                    variant="contained"
-                    size="small"
-                    color="primary"
-                    sx={{ mt: 2 }}
-                    onClick={() => setIsAddingLocation(true)}
-                  >
-                    Adicionar Planta
-                  </Button>
-                </Box>
-              </Popup>
-            </Marker>
-          )}
+          {/* Show temporary marker for selected location */}
+          {newLocation.latitude &&
+            newLocation.longitude &&
+            !isAddingLocation && (
+              <Marker
+                position={[newLocation.latitude, newLocation.longitude]}
+                icon={redIcon}
+              >
+                <Popup>
+                  <Box sx={{ p: 1, minWidth: 200 }}>
+                    <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                      Selected Location
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      sx={{ mt: 1, color: "text.secondary" }}
+                    >
+                      Click the button below to add plant details
+                    </Typography>
+                    <Button
+                      variant="contained"
+                      size="small"
+                      color="primary"
+                      sx={{ mt: 2 }}
+                      onClick={() => setIsAddingLocation(true)}
+                    >
+                      Add Plant Details
+                    </Button>
+                  </Box>
+                </Popup>
+              </Marker>
+            )}
         </MapContainer>
       </Box>
 
       {renderFarmerReport()}
       {renderCompanyReport()}
 
-      {/* Plant Detail Modal */}
+      {/* Plant Details Dialog */}
       <Dialog
         open={isDetailModalOpen}
         onClose={() => setIsDetailModalOpen(false)}
-        maxWidth="lg"
+        maxWidth="sm"
         fullWidth
-        sx={{
-          "& .MuiDialog-paper": {
-            margin: { xs: 1, sm: 2 },
-            width: { xs: "calc(100% - 16px)", sm: "calc(100% - 32px)" },
-            maxHeight: { xs: "calc(100% - 16px)", sm: "calc(100% - 32px)" },
-          },
-        }}
       >
-        {selectedPlant && (
-          <>
-            <DialogTitle>
+        <DialogTitle>
+          <Typography variant="h6" component="div">
+            {selectedPlant?.plant?.nomePopular}
+          </Typography>
+          <Typography variant="subtitle1" color="text.secondary">
+            {selectedPlant?.plant?.nomeCientifico}
+          </Typography>
+        </DialogTitle>
+        <DialogContent>
+          <Box sx={{ mb: 3 }}>
+            {selectedPlant?.imageUrl && (
               <Box
+                component="img"
+                src={selectedPlant.imageUrl}
+                alt="Plant"
                 sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  pr: 1,
+                  width: "100%",
+                  height: 200,
+                  objectFit: "cover",
+                  borderRadius: 1,
+                  mb: 2,
                 }}
-              >
-                <Typography
-                  variant="h6"
-                  component="div"
-                  sx={{ fontWeight: 600 }}
-                >
-                  {selectedPlant.species}
+              />
+            )}
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <Typography variant="subtitle2" color="text.secondary">
+                  Added by
                 </Typography>
-                {user?.role === "FARMER" &&
-                  selectedPlant.addedBy.id === user.userId && (
-                    <Tooltip title="Deletar planta">
-                      <IconButton
-                        onClick={() => {
-                          if (
-                            window.confirm(
-                              "Tem certeza que deseja deletar esta planta?"
-                            )
-                          ) {
-                            handleDeletePlant(selectedPlant.id);
-                          }
-                        }}
-                        color="error"
-                        size="small"
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    </Tooltip>
-                  )}
-              </Box>
-            </DialogTitle>
-            <DialogContent>
-              <Grid container spacing={3}>
-                {selectedPlant.imageUrl && (
-                  <Grid item xs={12} md={6}>
-                    <Box
-                      sx={{
-                        width: "100%",
-                        height: 400,
-                        position: "relative",
-                        borderRadius: 1,
-                        overflow: "hidden",
-                        backgroundColor: "grey.100",
-                      }}
-                    >
-                      <img
-                        src={selectedPlant.imageUrl}
-                        alt={selectedPlant.species}
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          objectFit: "cover",
-                        }}
-                      />
-                    </Box>
-                  </Grid>
-                )}
-                <Grid item xs={12} md={selectedPlant.imageUrl ? 6 : 12}>
-                  <Typography
-                    variant="subtitle1"
-                    sx={{ fontWeight: 600, mb: 1 }}
-                  >
-                    Descrição
-                  </Typography>
-                  <Typography variant="body1">
-                    {selectedPlant.description || "Sem descrição disponível"}
-                  </Typography>
-
-                  <Box sx={{ mt: 3 }}>
-                    <Grid container spacing={2}>
-                      <Grid item xs={12} sm={6}>
-                        <Typography
-                          variant="subtitle2"
-                          sx={{ color: "text.secondary" }}
-                        >
-                          Localização
-                        </Typography>
-                        <Typography variant="body2">
-                          Latitude: {selectedPlant.latitude.toFixed(6)}
-                          <br />
-                          Longitude: {selectedPlant.longitude.toFixed(6)}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <Typography
-                          variant="subtitle2"
-                          sx={{ color: "text.secondary" }}
-                        >
-                          Adicionado por
-                        </Typography>
-                        <Typography variant="body2">
-                          {selectedPlant.addedBy.name}
-                        </Typography>
-                        {selectedPlant.company && (
-                          <>
-                            <Typography
-                              variant="subtitle2"
-                              sx={{ color: "text.secondary", mt: 1 }}
-                            >
-                              Empresa
-                            </Typography>
-                            <Typography variant="body2">
-                              {selectedPlant.company.name}
-                            </Typography>
-                          </>
-                        )}
-                      </Grid>
-                    </Grid>
-                  </Box>
-                </Grid>
-
-                {user?.role === "ADMIN" && !selectedPlant.company && (
-                  <Grid item xs={12}>
-                    <Divider sx={{ my: 2 }} />
-                    <Typography
-                      variant="subtitle1"
-                      sx={{ fontWeight: 600, mb: 2 }}
-                    >
-                      Controles de Administrador
-                    </Typography>
-                    <FormControl fullWidth>
-                      <InputLabel>Atribuir à Empresa</InputLabel>
-                      <Select
-                        value={selectedCompanyId}
-                        label="Atribuir à Empresa"
-                        onChange={(e) => setSelectedCompanyId(e.target.value)}
-                      >
-                        <MenuItem value="">
-                          <em>Nenhuma</em>
-                        </MenuItem>
-                        {companyList.map((company) => (
-                          <MenuItem key={company.id} value={company.id}>
-                            {company.name}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                      <Typography
-                        variant="caption"
-                        sx={{
-                          mt: 1,
-                          color: "text.secondary",
-                          display: "block",
-                        }}
-                      >
-                        Selecione uma empresa para atribuir esta planta
-                      </Typography>
-                    </FormControl>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      sx={{ mt: 2 }}
-                      onClick={async () => {
-                        await handleAssignCompany();
-                        setIsDetailModalOpen(false);
-                      }}
-                      disabled={!selectedCompanyId}
-                    >
-                      Atribuir à Empresa
-                    </Button>
-                  </Grid>
-                )}
-                {user?.role === "ADMIN" && selectedPlant.company && (
-                  <Grid item xs={12}>
-                    <Divider sx={{ my: 2 }} />
-                    <Box
-                      sx={{
-                        p: 2,
-                        bgcolor: "success.light",
-                        borderRadius: 1,
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 1,
-                      }}
-                    >
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          color: "success.dark",
-                          fontWeight: 500,
-                        }}
-                      >
-                        ✓ Esta planta já está atribuída à empresa{" "}
-                        {selectedPlant.company.name}
-                      </Typography>
-                    </Box>
-                  </Grid>
-                )}
-
-                <Grid item xs={12}>
-                  <Divider sx={{ my: 2 }} />
-                  <PlantUpdates plantId={selectedPlant.id} />
-                </Grid>
+                <Typography>
+                  {selectedPlant?.addedBy?.name || "Unknown"}
+                </Typography>
               </Grid>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={() => setIsDetailModalOpen(false)}>
-                Fechar
+              {selectedPlant?.company && (
+                <Grid item xs={12}>
+                  <Typography variant="subtitle2" color="text.secondary">
+                    Company
+                  </Typography>
+                  <Typography>{selectedPlant.company.name}</Typography>
+                </Grid>
+              )}
+              <Grid item xs={12}>
+                <Typography variant="subtitle2" color="text.secondary">
+                  Location
+                </Typography>
+                <Typography>
+                  {selectedPlant?.latitude.toFixed(6)},{" "}
+                  {selectedPlant?.longitude.toFixed(6)}
+                </Typography>
+              </Grid>
+              {selectedPlant?.description && (
+                <Grid item xs={12}>
+                  <Typography variant="subtitle2" color="text.secondary">
+                    Description
+                  </Typography>
+                  <Typography>{selectedPlant.description}</Typography>
+                </Grid>
+              )}
+              <Grid item xs={12}>
+                <Typography variant="subtitle2" color="text.secondary">
+                  Plant Details
+                </Typography>
+                <Box sx={{ pl: 2 }}>
+                  <Typography>
+                    <strong>Category:</strong> {selectedPlant?.plant?.categoria}
+                  </Typography>
+                  {selectedPlant?.plant?.altura && (
+                    <Typography>
+                      <strong>Height:</strong> {selectedPlant.plant.altura}
+                    </Typography>
+                  )}
+                  {selectedPlant?.plant?.origem && (
+                    <Typography>
+                      <strong>Origin:</strong> {selectedPlant.plant.origem}
+                    </Typography>
+                  )}
+                  {selectedPlant?.plant?.especificacao && (
+                    <Typography>
+                      <strong>Specifications:</strong>{" "}
+                      {selectedPlant.plant.especificacao}
+                    </Typography>
+                  )}
+                </Box>
+              </Grid>
+            </Grid>
+          </Box>
+          {user?.role === "COMPANY" && !selectedPlant?.company && (
+            <Box sx={{ mt: 2 }}>
+              <FormControl fullWidth>
+                <InputLabel>Assign to Company</InputLabel>
+                <Select
+                  value={selectedCompanyId}
+                  onChange={(e) => setSelectedCompanyId(e.target.value)}
+                >
+                  <MenuItem value="">
+                    <em>None</em>
+                  </MenuItem>
+                  {companies.map((company) => (
+                    <MenuItem key={company.id} value={company.id}>
+                      {company.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <Button
+                variant="contained"
+                onClick={handleAssignCompany}
+                sx={{ mt: 2 }}
+              >
+                Assign to Company
               </Button>
-            </DialogActions>
-          </>
-        )}
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions>
+          {(user?.role === "ADMIN" ||
+            (user?.role === "FARMER" &&
+              selectedPlant?.addedBy?.id === user?.id)) && (
+            <Button
+              onClick={() => handleDeletePlant(selectedPlant.id)}
+              color="error"
+              startIcon={<DeleteIcon />}
+            >
+              Delete
+            </Button>
+          )}
+          <Button onClick={() => setIsDetailModalOpen(false)}>Close</Button>
+        </DialogActions>
       </Dialog>
 
-      {/* Add Plant Dialog */}
+      {/* Add Plant Dialog - only show after location is selected */}
       <Dialog
         open={isAddingLocation}
         onClose={() => {
@@ -1536,7 +1500,7 @@ const Map = () => {
           setNewLocation({
             latitude: null,
             longitude: null,
-            species: "",
+            plantId: null,
             description: "",
           });
           setImageUpload({
@@ -1546,97 +1510,112 @@ const Map = () => {
             error: null,
           });
         }}
-        sx={{
-          "& .MuiDialog-paper": {
-            margin: { xs: 1, sm: 2 },
-            width: { xs: "calc(100% - 16px)", sm: "calc(100% - 32px)" },
-            maxHeight: { xs: "calc(100% - 16px)", sm: "calc(100% - 32px)" },
-          },
-        }}
+        maxWidth="sm"
+        fullWidth
       >
-        <DialogTitle>Add New Plant Location</DialogTitle>
+        <DialogTitle>Add Plant Details</DialogTitle>
         <DialogContent>
-          <TextField
-            margin="dense"
-            label="Species"
-            required
-            fullWidth
-            value={newLocation.species}
-            onChange={(e) =>
-              setNewLocation({ ...newLocation, species: e.target.value })
-            }
-          />
-          <TextField
-            margin="dense"
-            label="Description"
-            fullWidth
-            multiline
-            rows={4}
-            value={newLocation.description}
-            onChange={(e) =>
-              setNewLocation({ ...newLocation, description: e.target.value })
-            }
-          />
-
-          <input
-            type="file"
-            accept="image/*"
-            id="image-upload"
-            style={{ display: "none" }}
-            onChange={handleImageSelect}
-          />
-          <label htmlFor="image-upload">
+          <Box sx={{ mt: 2 }}>
+            {error && (
+              <Alert severity="error" sx={{ mb: 2 }}>
+                {error}
+              </Alert>
+            )}
+            <Typography variant="body2" color="text.secondary" gutterBottom>
+              Selected Location: {newLocation.latitude?.toFixed(6)},{" "}
+              {newLocation.longitude?.toFixed(6)}
+            </Typography>
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <FormControl fullWidth margin="normal">
+                  <InputLabel>Plant</InputLabel>
+                  <Select
+                    value={newLocation.plantId || ""}
+                    onChange={(e) =>
+                      setNewLocation({
+                        ...newLocation,
+                        plantId: e.target.value,
+                      })
+                    }
+                    required
+                  >
+                    {availablePlants.map((plant) => (
+                      <MenuItem key={plant.id} value={plant.id}>
+                        {plant.nomePopular} ({plant.nomeCientifico})
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Description"
+                  value={newLocation.description}
+                  onChange={(e) =>
+                    setNewLocation({
+                      ...newLocation,
+                      description: e.target.value,
+                    })
+                  }
+                  multiline
+                  rows={3}
+                  margin="normal"
+                />
+              </Grid>
+            </Grid>
             <ImageUploadButton
-              component="span"
+              component="label"
               disabled={imageUpload.uploading}
             >
-              <CloudUploadIcon sx={{ fontSize: 32, mb: 1 }} />
-              {imageUpload.uploading
-                ? "Uploading..."
-                : imageUpload.preview
-                ? "Change Image"
-                : "Upload Plant Image"}
-            </ImageUploadButton>
-          </label>
-
-          {imageUpload.preview && (
-            <Box
-              sx={{
-                mt: 2,
-                position: "relative",
-                width: "100%",
-                height: 200,
-                borderRadius: 1,
-                overflow: "hidden",
-              }}
-            >
-              <img
-                src={imageUpload.preview}
-                alt="Preview"
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                }}
+              <input
+                type="file"
+                hidden
+                accept="image/*"
+                onChange={handleImageSelect}
               />
-            </Box>
-          )}
-
-          {imageUpload.error && (
-            <Alert severity="error" sx={{ mt: 2 }}>
-              {imageUpload.error}
-            </Alert>
-          )}
+              <CloudUploadIcon sx={{ fontSize: 32, mb: 1 }} />
+              <Typography variant="body1">
+                {imageUpload.uploading
+                  ? "Uploading..."
+                  : "Click to upload plant image"}
+              </Typography>
+              {imageUpload.preview && (
+                <Box
+                  component="img"
+                  src={imageUpload.preview}
+                  sx={{
+                    mt: 2,
+                    maxWidth: "100%",
+                    maxHeight: 200,
+                    objectFit: "contain",
+                  }}
+                />
+              )}
+            </ImageUploadButton>
+            {imageUpload.error && (
+              <Typography color="error" variant="body2" sx={{ mt: 1 }}>
+                {imageUpload.error}
+              </Typography>
+            )}
+          </Box>
         </DialogContent>
         <DialogActions>
+          <Button
+            onClick={() => {
+              setIsAddingLocation(false);
+              setIsAddMode(true); // Allow selecting a new location
+            }}
+          >
+            Change Location
+          </Button>
           <Button onClick={() => setIsAddingLocation(false)}>Cancel</Button>
           <Button
             onClick={handleAddLocation}
             variant="contained"
-            color="primary"
             disabled={imageUpload.uploading}
           >
-            {imageUpload.uploading ? "Uploading..." : "Add Plant"}
+            Add Plant
           </Button>
         </DialogActions>
       </Dialog>
