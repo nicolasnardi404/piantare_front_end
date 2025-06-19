@@ -261,50 +261,77 @@ const SearchControl = () => {
 function LocationControl({ onLocationSelected }) {
   const [loading, setLoading] = useState(false);
   const [userLocation, setUserLocation] = useState(null);
+  const [locationError, setLocationError] = useState(null);
   const map = useMap();
   const { user } = useAuth();
 
   const handleGetLocation = () => {
     setLoading(true);
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          setUserLocation({ lat: latitude, lng: longitude });
-          map.setView([latitude, longitude], 15);
-          // If user is a farmer, trigger the add plant dialog
-          if (user?.role === "FARMER") {
-            onLocationSelected({
-              latitude,
-              longitude,
-              fromCurrentLocation: true,
-            });
-          }
-          setLoading(false);
-        },
-        (error) => {
-          console.error("Error getting location:", error);
-          setLoading(false);
-        },
-        {
-          enableHighAccuracy: true,
-          timeout: 5000,
-          maximumAge: 0,
-        }
-      );
-    } else {
-      console.error("Geolocation is not supported by this browser.");
+    setLocationError(null);
+
+    if (!navigator.geolocation) {
+      setLocationError("Geolocalização não é suportada pelo seu navegador");
       setLoading(false);
+      return;
     }
+
+    const options = {
+      enableHighAccuracy: true, // Use GPS if available
+      timeout: 10000, // Wait up to 10 seconds
+      maximumAge: 0, // Don't use cached position
+    };
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        setUserLocation({ lat: latitude, lng: longitude });
+        map.setView([latitude, longitude], 15);
+
+        if (user?.role === "FARMER") {
+          onLocationSelected({
+            latitude,
+            longitude,
+            fromCurrentLocation: true,
+          });
+        }
+        setLoading(false);
+      },
+      (error) => {
+        console.error("Geolocation error:", error);
+        let errorMessage = "";
+
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            errorMessage =
+              "Por favor, permita o acesso à sua localização nas configurações do seu dispositivo.";
+            break;
+          case error.POSITION_UNAVAILABLE:
+            errorMessage =
+              "Não foi possível determinar sua localização. Verifique se o GPS está ativado.";
+            break;
+          case error.TIMEOUT:
+            errorMessage =
+              "Tempo excedido ao tentar obter sua localização. Verifique sua conexão e o GPS.";
+            break;
+          default:
+            errorMessage = "Erro ao obter sua localização. Tente novamente.";
+        }
+
+        setLocationError(errorMessage);
+        setLoading(false);
+      },
+      options
+    );
   };
 
   return (
     <>
       <Tooltip
         title={
-          user?.role === "FARMER"
-            ? "Adicionar planta na minha localização"
-            : "Minha Localização"
+          locationError ||
+          (user?.role === "FARMER"
+            ? "Adicionar planta na minha localização (ative o GPS)"
+            : "Minha Localização (ative o GPS)")
         }
         placement="left"
       >
@@ -312,7 +339,15 @@ function LocationControl({ onLocationSelected }) {
           onClick={handleGetLocation}
           disabled={loading}
           size="large"
-          color="primary"
+          color={locationError ? "error" : "primary"}
+          sx={{
+            ...(locationError && {
+              backgroundColor: "rgba(211, 47, 47, 0.1)",
+              "&:hover": {
+                backgroundColor: "rgba(211, 47, 47, 0.2)",
+              },
+            }),
+          }}
         >
           {loading ? <CircularProgress size={24} /> : <MyLocationIcon />}
         </LocationButton>
@@ -348,6 +383,21 @@ function LocationControl({ onLocationSelected }) {
             )}
           </Popup>
         </Marker>
+      )}
+      {locationError && (
+        <Alert
+          severity="error"
+          sx={{
+            position: "absolute",
+            bottom: 20,
+            left: "50%",
+            transform: "translateX(-50%)",
+            maxWidth: "90%",
+            zIndex: 1000,
+          }}
+        >
+          {locationError}
+        </Alert>
       )}
     </>
   );
