@@ -16,7 +16,7 @@ import { useAuth } from "../context/AuthContext";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import axios from "axios";
 
-const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8000";
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8000/api";
 
 const ProfilePaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(4),

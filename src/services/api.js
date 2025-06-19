@@ -5,7 +5,6 @@ const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8000/api";
 const api = axios.create({
   baseURL: API_URL,
 });
-
 // Add token to requests if it exists
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
@@ -42,6 +41,7 @@ export const plantLocations = {
   getOne: (id) => api.get(`/plant-locations/${id}`),
   assignCompany: (id, data) =>
     api.put(`/plant-locations/${id}/assign-company`, data),
+  delete: (id) => api.delete(`/plant-locations/${id}`),
 };
 
 export const uploads = {

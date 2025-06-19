@@ -36,7 +36,7 @@ import { format, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import api from "../services/api";
 
-const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8000";
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8000/api";
 
 // Utility function to safely format dates
 const formatDate = (dateString) => {

@@ -47,12 +47,13 @@ import AddLocationIcon from "@mui/icons-material/AddLocation";
 import AddLocationAltIcon from "@mui/icons-material/AddLocationAlt";
 import YardIcon from "@mui/icons-material/Yard";
 import GrassIcon from "@mui/icons-material/Grass";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 // Import marker cluster CSS
 import "leaflet.markercluster/dist/MarkerCluster.css";
 import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 
-const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8000";
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8000/api";
 
 // Fix for default marker icon
 delete L.Icon.Default.prototype._getIconUrl;
@@ -62,7 +63,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: require("leaflet/dist/images/marker-shadow.png"),
 });
 
-// Add this near the top of the file with other imports
+// Define red icon for user location
 const redIcon = new L.Icon({
   iconUrl:
     "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png",
@@ -72,6 +73,7 @@ const redIcon = new L.Icon({
   iconAnchor: [12, 41],
   popupAnchor: [1, -34],
   shadowSize: [41, 41],
+  shadowAnchor: [12, 41],
 });
 
 function AddMarkerToClick({ onLocationSelected }) {
@@ -263,7 +265,7 @@ function LocationControl({ onLocationSelected }) {
   const [userLocation, setUserLocation] = useState(null);
   const [locationError, setLocationError] = useState(null);
   const map = useMap();
-  const { user } = useAuth();
+  const { user, token } = useAuth();
 
   const handleGetLocation = () => {
     setLoading(true);
@@ -448,7 +450,7 @@ const Map = () => {
     speciesCount: {},
     recentPlants: [],
   });
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const [imageUpload, setImageUpload] = useState({
     file: null,
     preview: null,
@@ -532,6 +534,11 @@ const Map = () => {
   }, [locations, user]);
 
   const loadLocations = async () => {
+    if (!token) {
+      setError("You must be logged in to view plant locations");
+      return;
+    }
+
     try {
       const response = await plantLocations.getAll();
       console.log("API Response:", response.data);
@@ -665,6 +672,23 @@ const Map = () => {
       setError("");
     } catch (err) {
       setError(err.response?.data?.error || "Failed to assign company");
+    }
+  };
+
+  const handleDeletePlant = async (plantId) => {
+    if (!token) {
+      setError("You must be logged in to delete plants");
+      return;
+    }
+
+    try {
+      await plantLocations.delete(plantId);
+      setIsDetailModalOpen(false);
+      loadLocations();
+      setError("");
+    } catch (err) {
+      console.error("Delete error:", err);
+      setError(err.response?.data?.error || "Failed to delete plant location");
     }
   };
 
@@ -1244,8 +1268,32 @@ const Map = () => {
 
           {/* Display temporary marker for new location */}
           {newLocation.latitude && newLocation.longitude && (
-            <Marker position={[newLocation.latitude, newLocation.longitude]}>
-              <Popup>New plant location</Popup>
+            <Marker
+              position={[newLocation.latitude, newLocation.longitude]}
+              icon={redIcon}
+            >
+              <Popup>
+                <Box sx={{ p: 1, minWidth: 200 }}>
+                  <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                    Nova Localização
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    sx={{ mt: 1, color: "text.secondary" }}
+                  >
+                    Clique no botão abaixo para adicionar uma planta neste local
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    size="small"
+                    color="primary"
+                    sx={{ mt: 2 }}
+                    onClick={() => setIsAddingLocation(true)}
+                  >
+                    Adicionar Planta
+                  </Button>
+                </Box>
+              </Popup>
             </Marker>
           )}
         </MapContainer>
@@ -1271,9 +1319,42 @@ const Map = () => {
         {selectedPlant && (
           <>
             <DialogTitle>
-              <Typography variant="h6" component="div" sx={{ fontWeight: 600 }}>
-                {selectedPlant.species}
-              </Typography>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  pr: 1,
+                }}
+              >
+                <Typography
+                  variant="h6"
+                  component="div"
+                  sx={{ fontWeight: 600 }}
+                >
+                  {selectedPlant.species}
+                </Typography>
+                {user?.role === "FARMER" &&
+                  selectedPlant.addedBy.id === user.userId && (
+                    <Tooltip title="Deletar planta">
+                      <IconButton
+                        onClick={() => {
+                          if (
+                            window.confirm(
+                              "Tem certeza que deseja deletar esta planta?"
+                            )
+                          ) {
+                            handleDeletePlant(selectedPlant.id);
+                          }
+                        }}
+                        color="error"
+                        size="small"
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </Tooltip>
+                  )}
+              </Box>
             </DialogTitle>
             <DialogContent>
               <Grid container spacing={3}>
