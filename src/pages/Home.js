@@ -19,11 +19,8 @@ import {
 import { styled } from "@mui/material/styles";
 import { Link } from "react-router-dom";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import MarkerClusterGroup from "react-leaflet-markercluster";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import "leaflet.markercluster/dist/MarkerCluster.css";
-import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import api from "../services/api";
@@ -108,8 +105,8 @@ const ProcessCard = styled(Card)(({ theme }) => ({
 }));
 
 const StepIcon = styled(Box)(({ theme }) => ({
-  width: "48px",
-  height: "48px",
+  width: { xs: "40px", md: "48px" },
+  height: { xs: "40px", md: "48px" },
   borderRadius: "50%",
   background: "linear-gradient(135deg, #4caf50, #81c784)",
   display: "flex",
@@ -118,6 +115,9 @@ const StepIcon = styled(Box)(({ theme }) => ({
   marginBottom: theme.spacing(2),
   color: "white",
   boxShadow: "0 4px 12px rgba(76, 175, 80, 0.2)",
+  "& svg": {
+    fontSize: { xs: "1.5rem", md: "1.75rem" },
+  },
 }));
 
 const FeatureCard = styled(Card)(({ theme }) => ({
@@ -132,7 +132,7 @@ const FeatureCard = styled(Card)(({ theme }) => ({
 }));
 
 const StyledIcon = styled(Box)(({ theme }) => ({
-  fontSize: "3rem",
+  fontSize: { xs: "2.5rem", md: "3rem" },
   marginBottom: theme.spacing(2),
   color: theme.palette.primary.main,
   display: "flex",
@@ -140,7 +140,7 @@ const StyledIcon = styled(Box)(({ theme }) => ({
   alignItems: "center",
   width: "100%",
   "& > svg": {
-    fontSize: "3rem",
+    fontSize: { xs: "2.5rem", md: "3rem" },
   },
 }));
 
@@ -152,24 +152,22 @@ const CustomIcon = styled(Avatar)(({ theme }) => ({
 }));
 
 const ProcessSection = styled(Box)(({ theme }) => ({
-  padding: theme.spacing(4),
-  borderRadius: theme.spacing(2),
-  background: "rgba(255, 255, 255, 0.9)",
+  padding: "30px 20px",
+  borderRadius: "50px",
+  background: "rgba(255, 255, 255, 0.95)",
   backdropFilter: "blur(10px)",
   boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1)",
   height: "100%",
   display: "flex",
   flexDirection: "column",
   position: "relative",
-  "&::before": {
-    content: '""',
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    height: "4px",
-    background: "linear-gradient(90deg, #4caf50, #81c784)",
-    borderRadius: "4px 4px 0 0",
+  "& h4": {
+    fontSize: { xs: "1.5rem", md: "2rem" },
+    wordBreak: "break-word",
+    marginBottom: theme.spacing(4),
+  },
+  "& h6": {
+    fontSize: { xs: "1.1rem", md: "1.25rem" },
   },
 }));
 
@@ -198,14 +196,21 @@ const StatsCard = styled(Card)(({ theme }) => ({
 }));
 
 const MapWrapper = styled(Box)(({ theme }) => ({
-  height: "70vh",
+  [theme.breakpoints.down("md")]: {
+    height: "50vh",
+  },
+  [theme.breakpoints.up("md")]: {
+    height: "70vh",
+  },
   width: "100%",
-  borderRadius: theme.spacing(2),
+  borderRadius: { xs: theme.spacing(1), md: theme.spacing(2) },
   overflow: "hidden",
   boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1)",
+  backgroundColor: "#f8f9fa",
   "& .leaflet-container": {
     height: "100%",
     width: "100%",
+    background: "#f8f9fa",
   },
 }));
 
@@ -295,60 +300,6 @@ L.Icon.Default.mergeOptions({
   shadowUrl: require("leaflet/dist/images/marker-shadow.png"),
 });
 
-// Add these styles before the component
-const styles = `
-  .marker-cluster {
-    background-clip: padding-box;
-    border-radius: 20px;
-    background-color: rgba(76, 175, 80, 0.6);
-  }
-  
-  .marker-cluster div {
-    width: 30px;
-    height: 30px;
-    margin-left: 5px;
-    margin-top: 5px;
-    text-align: center;
-    border-radius: 15px;
-    font-size: 12px;
-    color: white;
-    font-weight: bold;
-    background-color: rgba(76, 175, 80, 0.8);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .marker-cluster-small {
-    background-color: rgba(76, 175, 80, 0.6);
-  }
-  
-  .marker-cluster-small div {
-    background-color: rgba(76, 175, 80, 0.8);
-  }
-  
-  .marker-cluster-medium {
-    background-color: rgba(241, 211, 87, 0.6);
-  }
-  
-  .marker-cluster-medium div {
-    background-color: rgba(240, 194, 12, 0.8);
-  }
-  
-  .marker-cluster-large {
-    background-color: rgba(253, 156, 115, 0.6);
-  }
-  
-  .marker-cluster-large div {
-    background-color: rgba(241, 128, 23, 0.8);
-  }
-`;
-
-// Add style tag to document
-const styleSheet = document.createElement("style");
-styleSheet.innerText = styles;
-document.head.appendChild(styleSheet);
-
 const Home = () => {
   const [plants, setPlants] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -356,6 +307,15 @@ const Home = () => {
 
   useEffect(() => {
     fetchPlants();
+  }, []);
+
+  useEffect(() => {
+    // Force a resize event after the map is mounted
+    const timer = setTimeout(() => {
+      window.dispatchEvent(new Event("resize"));
+    }, 100);
+
+    return () => clearTimeout(timer);
   }, []);
 
   const fetchPlants = async () => {
@@ -438,9 +398,14 @@ const Home = () => {
         </HeroSection>
       </Fade>
 
-      <Container sx={{ py: 8 }}>
+      <Container sx={{ py: { xs: 4, md: 8 } }}>
         <ScrollTriggeredSection>
-          <Grid container spacing={3} sx={{ mb: 4 }}>
+          <Grid
+            container
+            spacing={{ xs: 2, md: 3 }}
+            justifyContent="center"
+            sx={{ mb: { xs: 2, md: 4 } }}
+          >
             <Grid item xs={12}>
               <StatsCard>
                 <Typography variant="h4" color="primary" gutterBottom>
@@ -454,73 +419,48 @@ const Home = () => {
           </Grid>
 
           <MapWrapper>
-            <MapContainer center={center} zoom={4}>
+            <MapContainer
+              center={center}
+              zoom={4}
+              style={{ height: "100%", width: "100%" }}
+            >
               <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               />
-              <MarkerClusterGroup
-                chunkedLoading
-                spiderfyOnMaxZoom={true}
-                showCoverageOnHover={true}
-                zoomToBoundsOnClick={true}
-                maxClusterRadius={50}
-                iconCreateFunction={(cluster) => {
-                  const count = cluster.getChildCount();
-                  let size = 40;
-                  let className = "marker-cluster-";
-
-                  if (count < 10) {
-                    className += "small";
-                  } else if (count < 100) {
-                    className += "medium";
-                    size = 50;
-                  } else {
-                    className += "large";
-                    size = 60;
-                  }
-
-                  return L.divIcon({
-                    html: `<div><span>${count}</span></div>`,
-                    className: `marker-cluster ${className}`,
-                    iconSize: L.point(size, size),
-                  });
-                }}
-              >
-                {plants.map((plant) => (
-                  <Marker
-                    key={plant.id}
-                    position={[plant.latitude, plant.longitude]}
-                  >
-                    <Popup>
-                      <Box sx={{ p: 1 }}>
-                        <Typography variant="h6" gutterBottom>
-                          {plant.species}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          Plantada por: {plant.addedBy.name}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          Data:{" "}
-                          {format(new Date(plant.createdAt), "dd/MM/yyyy", {
-                            locale: ptBR,
-                          })}
-                        </Typography>
-                      </Box>
-                    </Popup>
-                  </Marker>
-                ))}
-              </MarkerClusterGroup>
+              {plants.map((plant) => (
+                <Marker
+                  key={plant.id}
+                  position={[plant.latitude, plant.longitude]}
+                >
+                  <Popup>
+                    <Box sx={{ p: 1 }}>
+                      <Typography variant="h6" gutterBottom>
+                        {plant.species}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Plantada por: {plant.addedBy.name}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Data:{" "}
+                        {format(new Date(plant.createdAt), "dd/MM/yyyy", {
+                          locale: ptBR,
+                        })}
+                      </Typography>
+                    </Box>
+                  </Popup>
+                </Marker>
+              ))}
             </MapContainer>
           </MapWrapper>
         </ScrollTriggeredSection>
       </Container>
 
-      <Container sx={{ py: 8 }}>
+      <Container sx={{ py: { xs: 4, md: 8 } }}>
         <ScrollTriggeredSection>
           <Grid
             container
-            spacing={4}
+            spacing={{ xs: 2, md: 4 }}
             sx={{
               justifyContent: "center",
               alignItems: "stretch",
@@ -564,8 +504,8 @@ const Home = () => {
                     <CardContent
                       sx={{
                         textAlign: "center",
-                        py: 4,
-                        px: 3,
+                        py: { xs: 3, md: 4 },
+                        px: { xs: 2, md: 3 },
                         display: "flex",
                         flexDirection: "column",
                         alignItems: "center",
@@ -580,6 +520,7 @@ const Home = () => {
                         sx={{
                           fontWeight: 600,
                           mb: 2,
+                          fontSize: { xs: "1.25rem", md: "1.5rem" },
                         }}
                       >
                         {feature.title}
@@ -589,6 +530,7 @@ const Home = () => {
                         sx={{
                           maxWidth: "90%",
                           mx: "auto",
+                          fontSize: { xs: "0.875rem", md: "1rem" },
                         }}
                       >
                         {feature.description}
@@ -605,7 +547,8 @@ const Home = () => {
       <Box
         sx={{
           bgcolor: "background.default",
-          py: 12,
+          py: { xs: 8, md: 12 },
+          px: { xs: 2, md: 0 },
           background: "linear-gradient(135deg, #f5f5f5 0%, #ffffff 100%)",
           position: "relative",
           "&::before": {
@@ -628,14 +571,14 @@ const Home = () => {
             variant="h3"
             sx={{
               textAlign: "center",
-              mb: 8,
+              mb: { xs: 6, md: 8 },
               fontSize: { xs: "2rem", md: "2.5rem" },
               position: "relative",
               zIndex: 1,
               "&::after": {
                 content: '""',
                 display: "block",
-                width: "60px",
+                width: { xs: "250px", md: "400px" },
                 height: "4px",
                 background: "linear-gradient(90deg, #4caf50, #81c784)",
                 margin: "20px auto 0",
@@ -651,7 +594,7 @@ const Home = () => {
               sx={{
                 display: "grid",
                 gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
-                gap: 4,
+                gap: { xs: 4, md: 6 },
                 width: "100%",
               }}
             >
