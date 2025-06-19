@@ -92,7 +92,7 @@ const Profile = () => {
 
     const fetchProfile = async () => {
       try {
-        const response = await axios.get(`${API_URL}/api/users/profile`, {
+        const response = await axios.get(`${API_URL}/users/profile`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -135,21 +135,17 @@ const Profile = () => {
     formData.append("file", imageUpload.file);
 
     try {
-      const response = await axios.post(
-        `${API_URL}/api/uploads/upload`,
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const response = await axios.post(`${API_URL}/uploads/upload`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       // Update profile with new image URL immediately
       const imageUrl = response.data.url;
       await axios.put(
-        `${API_URL}/api/users/profile`,
+        `${API_URL}/users/profile`,
         { imageUrl },
         {
           headers: {
@@ -180,7 +176,7 @@ const Profile = () => {
 
     try {
       const response = await axios.put(
-        `${API_URL}/api/users/profile`,
+        `${API_URL}/users/profile`,
         {
           name: profile.name,
           bio: profile.bio,

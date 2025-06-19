@@ -88,7 +88,7 @@ const CompanyProfile = () => {
   useEffect(() => {
     const fetchCompanyProfile = async () => {
       try {
-        const response = await axios.get(`${API_URL}/api/companies/profile`, {
+        const response = await axios.get(`${API_URL}/companies/profile`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -140,7 +140,7 @@ const CompanyProfile = () => {
     try {
       console.log("Starting immediate upload...");
       const uploadResponse = await axios.post(
-        `${API_URL}/api/uploads/upload`,
+        `${API_URL}/uploads/upload`,
         formData,
         {
           headers: {
@@ -161,7 +161,7 @@ const CompanyProfile = () => {
 
       // Update profile with new logo
       const updateResponse = await axios.put(
-        `${API_URL}/api/companies/profile`,
+        `${API_URL}/companies/profile`,
         { logoUrl },
         {
           headers: {
@@ -199,7 +199,7 @@ const CompanyProfile = () => {
 
     try {
       const response = await axios.put(
-        `${API_URL}/api/companies/profile`,
+        `${API_URL}/companies/profile`,
         {
           name: profile.name,
           email: profile.email,

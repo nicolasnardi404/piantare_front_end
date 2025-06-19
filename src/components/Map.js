@@ -589,7 +589,7 @@ const Map = () => {
           formData.append("file", imageUpload.file);
 
           const response = await axios.post(
-            `${API_URL}/api/uploads/upload`,
+            `${API_URL}/uploads/upload`,
             formData,
             {
               headers: {

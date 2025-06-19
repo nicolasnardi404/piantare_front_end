@@ -19,15 +19,11 @@ const FileUpload = ({ onUploadSuccess }) => {
     setError(null);
 
     try {
-      const response = await axios.post(
-        `${API_URL}/api/uploads/upload`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const response = await axios.post(`${API_URL}/uploads/upload`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       if (response.data.success) {
         onUploadSuccess(response.data.url);
