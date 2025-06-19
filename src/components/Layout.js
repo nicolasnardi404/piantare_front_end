@@ -34,7 +34,7 @@ const StyledAppBar = styled(AppBar)(({ theme }) => ({
 }));
 
 const BrandTitle = styled(Typography)(({ theme }) => ({
-  fontSize: "2rem",
+  fontSize: { xs: "1.5rem", md: "2rem" },
   fontWeight: 800,
   letterSpacing: "-0.03em",
   background: `linear-gradient(
@@ -52,7 +52,7 @@ const BrandTitle = styled(Typography)(({ theme }) => ({
   position: "relative",
   cursor: "pointer",
   transition: "all 0.3s ease-in-out",
-  padding: "0.2em 0.5em",
+  padding: { xs: "0.1em 0.3em", md: "0.2em 0.5em" },
   "&::before": {
     content: '""',
     position: "absolute",
@@ -108,6 +108,11 @@ const UserInfo = styled(Box)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   gap: theme.spacing(2),
+  [theme.breakpoints.down("sm")]: {
+    "& .MuiTypography-body1": {
+      display: "none",
+    },
+  },
 }));
 
 const Layout = ({ children }) => {
@@ -198,14 +203,21 @@ const Layout = ({ children }) => {
       <CssBaseline />
       <StyledAppBar
         position="fixed"
-        sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        sx={{
+          zIndex: (theme) => theme.zIndex.drawer + 1,
+          height: { xs: "56px", sm: "64px" },
+        }}
       >
-        <Toolbar>
+        <Toolbar sx={{ minHeight: { xs: "56px", sm: "64px" } }}>
           <MenuButton
             color="inherit"
             aria-label="open drawer"
             edge="start"
             onClick={handleDrawerToggle}
+            sx={{
+              mr: 1,
+              display: { sm: "none" },
+            }}
           >
             <MenuIcon />
           </MenuButton>
@@ -228,6 +240,8 @@ const Layout = ({ children }) => {
                 color="inherit"
                 onClick={logout}
                 sx={{
+                  minWidth: { xs: "40px", sm: "64px" },
+                  p: { xs: 0.5, sm: 1 },
                   "&:hover": {
                     backgroundColor: "rgba(255, 255, 255, 0.1)",
                   },
@@ -241,7 +255,10 @@ const Layout = ({ children }) => {
       </StyledAppBar>
       <Box
         component="nav"
-        sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
+        sx={{
+          width: { sm: drawerWidth },
+          flexShrink: { sm: 0 },
+        }}
       >
         <StyledDrawer
           variant="temporary"
@@ -252,6 +269,10 @@ const Layout = ({ children }) => {
           }}
           sx={{
             display: { xs: "block", sm: "none" },
+            "& .MuiDrawer-paper": {
+              width: drawerWidth,
+              boxSizing: "border-box",
+            },
           }}
         >
           {drawer}
@@ -260,6 +281,10 @@ const Layout = ({ children }) => {
           variant="permanent"
           sx={{
             display: { xs: "none", sm: "block" },
+            "& .MuiDrawer-paper": {
+              width: drawerWidth,
+              boxSizing: "border-box",
+            },
           }}
           open
         >
@@ -270,12 +295,11 @@ const Layout = ({ children }) => {
         component="main"
         sx={{
           flexGrow: 1,
-          p: 3,
+          p: { xs: 1, sm: 2, md: 3 },
           width: { sm: `calc(100% - ${drawerWidth}px)` },
-          mt: 8,
+          mt: { xs: "56px", sm: "64px" },
         }}
       >
-        <Toolbar />
         {children}
       </Box>
     </Box>

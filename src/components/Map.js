@@ -174,13 +174,14 @@ const ImageUploadButton = styled(Button)(({ theme }) => ({
 
 const SearchControl = styled(Paper)(({ theme }) => ({
   position: "absolute",
-  top: "10px",
-  right: "10px",
+  top: { xs: "60px", sm: "10px" },
+  right: { xs: "10px", sm: "10px" },
+  left: { xs: "10px", sm: "auto" },
   zIndex: 1000,
   padding: theme.spacing(1),
   display: "flex",
   alignItems: "center",
-  width: "300px",
+  width: { xs: "auto", sm: "300px" },
   backgroundColor: "rgba(255, 255, 255, 0.9)",
   backdropFilter: "blur(4px)",
   boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
@@ -485,11 +486,12 @@ const Map = () => {
     if (user?.role !== "COMPANY") return null;
 
     return (
-      <Box sx={{ mt: 4, mb: 2 }}>
+      <Box sx={{ mt: { xs: 2, md: 4 }, mb: { xs: 1, md: 2 } }}>
         <Typography
           variant="h5"
           sx={{
-            mb: 3,
+            mb: { xs: 2, md: 3 },
+            fontSize: { xs: "1.25rem", md: "1.5rem" },
             fontWeight: 600,
             background: "linear-gradient(135deg, #2e7d32, #81c784)",
             WebkitBackgroundClip: "text",
@@ -510,7 +512,7 @@ const Map = () => {
         >
           Relatório de Plantas
         </Typography>
-        <Grid container spacing={3}>
+        <Grid container spacing={{ xs: 2, md: 3 }}>
           <Grid item xs={12} md={4}>
             <ReportCard>
               <CardContent>
@@ -724,11 +726,12 @@ const Map = () => {
     if (user?.role !== "FARMER") return null;
 
     return (
-      <Box sx={{ mt: 4, mb: 2 }}>
+      <Box sx={{ mt: { xs: 2, md: 4 }, mb: { xs: 1, md: 2 } }}>
         <Typography
           variant="h5"
           sx={{
-            mb: 3,
+            mb: { xs: 2, md: 3 },
+            fontSize: { xs: "1.25rem", md: "1.5rem" },
             fontWeight: 600,
             background: "linear-gradient(135deg, #2e7d32, #81c784)",
             WebkitBackgroundClip: "text",
@@ -749,7 +752,7 @@ const Map = () => {
         >
           Minhas Plantas
         </Typography>
-        <Grid container spacing={3}>
+        <Grid container spacing={{ xs: 2, md: 3 }}>
           <Grid item xs={12} md={4}>
             <ReportCard>
               <CardContent>
@@ -901,7 +904,13 @@ const Map = () => {
         </Alert>
       )}
 
-      <Box sx={{ flexGrow: 1, height: "calc(100vh - 200px)", mb: 4 }}>
+      <Box
+        sx={{
+          flexGrow: 1,
+          height: { xs: "calc(100vh - 150px)", md: "calc(100vh - 200px)" },
+          mb: { xs: 2, md: 4 },
+        }}
+      >
         <MapContainer
           center={defaultPosition}
           zoom={13}
@@ -1020,6 +1029,13 @@ const Map = () => {
         onClose={() => setIsDetailModalOpen(false)}
         maxWidth="lg"
         fullWidth
+        sx={{
+          "& .MuiDialog-paper": {
+            margin: { xs: 1, sm: 2 },
+            width: { xs: "calc(100% - 16px)", sm: "calc(100% - 32px)" },
+            maxHeight: { xs: "calc(100% - 16px)", sm: "calc(100% - 32px)" },
+          },
+        }}
       >
         {selectedPlant && (
           <>
@@ -1217,6 +1233,13 @@ const Map = () => {
             uploading: false,
             error: null,
           });
+        }}
+        sx={{
+          "& .MuiDialog-paper": {
+            margin: { xs: 1, sm: 2 },
+            width: { xs: "calc(100% - 16px)", sm: "calc(100% - 32px)" },
+            maxHeight: { xs: "calc(100% - 16px)", sm: "calc(100% - 32px)" },
+          },
         }}
       >
         <DialogTitle>Add New Plant Location</DialogTitle>
