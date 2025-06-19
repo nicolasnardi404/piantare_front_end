@@ -75,4 +75,28 @@ export const uploads = {
     }),
 };
 
+export const plantUpdates = {
+  create: (updateData) => {
+    // Create a regular object instead of FormData since we already have the imageUrl
+    const data = {
+      plantLocationId: updateData.plantLocationId,
+      healthStatus: updateData.healthStatus,
+      notes: updateData.observations || "",
+      imageUrl: updateData.imageUrl,
+    };
+
+    console.log("Sending update data:", data);
+    return api.post("/plant-updates", data);
+  },
+  getByPlantId: (plantLocationId) =>
+    api.get(`/plant-updates/plant/${plantLocationId}`),
+  delete: (id) => api.delete(`/plant-updates/${id}`),
+};
+
+export const geoGpt = {
+  analyze: (plants) => api.post("/geogpt/analyze", { plants }),
+};
+
+// Export both named exports and default export
+export { api };
 export default api;
