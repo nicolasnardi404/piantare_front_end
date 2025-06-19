@@ -34,11 +34,14 @@ import {
   Divider,
   IconButton,
   InputAdornment,
+  Tooltip,
+  CircularProgress,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import "leaflet/dist/leaflet.css";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import SearchIcon from "@mui/icons-material/Search";
+import MyLocationIcon from "@mui/icons-material/MyLocation";
 import PlantUpdates from "./PlantUpdates";
 
 // Import marker cluster CSS
@@ -53,6 +56,18 @@ L.Icon.Default.mergeOptions({
   iconRetinaUrl: require("leaflet/dist/images/marker-icon-2x.png"),
   iconUrl: require("leaflet/dist/images/marker-icon.png"),
   shadowUrl: require("leaflet/dist/images/marker-shadow.png"),
+});
+
+// Add this near the top of the file with other imports
+const redIcon = new L.Icon({
+  iconUrl:
+    "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png",
+  shadowUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41],
 });
 
 function AddMarkerToClick({ onLocationSelected }) {
@@ -172,25 +187,8 @@ const ImageUploadButton = styled(Button)(({ theme }) => ({
   },
 }));
 
-const SearchControl = styled(Paper)(({ theme }) => ({
-  position: "absolute",
-  top: { xs: "60px", sm: "10px" },
-  right: { xs: "10px", sm: "10px" },
-  left: { xs: "10px", sm: "auto" },
-  zIndex: 1000,
-  padding: theme.spacing(1),
-  display: "flex",
-  alignItems: "center",
-  width: { xs: "auto", sm: "300px" },
-  backgroundColor: "rgba(255, 255, 255, 0.9)",
-  backdropFilter: "blur(4px)",
-  boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
-  borderRadius: theme.spacing(1),
-}));
-
-function MapSearch() {
+const SearchControl = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
   const map = useMap();
 
   const handleSearch = async () => {
@@ -213,7 +211,15 @@ function MapSearch() {
   };
 
   return (
-    <SearchControl elevation={3}>
+    <Box
+      sx={{
+        backgroundColor: "rgba(255, 255, 255, 0.9)",
+        backdropFilter: "blur(4px)",
+        boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+        borderRadius: 1,
+        padding: 1,
+      }}
+    >
       <TextField
         fullWidth
         size="small"
@@ -244,9 +250,125 @@ function MapSearch() {
           },
         }}
       />
-    </SearchControl>
+    </Box>
+  );
+};
+
+function LocationControl({ onLocationSelected }) {
+  const [loading, setLoading] = useState(false);
+  const [userLocation, setUserLocation] = useState(null);
+  const map = useMap();
+  const { user } = useAuth();
+
+  const handleGetLocation = () => {
+    setLoading(true);
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setUserLocation({ lat: latitude, lng: longitude });
+          map.setView([latitude, longitude], 15);
+          // If user is a farmer, trigger the add plant dialog
+          if (user?.role === "FARMER") {
+            onLocationSelected({ latitude, longitude });
+          }
+          setLoading(false);
+        },
+        (error) => {
+          console.error("Error getting location:", error);
+          setLoading(false);
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 5000,
+          maximumAge: 0,
+        }
+      );
+    } else {
+      console.error("Geolocation is not supported by this browser.");
+      setLoading(false);
+    }
+  };
+
+  return (
+    <>
+      <Tooltip
+        title={
+          user?.role === "FARMER"
+            ? "Adicionar planta na minha localização"
+            : "Minha Localização"
+        }
+        placement="left"
+      >
+        <LocationButton
+          onClick={handleGetLocation}
+          disabled={loading}
+          size="large"
+          color="primary"
+        >
+          {loading ? <CircularProgress size={24} /> : <MyLocationIcon />}
+        </LocationButton>
+      </Tooltip>
+      {userLocation && (
+        <Marker position={[userLocation.lat, userLocation.lng]} icon={redIcon}>
+          <Popup>
+            <Typography variant="body2" sx={{ fontWeight: 500 }}>
+              Sua localização atual
+            </Typography>
+            <Typography
+              variant="caption"
+              sx={{ display: "block", color: "text.secondary" }}
+            >
+              {userLocation.lat.toFixed(6)}, {userLocation.lng.toFixed(6)}
+            </Typography>
+            {user?.role === "FARMER" && (
+              <Button
+                variant="contained"
+                size="small"
+                color="primary"
+                sx={{ mt: 1 }}
+                onClick={() =>
+                  onLocationSelected({
+                    latitude: userLocation.lat,
+                    longitude: userLocation.lng,
+                  })
+                }
+              >
+                Adicionar Planta Aqui
+              </Button>
+            )}
+          </Popup>
+        </Marker>
+      )}
+    </>
   );
 }
+
+const MapControls = styled(Box)(({ theme }) => ({
+  position: "absolute",
+  top: { xs: "60px", sm: "10px" },
+  right: "10px",
+  left: { xs: "10px", sm: "auto" },
+  zIndex: 1000,
+  display: "flex",
+  flexDirection: "row",
+  alignItems: "center",
+  gap: theme.spacing(1),
+}));
+
+const LocationButton = styled(IconButton)(({ theme }) => ({
+  backgroundColor: "rgba(255, 255, 255, 0.9)",
+  backdropFilter: "blur(4px)",
+  boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+  display: "flex",
+  borderRadius: "50%",
+  width: "40px",
+  height: "40px",
+  padding: "8px",
+  "&:hover": {
+    backgroundColor: "rgba(255, 255, 255, 0.95)",
+  },
+}));
 
 const Map = () => {
   const [locations, setLocations] = useState([]);
@@ -254,6 +376,7 @@ const Map = () => {
   const [isAddingLocation, setIsAddingLocation] = useState(false);
   const [selectedCompanyId, setSelectedCompanyId] = useState("");
   const [companyList, setCompanyList] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
   const [newLocation, setNewLocation] = useState({
     latitude: null,
     longitude: null,
@@ -909,6 +1032,7 @@ const Map = () => {
           flexGrow: 1,
           height: { xs: "calc(100vh - 150px)", md: "calc(100vh - 200px)" },
           mb: { xs: 2, md: 4 },
+          position: "relative",
         }}
       >
         <MapContainer
@@ -921,7 +1045,21 @@ const Map = () => {
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           />
           <AddMarkerToClick onLocationSelected={handleMapClick} />
-          <MapSearch />
+
+          <MapControls>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 1,
+                width: { xs: "100%", sm: "auto" },
+              }}
+            >
+              <SearchControl />
+              <LocationControl onLocationSelected={handleMapClick} />
+            </Box>
+          </MapControls>
 
           <MarkerClusterGroup
             chunkedLoading
