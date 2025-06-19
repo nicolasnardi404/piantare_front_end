@@ -43,6 +43,10 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import SearchIcon from "@mui/icons-material/Search";
 import MyLocationIcon from "@mui/icons-material/MyLocation";
 import PlantUpdates from "./PlantUpdates";
+import AddLocationIcon from "@mui/icons-material/AddLocation";
+import AddLocationAltIcon from "@mui/icons-material/AddLocationAlt";
+import YardIcon from "@mui/icons-material/Yard";
+import GrassIcon from "@mui/icons-material/Grass";
 
 // Import marker cluster CSS
 import "leaflet.markercluster/dist/MarkerCluster.css";
@@ -270,7 +274,11 @@ function LocationControl({ onLocationSelected }) {
           map.setView([latitude, longitude], 15);
           // If user is a farmer, trigger the add plant dialog
           if (user?.role === "FARMER") {
-            onLocationSelected({ latitude, longitude });
+            onLocationSelected({
+              latitude,
+              longitude,
+              fromCurrentLocation: true,
+            });
           }
           setLoading(false);
         },
@@ -331,6 +339,7 @@ function LocationControl({ onLocationSelected }) {
                   onLocationSelected({
                     latitude: userLocation.lat,
                     longitude: userLocation.lng,
+                    fromCurrentLocation: true,
                   })
                 }
               >
@@ -374,6 +383,7 @@ const Map = () => {
   const [locations, setLocations] = useState([]);
   const [error, setError] = useState("");
   const [isAddingLocation, setIsAddingLocation] = useState(false);
+  const [isAddMode, setIsAddMode] = useState(false);
   const [selectedCompanyId, setSelectedCompanyId] = useState("");
   const [companyList, setCompanyList] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -492,7 +502,10 @@ const Map = () => {
   };
 
   const handleMapClick = (location) => {
-    if (user?.role === "FARMER") {
+    if (
+      user?.role === "FARMER" &&
+      (isAddMode || location.fromCurrentLocation)
+    ) {
       setNewLocation({
         ...newLocation,
         latitude: location.latitude,
@@ -1044,7 +1057,9 @@ const Map = () => {
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           />
-          <AddMarkerToClick onLocationSelected={handleMapClick} />
+          {user?.role === "FARMER" && isAddMode && (
+            <AddMarkerToClick onLocationSelected={handleMapClick} />
+          )}
 
           <MapControls>
             <Box
@@ -1058,6 +1073,34 @@ const Map = () => {
             >
               <SearchControl />
               <LocationControl onLocationSelected={handleMapClick} />
+              {user?.role === "FARMER" && (
+                <Tooltip
+                  title={
+                    isAddMode
+                      ? "Desativar modo de adicionar planta"
+                      : "Ativar modo de adicionar planta"
+                  }
+                  placement="left"
+                >
+                  <LocationButton
+                    onClick={() => setIsAddMode(!isAddMode)}
+                    color={isAddMode ? "primary" : "default"}
+                    sx={{
+                      backgroundColor: isAddMode
+                        ? "rgba(76, 175, 80, 0.9)"
+                        : "rgba(255, 255, 255, 0.9)",
+                      color: isAddMode ? "white" : "rgba(76, 175, 80, 0.8)",
+                      "&:hover": {
+                        backgroundColor: isAddMode
+                          ? "rgba(76, 175, 80, 0.95)"
+                          : "rgba(255, 255, 255, 0.95)",
+                      },
+                    }}
+                  >
+                    <YardIcon />
+                  </LocationButton>
+                </Tooltip>
+              )}
             </Box>
           </MapControls>
 
