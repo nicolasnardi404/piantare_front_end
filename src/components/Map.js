@@ -10,7 +10,7 @@ import {
 import MarkerClusterGroup from "react-leaflet-markercluster";
 import L from "leaflet";
 import { useAuth } from "../context/AuthContext";
-import { plantLocations, companies, plants } from "../services/api";
+import { plantLocations, companies, plants, plantUpdates } from "../services";
 import { b2Service } from "../services/b2";
 import axios from "axios";
 import {
@@ -48,6 +48,8 @@ import AddLocationAltIcon from "@mui/icons-material/AddLocationAlt";
 import YardIcon from "@mui/icons-material/Yard";
 import GrassIcon from "@mui/icons-material/Grass";
 import DeleteIcon from "@mui/icons-material/Delete";
+import UpdateIcon from "@mui/icons-material/Update";
+import HealthAndSafetyIcon from "@mui/icons-material/HealthAndSafety";
 
 // Import marker cluster CSS
 import "leaflet.markercluster/dist/MarkerCluster.css";
@@ -75,6 +77,23 @@ const redIcon = new L.Icon({
   shadowSize: [41, 41],
   shadowAnchor: [12, 41],
 });
+
+// Add this mapping function near the top of the file, after the imports
+const formatPlantCategory = (category) => {
+  const categoryMap = {
+    ARVORES: "Árvores",
+    ARVORES_FRUTIFERAS: "Árvores Frutíferas",
+    CAPINS: "Capins",
+    FOLHAGENS_ALTAS: "Folhagens Altas",
+    ARBUSTOS: "Arbustos",
+    TREPADEIRAS: "Trepadeiras",
+    AROMATICAS_E_COMESTIVEIS: "Aromáticas e Comestíveis",
+    PLANTAS_DE_FORRACAO: "Plantas de Forração",
+    PLANTAS_AQUATICAS_OU_PALUSTRES: "Plantas Aquáticas ou Palustres",
+  };
+
+  return categoryMap[category] || category;
+};
 
 function AddMarkerToClick({ onLocationSelected }) {
   useMapEvents({
@@ -175,21 +194,20 @@ const LocationChip = styled(Box)(({ theme }) => ({
 }));
 
 const ImageUploadButton = styled(Button)(({ theme }) => ({
-  marginTop: theme.spacing(2),
-  marginBottom: theme.spacing(1),
-  padding: theme.spacing(2),
-  border: `2px dashed ${theme.palette.primary.main}`,
-  borderRadius: theme.spacing(1),
   width: "100%",
+  height: "auto",
+  minHeight: 150,
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
+  justifyContent: "center",
   gap: theme.spacing(1),
-  backgroundColor: "rgba(76, 175, 80, 0.04)",
-  transition: "all 0.2s ease-in-out",
+  border: `2px dashed ${theme.palette.divider}`,
+  borderRadius: theme.shape.borderRadius,
+  backgroundColor: theme.palette.background.default,
   "&:hover": {
-    backgroundColor: "rgba(76, 175, 80, 0.08)",
-    borderStyle: "solid",
+    backgroundColor: theme.palette.action.hover,
+    borderColor: theme.palette.primary.main,
   },
 }));
 
@@ -464,15 +482,17 @@ const Map = () => {
     speciesCount: {},
     recentPlants: [],
   });
+  const [updateDialogState, setUpdateDialogState] = useState({
+    open: false,
+    plantId: null,
+    plantName: "",
+  });
 
   // São Paulo coordinates as default center
   const defaultPosition = [-23.5505, -46.6333];
 
   useEffect(() => {
     loadLocations();
-    if (user?.role === "ADMIN") {
-      loadCompanies();
-    }
     loadAvailablePlants();
   }, [user]);
 
@@ -550,15 +570,6 @@ const Map = () => {
     }
   };
 
-  const loadCompanies = async () => {
-    try {
-      const response = await companies.getAll();
-      setCompanies(response.data);
-    } catch (err) {
-      setError("Failed to load companies");
-    }
-  };
-
   const loadAvailablePlants = async () => {
     try {
       const response = await plants.getAll();
@@ -583,6 +594,12 @@ const Map = () => {
   };
 
   const handleMarkerClick = (location) => {
+    console.log("Selected Plant:", location);
+    console.log("Current User:", user);
+    console.log("Is user a farmer?", user?.role === "FARMER");
+    console.log("Plant added by:", location?.addedBy?.id);
+    console.log("User ID:", user?.userId);
+    console.log("Do IDs match?", location?.addedBy?.id === user?.userId);
     setSelectedPlant(location);
     setIsDetailModalOpen(true);
   };
@@ -729,6 +746,51 @@ const Map = () => {
     } catch (err) {
       console.error("Delete error:", err);
       setError(err.response?.data?.error || "Failed to delete plant location");
+    }
+  };
+
+  const handleAddUpdate = async (
+    plantId,
+    healthStatus,
+    observations,
+    image
+  ) => {
+    try {
+      let imageUrl = null;
+      if (image) {
+        const formData = new FormData();
+        formData.append("file", image);
+
+        const uploadResponse = await axios.post(
+          `${API_URL}/uploads/upload`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
+        // Get the URL from the upload response
+        imageUrl = uploadResponse.data.url;
+      }
+
+      // Create the update with the image URL
+      const updateResponse = await plantUpdates.create({
+        plantLocationId: plantId,
+        healthStatus,
+        observations,
+        imageUrl, // Pass the URL from the upload
+      });
+
+      console.log("Update created:", updateResponse);
+
+      // Refresh the locations to get the latest updates
+      await loadLocations();
+      setUpdateDialogState({ open: false, plantId: null, plantName: "" });
+    } catch (error) {
+      console.error("Error adding update:", error);
+      setError("Failed to add plant update");
     }
   };
 
@@ -975,174 +1037,518 @@ const Map = () => {
   const renderFarmerReport = () => {
     if (user?.role !== "FARMER") return null;
 
+    // Group plants by category
+    const plantsByCategory = farmerStats.recentPlants.reduce((acc, plant) => {
+      const category = plant.plant?.categoria || "OUTROS";
+      if (!acc[category]) {
+        acc[category] = [];
+      }
+      acc[category].push(plant);
+      return acc;
+    }, {});
+
     return (
       <Box sx={{ mt: { xs: 2, md: 4 }, mb: { xs: 1, md: 2 } }}>
-        <Typography
-          variant="h5"
+        <Box
           sx={{
-            mb: { xs: 2, md: 3 },
-            fontSize: { xs: "1.25rem", md: "1.5rem" },
-            fontWeight: 600,
-            background: "linear-gradient(135deg, #2e7d32, #81c784)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            display: "inline-block",
-            position: "relative",
-            "&::after": {
-              content: '""',
-              position: "absolute",
-              bottom: "-8px",
-              left: 0,
-              width: "60%",
-              height: "3px",
-              background: "linear-gradient(90deg, #4caf50, transparent)",
-              borderRadius: "2px",
-            },
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 3,
           }}
         >
-          Minhas Plantas
-        </Typography>
-        <Grid container spacing={{ xs: 2, md: 3 }}>
-          <Grid item xs={12} md={4}>
-            <ReportCard>
-              <CardContent>
-                <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-                  Visão Geral
-                </Typography>
-                <StatBox>
+          <Box>
+            <Typography
+              variant="h5"
+              sx={{
+                fontSize: { xs: "1.5rem", md: "1.75rem" },
+                fontWeight: 700,
+                background: "linear-gradient(135deg, #2e7d32, #81c784)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                mb: 1,
+              }}
+            >
+              Minhas Plantas
+            </Typography>
+            <Typography
+              variant="subtitle1"
+              sx={{ color: "text.secondary", fontWeight: 500 }}
+            >
+              Total de plantas cadastradas: {farmerStats.totalPlants}
+            </Typography>
+          </Box>
+        </Box>
+
+        <Grid container spacing={3}>
+          {Object.entries(plantsByCategory).map(([category, plants]) => (
+            <Grid item xs={12} md={6} key={category}>
+              <Box
+                sx={{
+                  background:
+                    "linear-gradient(145deg, rgba(255,255,255,0.9), rgba(255,255,255,0.95))",
+                  backdropFilter: "blur(10px)",
+                  borderRadius: "16px",
+                  boxShadow: "0 4px 24px -1px rgba(0, 0, 0, 0.1)",
+                  overflow: "hidden",
+                  border: "1px solid rgba(76, 175, 80, 0.1)",
+                  height: "100%",
+                }}
+              >
+                <Box
+                  sx={{
+                    p: 2,
+                    borderBottom: "1px solid rgba(76, 175, 80, 0.1)",
+                    background: "rgba(76, 175, 80, 0.05)",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
                   <Typography
-                    variant="h2"
-                    color="primary"
+                    variant="h6"
                     sx={{
-                      fontWeight: 700,
-                      textShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                      fontWeight: 600,
+                      color: "primary.main",
                     }}
                   >
-                    {farmerStats.totalPlants}
+                    {formatPlantCategory(category)}
                   </Typography>
                   <Typography
-                    variant="body1"
-                    color="text.secondary"
-                    sx={{ fontWeight: 500 }}
+                    sx={{
+                      backgroundColor: "rgba(76, 175, 80, 0.12)",
+                      color: "primary.main",
+                      px: 2,
+                      py: 0.5,
+                      borderRadius: "12px",
+                      fontSize: "0.875rem",
+                      fontWeight: 600,
+                    }}
                   >
-                    Total de Plantas Cadastradas
+                    {plants.length} plantas
                   </Typography>
-                </StatBox>
-              </CardContent>
-            </ReportCard>
-          </Grid>
-          <Grid item xs={12} md={8}>
-            <ReportCard>
-              <CardContent>
-                <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-                  Minhas Espécies
-                </Typography>
-                <Box
-                  sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}
-                >
-                  {Object.entries(farmerStats.speciesCount).map(
-                    ([species, count]) => (
+                </Box>
+                <Box sx={{ p: 2 }}>
+                  {plants.map((plant) => (
+                    <Box
+                      key={plant.id}
+                      sx={{
+                        mb: 2,
+                        p: 2,
+                        background: "rgba(76, 175, 80, 0.03)",
+                        borderRadius: "12px",
+                        transition: "all 0.2s ease-in-out",
+                        cursor: "pointer",
+                        "&:hover": {
+                          transform: "translateX(8px)",
+                          background: "rgba(76, 175, 80, 0.06)",
+                        },
+                        "&:last-child": {
+                          mb: 0,
+                        },
+                      }}
+                      onClick={() => handleMarkerClick(plant)}
+                    >
                       <Box
-                        key={species}
                         sx={{
                           display: "flex",
-                          flexDirection: "column",
-                          padding: "12px",
-                          borderRadius: "12px",
-                          backgroundColor: "rgba(76, 175, 80, 0.04)",
-                          border: "1px solid rgba(76, 175, 80, 0.1)",
-                          transition: "all 0.2s ease-in-out",
-                          position: "relative",
-                          overflow: "hidden",
-                          "&:hover": {
-                            backgroundColor: "rgba(76, 175, 80, 0.08)",
-                            transform: "translateX(4px)",
-                          },
-                          "&::before": {
-                            content: '""',
-                            position: "absolute",
-                            left: 0,
-                            top: 0,
-                            bottom: 0,
-                            width: "4px",
-                            background:
-                              "linear-gradient(to bottom, #4caf50, #81c784)",
-                            borderRadius: "4px",
-                            opacity: 0.8,
-                          },
+                          alignItems: "flex-start",
+                          justifyContent: "space-between",
                         }}
                       >
-                        <Box
-                          sx={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                            mb: 0.5,
-                          }}
-                        >
-                          <Typography
-                            variant="subtitle2"
-                            sx={{
-                              color: "text.primary",
-                              fontWeight: 600,
-                              fontSize: "0.95rem",
-                            }}
-                          >
-                            {species}
-                          </Typography>
+                        <Box sx={{ flex: 1 }}>
                           <Box
                             sx={{
                               display: "flex",
                               alignItems: "center",
                               gap: 1,
-                              color: "primary.main",
+                              mb: 0.5,
                             }}
                           >
                             <Typography
-                              variant="body2"
-                              sx={{
-                                fontWeight: 700,
-                                backgroundColor: "rgba(76, 175, 80, 0.12)",
-                                padding: "4px 12px",
-                                borderRadius: "12px",
-                                fontSize: "0.875rem",
-                              }}
+                              variant="subtitle1"
+                              sx={{ fontWeight: 600 }}
                             >
-                              {count}
+                              {plant.plant?.nomePopular}
                             </Typography>
+                            {plant.updates && plant.updates.length > 0 && (
+                              <Box
+                                sx={{
+                                  width: 12,
+                                  height: 12,
+                                  borderRadius: "50%",
+                                  bgcolor:
+                                    plant.updates[0].healthStatus === "HEALTHY"
+                                      ? "#4caf50"
+                                      : plant.updates[0].healthStatus ===
+                                        "NEEDS_ATTENTION"
+                                      ? "#ff9800"
+                                      : "#f44336",
+                                }}
+                              />
+                            )}
                           </Box>
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              color: "text.secondary",
+                              fontStyle: "italic",
+                              mb: 1,
+                            }}
+                          >
+                            {plant.plant?.nomeCientifico}
+                          </Typography>
                         </Box>
                         <Box
                           sx={{
-                            width: "100%",
-                            height: "4px",
-                            backgroundColor: "rgba(76, 175, 80, 0.08)",
-                            borderRadius: "2px",
-                            overflow: "hidden",
+                            display: "flex",
+                            gap: 1,
+                            alignItems: "flex-start",
                           }}
                         >
-                          <Box
-                            sx={{
-                              width: `${
-                                (count / farmerStats.totalPlants) * 100
-                              }%`,
-                              height: "100%",
-                              background:
-                                "linear-gradient(90deg, #4caf50, #81c784)",
-                              borderRadius: "2px",
-                              transition: "width 0.3s ease-in-out",
+                          <IconButton
+                            size="small"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setUpdateDialogState({
+                                open: true,
+                                plantId: plant.id,
+                                plantName: plant.plant?.nomePopular,
+                              });
                             }}
-                          />
+                            sx={{
+                              bgcolor: "rgba(76, 175, 80, 0.1)",
+                              "&:hover": {
+                                bgcolor: "rgba(76, 175, 80, 0.2)",
+                              },
+                            }}
+                          >
+                            <UpdateIcon color="primary" />
+                          </IconButton>
+                          {plant.imageUrl && (
+                            <Box
+                              component="img"
+                              src={plant.imageUrl}
+                              alt={plant.plant?.nomePopular}
+                              sx={{
+                                width: 60,
+                                height: 60,
+                                borderRadius: "8px",
+                                objectFit: "cover",
+                              }}
+                            />
+                          )}
                         </Box>
                       </Box>
-                    )
-                  )}
+                      <Box
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 2,
+                          mt: 1,
+                        }}
+                      >
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            color: "text.secondary",
+                          }}
+                        >
+                          📍 {plant.latitude.toFixed(6)},{" "}
+                          {plant.longitude.toFixed(6)}
+                        </Typography>
+                        {plant.description && (
+                          <Typography
+                            variant="caption"
+                            sx={{
+                              color: "text.secondary",
+                              display: "flex",
+                              alignItems: "center",
+                            }}
+                          >
+                            📝 {plant.description.substring(0, 50)}
+                            {plant.description.length > 50 ? "..." : ""}
+                          </Typography>
+                        )}
+                      </Box>
+                      {plant.updates && plant.updates.length > 0 && (
+                        <Box
+                          sx={{
+                            mt: 1,
+                            pt: 1,
+                            borderTop: "1px dashed rgba(76, 175, 80, 0.2)",
+                            fontSize: "0.75rem",
+                            color: "text.secondary",
+                          }}
+                        >
+                          {console.log("Plant updates in card:", plant.updates)}
+                          <Box
+                            sx={{
+                              display: "flex",
+                              gap: 2,
+                              alignItems: "flex-start",
+                            }}
+                          >
+                            <Box sx={{ flex: 1 }}>
+                              <Typography
+                                variant="caption"
+                                sx={{ display: "block" }}
+                              >
+                                Última atualização:{" "}
+                                {new Date(
+                                  plant.updates[0].updateDate
+                                ).toLocaleDateString()}
+                              </Typography>
+                              {plant.updates[0].notes && (
+                                <Typography
+                                  variant="caption"
+                                  sx={{
+                                    display: "block",
+                                    mt: 0.5,
+                                    fontStyle: "italic",
+                                  }}
+                                >
+                                  "{plant.updates[0].notes}"
+                                </Typography>
+                              )}
+                            </Box>
+                            {plant.updates[0].imageUrl && (
+                              <Box
+                                component="img"
+                                src={plant.updates[0].imageUrl}
+                                alt="Latest update"
+                                sx={{
+                                  width: 60,
+                                  height: 60,
+                                  borderRadius: "8px",
+                                  objectFit: "cover",
+                                }}
+                              />
+                            )}
+                          </Box>
+                        </Box>
+                      )}
+                    </Box>
+                  ))}
                 </Box>
-              </CardContent>
-            </ReportCard>
-          </Grid>
+              </Box>
+            </Grid>
+          ))}
         </Grid>
+        <PlantUpdateDialog />
       </Box>
+    );
+  };
+
+  const PlantUpdateDialog = () => {
+    const [healthStatus, setHealthStatus] = useState("HEALTHY");
+    const [observations, setObservations] = useState("");
+    const [imageUpload, setImageUpload] = useState({
+      file: null,
+      preview: null,
+      error: null,
+    });
+
+    const handleImageSelect = (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      // Check file type
+      if (!file.type.startsWith("image/")) {
+        setImageUpload((prev) => ({
+          ...prev,
+          error: "Por favor selecione uma imagem válida",
+        }));
+        return;
+      }
+
+      // Check file size (max 10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        setImageUpload((prev) => ({
+          ...prev,
+          error: "A imagem deve ter menos que 10MB",
+        }));
+        return;
+      }
+
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImageUpload({
+          file,
+          preview: reader.result,
+          error: null,
+        });
+      };
+      reader.onerror = () => {
+        setImageUpload((prev) => ({
+          ...prev,
+          error: "Erro ao carregar a imagem",
+        }));
+      };
+      reader.readAsDataURL(file);
+    };
+
+    const handleSubmit = async () => {
+      try {
+        await handleAddUpdate(
+          updateDialogState.plantId,
+          healthStatus,
+          observations,
+          imageUpload.file
+        );
+        // Reset form
+        setHealthStatus("HEALTHY");
+        setObservations("");
+        setImageUpload({
+          file: null,
+          preview: null,
+          error: null,
+        });
+      } catch (error) {
+        console.error("Error submitting update:", error);
+      }
+    };
+
+    return (
+      <Dialog
+        open={updateDialogState.open}
+        onClose={() =>
+          setUpdateDialogState({ open: false, plantId: null, plantName: "" })
+        }
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <HealthAndSafetyIcon color="primary" />
+            <Typography variant="h6">Atualizar Status da Planta</Typography>
+          </Box>
+          <Typography variant="subtitle1" color="text.secondary" sx={{ mt: 1 }}>
+            {updateDialogState.plantName}
+          </Typography>
+        </DialogTitle>
+        <DialogContent>
+          <Box sx={{ mt: 2 }}>
+            <FormControl fullWidth sx={{ mb: 3 }}>
+              <InputLabel>Status de Saúde</InputLabel>
+              <Select
+                value={healthStatus}
+                onChange={(e) => setHealthStatus(e.target.value)}
+                label="Status de Saúde"
+              >
+                <MenuItem value="HEALTHY">
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    <Box
+                      sx={{
+                        width: 12,
+                        height: 12,
+                        borderRadius: "50%",
+                        bgcolor: "#4caf50",
+                      }}
+                    />
+                    Saudável
+                  </Box>
+                </MenuItem>
+                <MenuItem value="NEEDS_ATTENTION">
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    <Box
+                      sx={{
+                        width: 12,
+                        height: 12,
+                        borderRadius: "50%",
+                        bgcolor: "#ff9800",
+                      }}
+                    />
+                    Precisa de Atenção
+                  </Box>
+                </MenuItem>
+                <MenuItem value="SICK">
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    <Box
+                      sx={{
+                        width: 12,
+                        height: 12,
+                        borderRadius: "50%",
+                        bgcolor: "#f44336",
+                      }}
+                    />
+                    Doente
+                  </Box>
+                </MenuItem>
+              </Select>
+            </FormControl>
+            <TextField
+              fullWidth
+              multiline
+              rows={4}
+              label="Observações"
+              value={observations}
+              onChange={(e) => setObservations(e.target.value)}
+              placeholder="Descreva o estado atual da planta, tratamentos aplicados, etc."
+              sx={{ mb: 3 }}
+            />
+            <ImageUploadButton
+              component="label"
+              disabled={false}
+              sx={{
+                mt: 2,
+                mb: imageUpload.preview ? 1 : 3,
+              }}
+            >
+              <input
+                type="file"
+                hidden
+                accept="image/*"
+                onChange={handleImageSelect}
+              />
+              <CloudUploadIcon sx={{ fontSize: 32, mb: 1 }} />
+              <Typography variant="body1">
+                Clique para adicionar uma foto
+              </Typography>
+              {imageUpload.preview && (
+                <Box
+                  component="img"
+                  src={imageUpload.preview}
+                  sx={{
+                    mt: 2,
+                    maxWidth: "100%",
+                    maxHeight: 200,
+                    objectFit: "contain",
+                  }}
+                />
+              )}
+            </ImageUploadButton>
+            {imageUpload.error && (
+              <Typography color="error" variant="body2" sx={{ mt: 1, mb: 2 }}>
+                {imageUpload.error}
+              </Typography>
+            )}
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() =>
+              setUpdateDialogState({
+                open: false,
+                plantId: null,
+                plantName: "",
+              })
+            }
+          >
+            Cancelar
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleSubmit}
+            startIcon={<UpdateIcon />}
+          >
+            Atualizar Status
+          </Button>
+        </DialogActions>
+      </Dialog>
     );
   };
 
@@ -1281,7 +1687,14 @@ const Map = () => {
                     }}
                   >
                     <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-                      {location.species}
+                      {location.plant?.nomePopular || "Unknown Plant"}
+                    </Typography>
+                    <Typography
+                      variant="caption"
+                      color="text.secondary"
+                      sx={{ display: "block" }}
+                    >
+                      {location.plant?.nomeCientifico}
                     </Typography>
                     <Typography variant="body2" sx={{ mt: 1 }}>
                       {location.description}
@@ -1389,23 +1802,23 @@ const Map = () => {
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <Typography variant="subtitle2" color="text.secondary">
-                  Added by
+                  Adicionado por
                 </Typography>
                 <Typography>
-                  {selectedPlant?.addedBy?.name || "Unknown"}
+                  {selectedPlant?.addedBy?.name || "Desconhecido"}
                 </Typography>
               </Grid>
               {selectedPlant?.company && (
                 <Grid item xs={12}>
                   <Typography variant="subtitle2" color="text.secondary">
-                    Company
+                    Empresa
                   </Typography>
                   <Typography>{selectedPlant.company.name}</Typography>
                 </Grid>
               )}
               <Grid item xs={12}>
                 <Typography variant="subtitle2" color="text.secondary">
-                  Location
+                  Localização
                 </Typography>
                 <Typography>
                   {selectedPlant?.latitude.toFixed(6)},{" "}
@@ -1415,80 +1828,386 @@ const Map = () => {
               {selectedPlant?.description && (
                 <Grid item xs={12}>
                   <Typography variant="subtitle2" color="text.secondary">
-                    Description
+                    Descrição
                   </Typography>
                   <Typography>{selectedPlant.description}</Typography>
                 </Grid>
               )}
+
+              {/* Updates Section - Now First */}
               <Grid item xs={12}>
-                <Typography variant="subtitle2" color="text.secondary">
-                  Plant Details
-                </Typography>
-                <Box sx={{ pl: 2 }}>
-                  <Typography>
-                    <strong>Category:</strong> {selectedPlant?.plant?.categoria}
+                <Box
+                  sx={{
+                    background:
+                      "linear-gradient(145deg, rgba(255,255,255,0.9), rgba(255,255,255,0.95))",
+                    backdropFilter: "blur(10px)",
+                    borderRadius: "16px",
+                    boxShadow: "0 4px 24px -1px rgba(0, 0, 0, 0.1)",
+                    overflow: "hidden",
+                    border: "1px solid rgba(76, 175, 80, 0.1)",
+                  }}
+                >
+                  <Box
+                    sx={{
+                      p: 2,
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      borderBottom: "1px solid rgba(76, 175, 80, 0.1)",
+                    }}
+                  >
+                    <Typography
+                      variant="h6"
+                      sx={{ fontWeight: 600, color: "primary.main" }}
+                    >
+                      Histórico de Atualizações
+                    </Typography>
+                    {user?.role === "FARMER" &&
+                      selectedPlant?.addedBy?.id === user?.userId && (
+                        <Button
+                          startIcon={<UpdateIcon />}
+                          variant="contained"
+                          size="small"
+                          onClick={() =>
+                            setUpdateDialogState({
+                              open: true,
+                              plantId: selectedPlant.id,
+                              plantName: selectedPlant.plant?.nomePopular,
+                            })
+                          }
+                        >
+                          Nova Atualização
+                        </Button>
+                      )}
+                  </Box>
+                  <Box sx={{ p: 2 }}>
+                    {selectedPlant?.updates &&
+                    selectedPlant.updates.length > 0 ? (
+                      <Box sx={{ position: "relative" }}>
+                        {/* Timeline line */}
+                        <Box
+                          sx={{
+                            position: "absolute",
+                            left: "24px",
+                            top: 0,
+                            bottom: 0,
+                            width: "2px",
+                            background: "rgba(76, 175, 80, 0.2)",
+                            zIndex: 0,
+                          }}
+                        />
+                        {selectedPlant.updates.map((update, index) => (
+                          <Box
+                            key={update.id}
+                            sx={{
+                              position: "relative",
+                              mb:
+                                index !== selectedPlant.updates.length - 1
+                                  ? 4
+                                  : 0,
+                              ml: 6,
+                              "&::before": {
+                                content: '""',
+                                position: "absolute",
+                                left: "-28px",
+                                top: "24px",
+                                width: "16px",
+                                height: "16px",
+                                borderRadius: "50%",
+                                backgroundColor:
+                                  update.healthStatus === "HEALTHY"
+                                    ? "#4caf50"
+                                    : update.healthStatus === "NEEDS_ATTENTION"
+                                    ? "#ff9800"
+                                    : "#f44336",
+                                border: "3px solid white",
+                                boxShadow: "0 0 0 2px rgba(76, 175, 80, 0.2)",
+                                zIndex: 1,
+                              },
+                            }}
+                          >
+                            <Box
+                              sx={{
+                                background: "white",
+                                borderRadius: "12px",
+                                p: 2,
+                                boxShadow: "0 2px 12px rgba(0,0,0,0.08)",
+                                border: "1px solid rgba(76, 175, 80, 0.1)",
+                              }}
+                            >
+                              <Box sx={{ mb: 2 }}>
+                                <Typography
+                                  variant="subtitle1"
+                                  sx={{
+                                    fontWeight: 600,
+                                    color: "primary.main",
+                                  }}
+                                >
+                                  {update.healthStatus === "HEALTHY"
+                                    ? "Saudável"
+                                    : update.healthStatus === "NEEDS_ATTENTION"
+                                    ? "Precisa de Atenção"
+                                    : "Doente"}
+                                </Typography>
+                                <Typography
+                                  variant="caption"
+                                  sx={{ color: "text.secondary" }}
+                                >
+                                  {new Date(
+                                    update.updateDate
+                                  ).toLocaleDateString()}{" "}
+                                  às{" "}
+                                  {new Date(
+                                    update.updateDate
+                                  ).toLocaleTimeString()}
+                                </Typography>
+                              </Box>
+                              {update.notes && (
+                                <Typography
+                                  sx={{
+                                    color: "text.secondary",
+                                    mb: update.imageUrl ? 2 : 0,
+                                    fontStyle: "italic",
+                                  }}
+                                >
+                                  "{update.notes}"
+                                </Typography>
+                              )}
+                              {update.imageUrl && (
+                                <Box
+                                  sx={{
+                                    mt: 2,
+                                    position: "relative",
+                                    "&:hover": {
+                                      "& .zoom-overlay": {
+                                        opacity: 1,
+                                      },
+                                    },
+                                  }}
+                                >
+                                  <Box
+                                    component="img"
+                                    src={update.imageUrl}
+                                    alt="Update photo"
+                                    sx={{
+                                      width: "100%",
+                                      maxHeight: 200,
+                                      borderRadius: "8px",
+                                      objectFit: "cover",
+                                      cursor: "pointer",
+                                    }}
+                                    onClick={() => {
+                                      window.open(update.imageUrl, "_blank");
+                                    }}
+                                  />
+                                  <Box
+                                    className="zoom-overlay"
+                                    sx={{
+                                      position: "absolute",
+                                      top: 0,
+                                      left: 0,
+                                      right: 0,
+                                      bottom: 0,
+                                      display: "flex",
+                                      alignItems: "center",
+                                      justifyContent: "center",
+                                      background: "rgba(0,0,0,0.3)",
+                                      borderRadius: "8px",
+                                      opacity: 0,
+                                      transition: "opacity 0.2s ease-in-out",
+                                      color: "white",
+                                    }}
+                                  >
+                                    <Typography>Clique para ampliar</Typography>
+                                  </Box>
+                                </Box>
+                              )}
+                            </Box>
+                          </Box>
+                        ))}
+                      </Box>
+                    ) : (
+                      <Typography
+                        sx={{ textAlign: "center", color: "text.secondary" }}
+                      >
+                        Nenhuma atualização registrada
+                      </Typography>
+                    )}
+                  </Box>
+                </Box>
+              </Grid>
+
+              {/* General Information Section - Now Second */}
+              <Grid item xs={12}>
+                <Box
+                  sx={{
+                    mt: 3,
+                    background:
+                      "linear-gradient(145deg, rgba(255,255,255,0.9), rgba(255,255,255,0.95))",
+                    backdropFilter: "blur(10px)",
+                    borderRadius: "16px",
+                    boxShadow: "0 4px 24px -1px rgba(0, 0, 0, 0.1)",
+                    overflow: "hidden",
+                    border: "1px solid rgba(76, 175, 80, 0.1)",
+                    position: "relative",
+                  }}
+                >
+                  <Box
+                    sx={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      height: "4px",
+                      background: "linear-gradient(90deg, #4caf50, #81c784)",
+                    }}
+                  />
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      p: 2,
+                      pb: 1,
+                      color: "primary.main",
+                      fontWeight: 600,
+                    }}
+                  >
+                    Informações Gerais
                   </Typography>
-                  {selectedPlant?.plant?.altura && (
-                    <Typography>
-                      <strong>Height:</strong> {selectedPlant.plant.altura}
-                    </Typography>
-                  )}
-                  {selectedPlant?.plant?.origem && (
-                    <Typography>
-                      <strong>Origin:</strong> {selectedPlant.plant.origem}
-                    </Typography>
-                  )}
-                  {selectedPlant?.plant?.especificacao && (
-                    <Typography>
-                      <strong>Specifications:</strong>{" "}
-                      {selectedPlant.plant.especificacao}
-                    </Typography>
-                  )}
+                  <Box sx={{ p: 2 }}>
+                    <Grid container spacing={2}>
+                      <Grid item xs={12}>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            p: 1.5,
+                            background: "rgba(76, 175, 80, 0.05)",
+                            borderRadius: "12px",
+                            mb: 1,
+                          }}
+                        >
+                          <Box
+                            sx={{
+                              display: "flex",
+                              flexDirection: "column",
+                              flex: 1,
+                            }}
+                          >
+                            <Typography
+                              sx={{
+                                fontWeight: 600,
+                                color: "primary.main",
+                                mb: 0.5,
+                              }}
+                            >
+                              Categoria
+                            </Typography>
+                            <Typography>
+                              {formatPlantCategory(
+                                selectedPlant?.plant?.categoria
+                              )}
+                            </Typography>
+                          </Box>
+                        </Box>
+                      </Grid>
+                      {selectedPlant?.plant?.altura && (
+                        <Grid item xs={12} sm={6}>
+                          <Box
+                            sx={{
+                              p: 1.5,
+                              background: "rgba(76, 175, 80, 0.05)",
+                              borderRadius: "12px",
+                              height: "100%",
+                            }}
+                          >
+                            <Typography
+                              sx={{
+                                fontWeight: 600,
+                                color: "primary.main",
+                                mb: 0.5,
+                              }}
+                            >
+                              Altura
+                            </Typography>
+                            <Typography>
+                              {selectedPlant.plant.altura}
+                            </Typography>
+                          </Box>
+                        </Grid>
+                      )}
+                      {selectedPlant?.plant?.origem && (
+                        <Grid item xs={12} sm={6}>
+                          <Box
+                            sx={{
+                              p: 1.5,
+                              background: "rgba(76, 175, 80, 0.05)",
+                              borderRadius: "12px",
+                              height: "100%",
+                            }}
+                          >
+                            <Typography
+                              sx={{
+                                fontWeight: 600,
+                                color: "primary.main",
+                                mb: 0.5,
+                              }}
+                            >
+                              Origem
+                            </Typography>
+                            <Typography>
+                              {selectedPlant.plant.origem}
+                            </Typography>
+                          </Box>
+                        </Grid>
+                      )}
+                      {selectedPlant?.plant?.especificacao && (
+                        <Grid item xs={12}>
+                          <Box
+                            sx={{
+                              p: 1.5,
+                              background: "rgba(76, 175, 80, 0.05)",
+                              borderRadius: "12px",
+                            }}
+                          >
+                            <Typography
+                              sx={{
+                                fontWeight: 600,
+                                color: "primary.main",
+                                mb: 0.5,
+                              }}
+                            >
+                              Especificações
+                            </Typography>
+                            <Typography
+                              sx={{
+                                lineHeight: 1.6,
+                              }}
+                            >
+                              {selectedPlant.plant.especificacao}
+                            </Typography>
+                          </Box>
+                        </Grid>
+                      )}
+                    </Grid>
+                  </Box>
                 </Box>
               </Grid>
             </Grid>
           </Box>
-          {user?.role === "COMPANY" && !selectedPlant?.company && (
-            <Box sx={{ mt: 2 }}>
-              <FormControl fullWidth>
-                <InputLabel>Assign to Company</InputLabel>
-                <Select
-                  value={selectedCompanyId}
-                  onChange={(e) => setSelectedCompanyId(e.target.value)}
-                >
-                  <MenuItem value="">
-                    <em>None</em>
-                  </MenuItem>
-                  {companies.map((company) => (
-                    <MenuItem key={company.id} value={company.id}>
-                      {company.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-              <Button
-                variant="contained"
-                onClick={handleAssignCompany}
-                sx={{ mt: 2 }}
-              >
-                Assign to Company
-              </Button>
-            </Box>
-          )}
         </DialogContent>
         <DialogActions>
           {(user?.role === "ADMIN" ||
             (user?.role === "FARMER" &&
-              selectedPlant?.addedBy?.id === user?.id)) && (
+              selectedPlant?.addedBy?.id === user?.userId)) && (
             <Button
               onClick={() => handleDeletePlant(selectedPlant.id)}
               color="error"
               startIcon={<DeleteIcon />}
             >
-              Delete
+              Excluir
             </Button>
           )}
-          <Button onClick={() => setIsDetailModalOpen(false)}>Close</Button>
+          <Button onClick={() => setIsDetailModalOpen(false)}>Fechar</Button>
         </DialogActions>
       </Dialog>
 
@@ -1513,7 +2232,7 @@ const Map = () => {
         maxWidth="sm"
         fullWidth
       >
-        <DialogTitle>Add Plant Details</DialogTitle>
+        <DialogTitle>Adicionar Planta</DialogTitle>
         <DialogContent>
           <Box sx={{ mt: 2 }}>
             {error && (
@@ -1522,13 +2241,13 @@ const Map = () => {
               </Alert>
             )}
             <Typography variant="body2" color="text.secondary" gutterBottom>
-              Selected Location: {newLocation.latitude?.toFixed(6)},{" "}
+              Localização Selecionada: {newLocation.latitude?.toFixed(6)},{" "}
               {newLocation.longitude?.toFixed(6)}
             </Typography>
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <FormControl fullWidth margin="normal">
-                  <InputLabel>Plant</InputLabel>
+                  <InputLabel>Planta</InputLabel>
                   <Select
                     value={newLocation.plantId || ""}
                     onChange={(e) =>
@@ -1550,7 +2269,7 @@ const Map = () => {
               <Grid item xs={12}>
                 <TextField
                   fullWidth
-                  label="Description"
+                  label="Descrição"
                   value={newLocation.description}
                   onChange={(e) =>
                     setNewLocation({
@@ -1577,8 +2296,8 @@ const Map = () => {
               <CloudUploadIcon sx={{ fontSize: 32, mb: 1 }} />
               <Typography variant="body1">
                 {imageUpload.uploading
-                  ? "Uploading..."
-                  : "Click to upload plant image"}
+                  ? "Enviando..."
+                  : "Clique para enviar uma imagem da planta"}
               </Typography>
               {imageUpload.preview && (
                 <Box
@@ -1607,15 +2326,15 @@ const Map = () => {
               setIsAddMode(true); // Allow selecting a new location
             }}
           >
-            Change Location
+            Alterar Localização
           </Button>
-          <Button onClick={() => setIsAddingLocation(false)}>Cancel</Button>
+          <Button onClick={() => setIsAddingLocation(false)}>Cancelar</Button>
           <Button
             onClick={handleAddLocation}
             variant="contained"
             disabled={imageUpload.uploading}
           >
-            Add Plant
+            Adicionar Planta
           </Button>
         </DialogActions>
       </Dialog>
