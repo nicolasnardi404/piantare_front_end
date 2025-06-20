@@ -62,6 +62,10 @@ import AutorenewIcon from "@mui/icons-material/Autorenew";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import CompanyReport from "./CompanyReport";
+import PersonIcon from "@mui/icons-material/Person";
+import BusinessIcon from "@mui/icons-material/Business";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import DescriptionIcon from "@mui/icons-material/Description";
 
 // Import marker cluster CSS
 import "leaflet.markercluster/dist/MarkerCluster.css";
@@ -2417,6 +2421,8 @@ const LocationMap = () => {
                 }}
               />
             )}
+
+            {/* Current Status Section */}
             <Box
               sx={{
                 background: "white",
@@ -2427,241 +2433,520 @@ const LocationMap = () => {
                 mb: 3,
               }}
             >
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={4}>
-                  <Typography variant="subtitle2" color="text.secondary">
-                    Adicionado por
-                  </Typography>
-                  <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                    {selectedPlant?.addedBy?.name || "Desconhecido"}
-                  </Typography>
-                </Grid>
-                {selectedPlant?.company && (
-                  <Grid item xs={12} sm={4}>
-                    <Typography variant="subtitle2" color="text.secondary">
-                      Empresa
-                    </Typography>
-                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                      {selectedPlant.company.name}
-                    </Typography>
-                  </Grid>
-                )}
-                <Grid item xs={12} sm={4}>
-                  <Typography variant="subtitle2" color="text.secondary">
-                    Localização
-                  </Typography>
-                  <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                    {locationAddress ? (
-                      <>
-                        {locationAddress.address.city ||
-                          locationAddress.address.town ||
-                          locationAddress.address.village ||
-                          ""}
-                        {locationAddress.address.state
-                          ? `, ${locationAddress.address.state}`
-                          : ""}{" "}
-                        - {locationAddress.address.country || ""}
-                      </>
-                    ) : (
-                      "Carregando endereço..."
-                    )}
-                  </Typography>
-                </Grid>
-                {selectedPlant?.description && (
-                  <Grid item xs={12}>
-                    <Typography variant="subtitle2" color="text.secondary">
-                      Descrição
-                    </Typography>
-                    <Typography
-                      variant="body1"
-                      sx={{ fontWeight: 500, mt: 0.5, whiteSpace: "pre-wrap" }}
-                    >
-                      {selectedPlant.description}
-                    </Typography>
-                  </Grid>
-                )}
-              </Grid>
-            </Box>
-
-            {/* Timeline Section */}
-            <Box sx={{ mt: 4 }}>
               <Typography
                 variant="h6"
                 sx={{ mb: 3, color: "primary.main", fontWeight: 600 }}
               >
-                Histórico de Atualizações
+                Status Atual
               </Typography>
-              {selectedPlant?.updates && selectedPlant.updates.length > 0 ? (
-                <Box sx={{ position: "relative" }}>
-                  {/* Timeline line */}
+              <Grid container spacing={3}>
+                <Grid item xs={12} sm={4}>
+                  <Box>
+                    <Typography variant="body2" color="text.secondary">
+                      Estado de Saúde
+                    </Typography>
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        color:
+                          selectedPlant?.updates &&
+                          selectedPlant.updates.length > 0
+                            ? selectedPlant.updates[0].healthStatus ===
+                              "HEALTHY"
+                              ? "#4caf50"
+                              : selectedPlant.updates[0].healthStatus ===
+                                "NEEDS_ATTENTION"
+                              ? "#ff9800"
+                              : "#f44336"
+                            : "#4caf50",
+                        fontWeight: 600,
+                      }}
+                    >
+                      {selectedPlant?.updates &&
+                      selectedPlant.updates.length > 0
+                        ? selectedPlant.updates[0].healthStatus === "HEALTHY"
+                          ? "Saudável"
+                          : selectedPlant.updates[0].healthStatus ===
+                            "NEEDS_ATTENTION"
+                          ? "Precisa de Atenção"
+                          : "Doente"
+                        : "Saudável"}
+                    </Typography>
+                  </Box>
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                  <Box>
+                    <Typography variant="body2" color="text.secondary">
+                      Dimensões Atuais
+                    </Typography>
+                    <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                      {selectedPlant?.updates &&
+                      selectedPlant.updates.length > 0
+                        ? `${selectedPlant.updates[0].measurements.height}m x ${selectedPlant.updates[0].measurements.width}m`
+                        : "Não informado"}
+                    </Typography>
+                  </Box>
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                  <Box>
+                    <Typography variant="body2" color="text.secondary">
+                      Última Atualização
+                    </Typography>
+                    <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                      {selectedPlant?.updates &&
+                      selectedPlant.updates.length > 0
+                        ? new Date(
+                            selectedPlant.updates[0].updateDate
+                          ).toLocaleDateString()
+                        : "Sem atualizações"}
+                    </Typography>
+                  </Box>
+                </Grid>
+              </Grid>
+            </Box>
+
+            <Box
+              sx={{
+                background: "white",
+                borderRadius: "16px",
+                boxShadow: "0 4px 20px rgba(0, 0, 0, 0.08)",
+                border: "1px solid rgba(76, 175, 80, 0.1)",
+                p: 3,
+              }}
+            >
+              <Grid container spacing={3}>
+                <Grid item xs={12} sm={4}>
                   <Box
                     sx={{
-                      position: "absolute",
-                      left: "16px",
-                      top: 0,
-                      bottom: 0,
-                      width: "2px",
-                      background: "rgba(76, 175, 80, 0.2)",
-                      zIndex: 0,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 1.5,
+                      p: 2,
+                      background: "rgba(76, 175, 80, 0.04)",
+                      borderRadius: "12px",
+                      transition: "all 0.2s ease",
+                      height: "100%",
+                      "&:hover": {
+                        background: "rgba(76, 175, 80, 0.08)",
+                      },
                     }}
-                  />
-                  {selectedPlant.updates.map((update, index) => (
+                  >
+                    <PersonIcon sx={{ color: "primary.main", mt: 0.5 }} />
+                    <Box>
+                      <Typography
+                        variant="subtitle2"
+                        color="text.secondary"
+                        sx={{ mb: 0.5 }}
+                      >
+                        Plantado por
+                      </Typography>
+                      <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                        {selectedPlant?.addedBy?.name || "Desconhecido"}
+                      </Typography>
+                    </Box>
+                  </Box>
+                </Grid>
+                {selectedPlant?.company && (
+                  <Grid item xs={12} sm={4}>
                     <Box
-                      key={update.id}
                       sx={{
-                        position: "relative",
-                        mb: index !== selectedPlant.updates.length - 1 ? 4 : 0,
-                        ml: 5,
-                        "&::before": {
-                          content: '""',
-                          position: "absolute",
-                          left: "-24px",
-                          top: "24px",
-                          width: "16px",
-                          height: "16px",
-                          borderRadius: "50%",
-                          backgroundColor:
-                            update.healthStatus === "HEALTHY"
-                              ? "#4caf50"
-                              : update.healthStatus === "NEEDS_ATTENTION"
-                              ? "#ff9800"
-                              : "#f44336",
-                          border: "3px solid white",
-                          boxShadow: "0 0 0 2px rgba(76, 175, 80, 0.2)",
-                          zIndex: 1,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: 1.5,
+                        p: 2,
+                        background: "rgba(76, 175, 80, 0.04)",
+                        borderRadius: "12px",
+                        transition: "all 0.2s ease",
+                        height: "100%",
+                        "&:hover": {
+                          background: "rgba(76, 175, 80, 0.08)",
                         },
                       }}
                     >
-                      <Box
-                        sx={{
-                          background: "white",
-                          borderRadius: "16px",
-                          overflow: "hidden",
-                          boxShadow: "0 4px 20px rgba(0, 0, 0, 0.08)",
-                          border: "1px solid rgba(76, 175, 80, 0.1)",
-                        }}
-                      >
-                        <Box sx={{ p: 3 }}>
-                          <Box
-                            sx={{
-                              display: "flex",
-                              justifyContent: "space-between",
-                              alignItems: "flex-start",
-                              mb: 2,
-                            }}
-                          >
-                            <Box>
-                              <Typography
-                                variant="h6"
-                                sx={{
-                                  fontWeight: 600,
-                                  color: "primary.main",
-                                  mb: 0.5,
-                                }}
-                              >
-                                {update.healthStatus === "HEALTHY"
-                                  ? "Saudável"
-                                  : update.healthStatus === "NEEDS_ATTENTION"
-                                  ? "Precisa de Atenção"
-                                  : "Doente"}
-                              </Typography>
-                              <Typography
-                                variant="body2"
-                                color="text.secondary"
-                              >
-                                {new Date(
-                                  update.updateDate
-                                ).toLocaleDateString()}
-                              </Typography>
-                            </Box>
-                          </Box>
-
-                          {/* Measurements Section */}
-                          <Box
-                            sx={{
-                              mb: 2,
-                              display: "flex",
-                              gap: 4,
-                              backgroundColor: "rgba(76, 175, 80, 0.05)",
-                              p: 2,
-                              borderRadius: "12px",
-                            }}
-                          >
-                            <Box>
-                              <Typography
-                                variant="body2"
-                                color="text.secondary"
-                              >
-                                Altura
-                              </Typography>
-                              <Typography variant="subtitle2" fontWeight="600">
-                                {update.measurements.height}m
-                              </Typography>
-                            </Box>
-                            <Box>
-                              <Typography
-                                variant="body2"
-                                color="text.secondary"
-                              >
-                                Largura
-                              </Typography>
-                              <Typography variant="subtitle2" fontWeight="600">
-                                {update.measurements.width}m
-                              </Typography>
-                            </Box>
-                          </Box>
-
-                          {update.notes && (
-                            <Typography
-                              sx={{
-                                color: "text.secondary",
-                                fontStyle: "italic",
-                                mb: 2,
-                              }}
-                            >
-                              "{update.notes}"
-                            </Typography>
-                          )}
-
-                          {update.imageUrl && (
-                            <Box
-                              sx={{
-                                borderRadius: "12px",
-                                overflow: "hidden",
-                                maxWidth: "600px",
-                                margin: "0 auto",
-                              }}
-                            >
-                              <Box
-                                component="img"
-                                src={update.imageUrl}
-                                alt={`Update on ${new Date(
-                                  update.updateDate
-                                ).toLocaleDateString()}`}
-                                sx={{
-                                  width: "100%",
-                                  height: "300px",
-                                  objectFit: "cover",
-                                }}
-                              />
-                            </Box>
-                          )}
-                        </Box>
+                      <BusinessIcon sx={{ color: "primary.main", mt: 0.5 }} />
+                      <Box>
+                        <Typography
+                          variant="subtitle2"
+                          color="text.secondary"
+                          sx={{ mb: 0.5 }}
+                        >
+                          Empresa
+                        </Typography>
+                        <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                          {selectedPlant.company.name}
+                        </Typography>
                       </Box>
                     </Box>
-                  ))}
-                </Box>
-              ) : (
-                <Typography
+                  </Grid>
+                )}
+                <Grid item xs={12} sm={4}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 1.5,
+                      p: 2,
+                      background: "rgba(76, 175, 80, 0.04)",
+                      borderRadius: "12px",
+                      transition: "all 0.2s ease",
+                      height: "100%",
+                      "&:hover": {
+                        background: "rgba(76, 175, 80, 0.08)",
+                      },
+                    }}
+                  >
+                    <LocationOnIcon sx={{ color: "primary.main", mt: 0.5 }} />
+                    <Box>
+                      <Typography
+                        variant="subtitle2"
+                        color="text.secondary"
+                        sx={{ mb: 0.5 }}
+                      >
+                        Localização
+                      </Typography>
+                      <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                        {locationAddress ? (
+                          <>
+                            {locationAddress.address.city ||
+                              locationAddress.address.town ||
+                              locationAddress.address.village ||
+                              ""}
+                            {locationAddress.address.state
+                              ? `, ${locationAddress.address.state}`
+                              : ""}{" "}
+                            - {locationAddress.address.country || ""}
+                          </>
+                        ) : (
+                          "Carregando endereço..."
+                        )}
+                      </Typography>
+                    </Box>
+                  </Box>
+                </Grid>
+              </Grid>
+
+              {selectedPlant?.description && (
+                <Box
                   sx={{
-                    textAlign: "center",
-                    color: "text.secondary",
-                    py: 3,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 1.5,
+                    p: 2.5,
+                    background: "rgba(76, 175, 80, 0.04)",
+                    borderRadius: "12px",
+                    transition: "all 0.2s ease",
+                    mt: 3,
+                    "&:hover": {
+                      background: "rgba(76, 175, 80, 0.08)",
+                    },
                   }}
                 >
-                  Nenhuma atualização registrada
-                </Typography>
+                  <DescriptionIcon sx={{ color: "primary.main", mt: 0.5 }} />
+                  <Box sx={{ flex: 1 }}>
+                    <Typography
+                      variant="subtitle2"
+                      color="text.secondary"
+                      sx={{ mb: 0.5 }}
+                    >
+                      Descrição
+                    </Typography>
+                    <Typography
+                      variant="body1"
+                      sx={{ fontWeight: 500, whiteSpace: "pre-wrap" }}
+                    >
+                      {selectedPlant.description}
+                    </Typography>
+                  </Box>
+                </Box>
               )}
+            </Box>
+          </Box>
+
+          {/* Timeline Section */}
+          <Box sx={{ mt: 4 }}>
+            <Typography
+              variant="h6"
+              sx={{ mb: 3, color: "primary.main", fontWeight: 600 }}
+            >
+              Histórico de Atualizações
+            </Typography>
+            {selectedPlant?.updates && selectedPlant.updates.length > 0 ? (
+              <Box sx={{ position: "relative" }}>
+                {/* Timeline line */}
+                <Box
+                  sx={{
+                    position: "absolute",
+                    left: "16px",
+                    top: 0,
+                    bottom: 0,
+                    width: "2px",
+                    background: "rgba(76, 175, 80, 0.2)",
+                    zIndex: 0,
+                  }}
+                />
+                {selectedPlant.updates.map((update, index) => (
+                  <Box
+                    key={update.id}
+                    sx={{
+                      position: "relative",
+                      mb: index !== selectedPlant.updates.length - 1 ? 4 : 0,
+                      ml: 5,
+                      "&::before": {
+                        content: '""',
+                        position: "absolute",
+                        left: "-24px",
+                        top: "24px",
+                        width: "16px",
+                        height: "16px",
+                        borderRadius: "50%",
+                        backgroundColor:
+                          update.healthStatus === "HEALTHY"
+                            ? "#4caf50"
+                            : update.healthStatus === "NEEDS_ATTENTION"
+                            ? "#ff9800"
+                            : "#f44336",
+                        border: "3px solid white",
+                        boxShadow: "0 0 0 2px rgba(76, 175, 80, 0.2)",
+                        zIndex: 1,
+                      },
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        background: "white",
+                        borderRadius: "16px",
+                        overflow: "hidden",
+                        boxShadow: "0 4px 20px rgba(0, 0, 0, 0.08)",
+                        border: "1px solid rgba(76, 175, 80, 0.1)",
+                      }}
+                    >
+                      <Box sx={{ p: 3 }}>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "flex-start",
+                            mb: 2,
+                          }}
+                        >
+                          <Box>
+                            <Typography
+                              variant="h6"
+                              sx={{
+                                fontWeight: 600,
+                                color: "primary.main",
+                                mb: 0.5,
+                              }}
+                            >
+                              {update.healthStatus === "HEALTHY"
+                                ? "Saudável"
+                                : update.healthStatus === "NEEDS_ATTENTION"
+                                ? "Precisa de Atenção"
+                                : "Doente"}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                              {new Date(update.updateDate).toLocaleDateString()}
+                            </Typography>
+                          </Box>
+                        </Box>
+
+                        {/* Measurements Section */}
+                        <Box
+                          sx={{
+                            mb: 2,
+                            display: "flex",
+                            gap: 4,
+                            backgroundColor: "rgba(76, 175, 80, 0.05)",
+                            p: 2,
+                            borderRadius: "12px",
+                          }}
+                        >
+                          <Box>
+                            <Typography variant="body2" color="text.secondary">
+                              Altura
+                            </Typography>
+                            <Typography variant="subtitle2" fontWeight="600">
+                              {update.measurements.height}m
+                            </Typography>
+                          </Box>
+                          <Box>
+                            <Typography variant="body2" color="text.secondary">
+                              Largura
+                            </Typography>
+                            <Typography variant="subtitle2" fontWeight="600">
+                              {update.measurements.width}m
+                            </Typography>
+                          </Box>
+                        </Box>
+
+                        {update.notes && (
+                          <Typography
+                            sx={{
+                              color: "text.secondary",
+                              fontStyle: "italic",
+                              mb: 2,
+                            }}
+                          >
+                            "{update.notes}"
+                          </Typography>
+                        )}
+
+                        {update.imageUrl && (
+                          <Box
+                            sx={{
+                              borderRadius: "12px",
+                              overflow: "hidden",
+                              maxWidth: "600px",
+                              margin: "0 auto",
+                            }}
+                          >
+                            <Box
+                              component="img"
+                              src={update.imageUrl}
+                              alt={`Update on ${new Date(
+                                update.updateDate
+                              ).toLocaleDateString()}`}
+                              sx={{
+                                width: "100%",
+                                height: "300px",
+                                objectFit: "cover",
+                              }}
+                            />
+                          </Box>
+                        )}
+                      </Box>
+                    </Box>
+                  </Box>
+                ))}
+              </Box>
+            ) : (
+              <Typography
+                sx={{
+                  textAlign: "center",
+                  color: "text.secondary",
+                  py: 3,
+                }}
+              >
+                Nenhuma atualização registrada
+              </Typography>
+            )}
+          </Box>
+
+          {/* General Information Card */}
+          <Box sx={{ mt: 4 }}>
+            <Typography
+              variant="h6"
+              sx={{ mb: 3, color: "primary.main", fontWeight: 600 }}
+            >
+              Informações Gerais
+            </Typography>
+            <Box
+              sx={{
+                background: "white",
+                borderRadius: "16px",
+                overflow: "hidden",
+                boxShadow: "0 4px 20px rgba(0, 0, 0, 0.08)",
+                border: "1px solid rgba(76, 175, 80, 0.1)",
+                p: 3,
+              }}
+            >
+              <Grid container spacing={3}>
+                <Grid item xs={12} sm={4}>
+                  <Box sx={{ mb: 3 }}>
+                    <Typography
+                      variant="subtitle1"
+                      sx={{ fontWeight: 600, color: "primary.main", mb: 2 }}
+                    >
+                      Identificação
+                    </Typography>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 2,
+                      }}
+                    >
+                      <Box>
+                        <Typography variant="body2" color="text.secondary">
+                          Nome Popular
+                        </Typography>
+                        <Typography variant="body1" fontWeight="500">
+                          {selectedPlant?.plant?.nomePopular}
+                        </Typography>
+                      </Box>
+                      <Box>
+                        <Typography variant="body2" color="text.secondary">
+                          Nome Científico
+                        </Typography>
+                        <Typography
+                          variant="body1"
+                          fontWeight="500"
+                          sx={{ fontStyle: "italic" }}
+                        >
+                          {selectedPlant?.plant?.nomeCientifico}
+                        </Typography>
+                      </Box>
+                      <Box>
+                        <Typography variant="body2" color="text.secondary">
+                          Categoria
+                        </Typography>
+                        <Typography variant="body1" fontWeight="500">
+                          {formatPlantCategory(
+                            selectedPlant?.plant?.categoria || "OUTROS"
+                          )}
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </Box>
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                  <Box sx={{ mb: 3 }}>
+                    <Typography
+                      variant="subtitle1"
+                      sx={{ fontWeight: 600, color: "primary.main", mb: 2 }}
+                    >
+                      Características
+                    </Typography>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 2,
+                      }}
+                    >
+                      <Box>
+                        <Typography variant="body2" color="text.secondary">
+                          Altura Esperada
+                        </Typography>
+                        <Typography variant="body1" fontWeight="500">
+                          {selectedPlant?.plant?.altura || "Não informado"}
+                        </Typography>
+                      </Box>
+                      <Box>
+                        <Typography variant="body2" color="text.secondary">
+                          Origem
+                        </Typography>
+                        <Typography variant="body1" fontWeight="500">
+                          {selectedPlant?.plant?.origem || "Não informado"}
+                        </Typography>
+                      </Box>
+                      <Box>
+                        <Typography variant="body2" color="text.secondary">
+                          Especificação
+                        </Typography>
+                        <Typography variant="body1" fontWeight="500">
+                          {selectedPlant?.plant?.especificacao ||
+                            "Não informado"}
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </Box>
+                </Grid>
+              </Grid>
             </Box>
           </Box>
         </DialogContent>
