@@ -472,6 +472,12 @@ const LocationMap = () => {
     longitude: null,
     plantId: null,
     description: "",
+    measurements: {
+      height: "",
+      width: "",
+      health: "HEALTHY",
+      notes: "",
+    },
   });
   const [availablePlants, setAvailablePlants] = useState([]);
   const [error, setError] = useState("");
@@ -673,9 +679,14 @@ const LocationMap = () => {
       if (
         !newLocation.latitude ||
         !newLocation.longitude ||
-        !newLocation.plantId
+        !newLocation.plantId ||
+        !newLocation.measurements.height ||
+        !newLocation.measurements.width ||
+        !imageUpload.file
       ) {
-        setError("Please fill in all required fields");
+        setError(
+          "Please fill in all required fields (location, plant, measurements, and image)"
+        );
         return;
       }
 
@@ -708,8 +719,12 @@ const LocationMap = () => {
       }
 
       await plantLocations.create({
-        ...newLocation,
+        latitude: newLocation.latitude,
+        longitude: newLocation.longitude,
+        plantId: newLocation.plantId,
+        description: newLocation.description,
         imageUrl,
+        measurements: newLocation.measurements,
       });
 
       setIsAddingLocation(false);
@@ -718,6 +733,12 @@ const LocationMap = () => {
         longitude: null,
         plantId: null,
         description: "",
+        measurements: {
+          height: "",
+          width: "",
+          health: "HEALTHY",
+          notes: "",
+        },
       });
       setImageUpload({
         file: null,
@@ -817,7 +838,9 @@ const LocationMap = () => {
     plantId,
     healthStatus,
     observations,
-    image
+    image,
+    height,
+    width
   ) => {
     try {
       let imageUrl = null;
@@ -839,12 +862,18 @@ const LocationMap = () => {
         imageUrl = uploadResponse.data.url;
       }
 
-      // Create the update with the image URL
+      // Create the update with the image URL and measurements
       const updateResponse = await plantUpdates.create({
         plantLocationId: plantId,
         healthStatus,
-        observations,
-        imageUrl, // Pass the URL from the upload
+        notes: observations,
+        imageUrl,
+        measurements: {
+          height: height.toString(),
+          width: width.toString(),
+          health: healthStatus,
+          notes: observations,
+        },
       });
 
       console.log("Update created:", updateResponse);
@@ -1213,10 +1242,10 @@ const LocationMap = () => {
                               alignItems: "flex-start",
                             }}
                           >
-                            {plant.imageUrl && (
+                            {plant.updates && plant.updates.length > 0 && (
                               <Box
                                 component="img"
-                                src={plant.imageUrl}
+                                src={plant.updates[0].imageUrl}
                                 alt={plant.plant?.nomePopular}
                                 sx={{
                                   width: 60,
@@ -1552,10 +1581,10 @@ const LocationMap = () => {
                           >
                             <UpdateIcon color="primary" />
                           </IconButton>
-                          {plant.imageUrl && (
+                          {plant.updates && plant.updates.length > 0 && (
                             <Box
                               component="img"
-                              src={plant.imageUrl}
+                              src={plant.updates[0].imageUrl}
                               alt={plant.plant?.nomePopular}
                               sx={{
                                 width: 60,
@@ -1672,6 +1701,8 @@ const LocationMap = () => {
   const PlantUpdateDialog = () => {
     const [healthStatus, setHealthStatus] = useState("HEALTHY");
     const [observations, setObservations] = useState("");
+    const [height, setHeight] = useState("");
+    const [width, setWidth] = useState("");
     const [imageUpload, setImageUpload] = useState({
       file: null,
       preview: null,
@@ -1719,16 +1750,25 @@ const LocationMap = () => {
     };
 
     const handleSubmit = async () => {
+      if (!height || !width) {
+        setError("Por favor, preencha a altura e largura da planta");
+        return;
+      }
+
       try {
         await handleAddUpdate(
           updateDialogState.plantId,
           healthStatus,
           observations,
-          imageUpload.file
+          imageUpload.file,
+          height,
+          width
         );
         // Reset form
         setHealthStatus("HEALTHY");
         setObservations("");
+        setHeight("");
+        setWidth("");
         setImageUpload({
           file: null,
           preview: null,
@@ -1749,22 +1789,16 @@ const LocationMap = () => {
         fullWidth
       >
         <DialogTitle>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <HealthAndSafetyIcon color="primary" />
-            <Typography variant="h6">Atualizar Status da Planta</Typography>
-          </Box>
-          <Typography variant="subtitle1" color="text.secondary" sx={{ mt: 1 }}>
-            {updateDialogState.plantName}
-          </Typography>
+          Atualizar Status da Planta: {updateDialogState.plantName}
         </DialogTitle>
         <DialogContent>
           <Box sx={{ mt: 2 }}>
             <FormControl fullWidth sx={{ mb: 3 }}>
-              <InputLabel>Status de Saúde</InputLabel>
+              <InputLabel>Estado de Saúde</InputLabel>
               <Select
                 value={healthStatus}
                 onChange={(e) => setHealthStatus(e.target.value)}
-                label="Status de Saúde"
+                label="Estado de Saúde"
               >
                 <MenuItem value="HEALTHY">
                   <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
@@ -1807,6 +1841,32 @@ const LocationMap = () => {
                 </MenuItem>
               </Select>
             </FormControl>
+
+            <Grid container spacing={2} sx={{ mb: 3 }}>
+              <Grid item xs={6}>
+                <TextField
+                  fullWidth
+                  label="Altura (metros)"
+                  type="number"
+                  value={height}
+                  onChange={(e) => setHeight(e.target.value)}
+                  inputProps={{ step: "0.01" }}
+                  required
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  fullWidth
+                  label="Largura (metros)"
+                  type="number"
+                  value={width}
+                  onChange={(e) => setWidth(e.target.value)}
+                  inputProps={{ step: "0.01" }}
+                  required
+                />
+              </Grid>
+            </Grid>
+
             <TextField
               fullWidth
               multiline
@@ -1879,6 +1939,163 @@ const LocationMap = () => {
     );
   };
 
+  const renderAddLocationDialog = () => (
+    <Dialog
+      open={isAddingLocation}
+      onClose={() => setIsAddingLocation(false)}
+      maxWidth="sm"
+      fullWidth
+    >
+      <DialogTitle>Add New Plant Location</DialogTitle>
+      <DialogContent>
+        <Box sx={{ mt: 2 }}>
+          {error && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {error}
+            </Alert>
+          )}
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <FormControl fullWidth>
+                <InputLabel>Select Plant</InputLabel>
+                <Select
+                  value={newLocation.plantId || ""}
+                  onChange={(e) =>
+                    setNewLocation((prev) => ({
+                      ...prev,
+                      plantId: e.target.value,
+                    }))
+                  }
+                >
+                  {availablePlants.map((plant) => (
+                    <MenuItem key={plant.id} value={plant.id}>
+                      {plant.nomePopular} ({plant.nomeCientifico})
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                multiline
+                rows={3}
+                label="Description"
+                value={newLocation.description}
+                onChange={(e) =>
+                  setNewLocation((prev) => ({
+                    ...prev,
+                    description: e.target.value,
+                  }))
+                }
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                fullWidth
+                label="Height (meters)"
+                type="number"
+                value={newLocation.measurements.height}
+                onChange={(e) =>
+                  setNewLocation((prev) => ({
+                    ...prev,
+                    measurements: {
+                      ...prev.measurements,
+                      height: e.target.value,
+                    },
+                  }))
+                }
+                inputProps={{ step: "0.01" }}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                fullWidth
+                label="Width (meters)"
+                type="number"
+                value={newLocation.measurements.width}
+                onChange={(e) =>
+                  setNewLocation((prev) => ({
+                    ...prev,
+                    measurements: {
+                      ...prev.measurements,
+                      width: e.target.value,
+                    },
+                  }))
+                }
+                inputProps={{ step: "0.01" }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                multiline
+                rows={2}
+                label="Initial Notes"
+                value={newLocation.measurements.notes}
+                onChange={(e) =>
+                  setNewLocation((prev) => ({
+                    ...prev,
+                    measurements: {
+                      ...prev.measurements,
+                      notes: e.target.value,
+                    },
+                  }))
+                }
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <ImageUploadButton
+                component="label"
+                variant="outlined"
+                startIcon={<CloudUploadIcon />}
+                disabled={imageUpload.uploading}
+              >
+                {imageUpload.uploading ? (
+                  <CircularProgress size={24} />
+                ) : imageUpload.preview ? (
+                  <Box
+                    component="img"
+                    src={imageUpload.preview}
+                    alt="Preview"
+                    sx={{
+                      maxWidth: "100%",
+                      maxHeight: 200,
+                      objectFit: "contain",
+                    }}
+                  />
+                ) : (
+                  "Upload Plant Image"
+                )}
+                <input
+                  type="file"
+                  hidden
+                  accept="image/*"
+                  onChange={handleImageSelect}
+                />
+              </ImageUploadButton>
+              {imageUpload.error && (
+                <Typography color="error" variant="caption" sx={{ mt: 1 }}>
+                  {imageUpload.error}
+                </Typography>
+              )}
+            </Grid>
+          </Grid>
+        </Box>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={() => setIsAddingLocation(false)}>Cancel</Button>
+        <Button
+          onClick={handleAddLocation}
+          variant="contained"
+          disabled={imageUpload.uploading}
+        >
+          Add Plant
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+
   return (
     <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
       {error && (
@@ -1939,6 +2156,12 @@ const LocationMap = () => {
                           longitude: null,
                           plantId: null,
                           description: "",
+                          measurements: {
+                            height: "",
+                            width: "",
+                            health: "HEALTHY",
+                            notes: "",
+                          },
                         });
                       }
                     }}
@@ -2112,10 +2335,10 @@ const LocationMap = () => {
         </DialogTitle>
         <DialogContent>
           <Box sx={{ mb: 3 }}>
-            {selectedPlant?.imageUrl && (
+            {selectedPlant?.updates && selectedPlant.updates.length > 0 && (
               <Box
                 component="img"
-                src={selectedPlant.imageUrl}
+                src={selectedPlant.updates[0].imageUrl}
                 alt="Plant"
                 sx={{
                   width: "100%",
@@ -2485,133 +2708,7 @@ const LocationMap = () => {
         </DialogActions>
       </Dialog>
 
-      {/* Add Plant Dialog - only show after location is selected */}
-      <Dialog
-        open={isAddingLocation}
-        onClose={() => {
-          setIsAddingLocation(false);
-          setNewLocation({
-            latitude: null,
-            longitude: null,
-            plantId: null,
-            description: "",
-          });
-          setImageUpload({
-            file: null,
-            preview: null,
-            uploading: false,
-            error: null,
-          });
-        }}
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogTitle>Adicionar Planta</DialogTitle>
-        <DialogContent>
-          <Box sx={{ mt: 2 }}>
-            {error && (
-              <Alert severity="error" sx={{ mb: 2 }}>
-                {error}
-              </Alert>
-            )}
-            <Typography variant="body2" color="text.secondary" gutterBottom>
-              Localização Selecionada: {newLocation.latitude?.toFixed(6)},{" "}
-              {newLocation.longitude?.toFixed(6)}
-            </Typography>
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <FormControl fullWidth margin="normal">
-                  <InputLabel>Planta</InputLabel>
-                  <Select
-                    value={newLocation.plantId || ""}
-                    onChange={(e) =>
-                      setNewLocation({
-                        ...newLocation,
-                        plantId: e.target.value,
-                      })
-                    }
-                    required
-                  >
-                    {availablePlants.map((plant) => (
-                      <MenuItem key={plant.id} value={plant.id}>
-                        {plant.nomePopular} ({plant.nomeCientifico})
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="Descrição"
-                  value={newLocation.description}
-                  onChange={(e) =>
-                    setNewLocation({
-                      ...newLocation,
-                      description: e.target.value,
-                    })
-                  }
-                  multiline
-                  rows={3}
-                  margin="normal"
-                />
-              </Grid>
-            </Grid>
-            <ImageUploadButton
-              component="label"
-              disabled={imageUpload.uploading}
-            >
-              <input
-                type="file"
-                hidden
-                accept="image/*"
-                onChange={handleImageSelect}
-              />
-              <CloudUploadIcon sx={{ fontSize: 32, mb: 1 }} />
-              <Typography variant="body1">
-                {imageUpload.uploading
-                  ? "Enviando..."
-                  : "Clique para enviar uma imagem da planta"}
-              </Typography>
-              {imageUpload.preview && (
-                <Box
-                  component="img"
-                  src={imageUpload.preview}
-                  sx={{
-                    mt: 2,
-                    maxWidth: "100%",
-                    maxHeight: 200,
-                    objectFit: "contain",
-                  }}
-                />
-              )}
-            </ImageUploadButton>
-            {imageUpload.error && (
-              <Typography color="error" variant="body2" sx={{ mt: 1 }}>
-                {imageUpload.error}
-              </Typography>
-            )}
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={() => {
-              setIsAddingLocation(false);
-              setIsAddMode(true); // Allow selecting a new location
-            }}
-          >
-            Alterar Localização
-          </Button>
-          <Button onClick={() => setIsAddingLocation(false)}>Cancelar</Button>
-          <Button
-            onClick={handleAddLocation}
-            variant="contained"
-            disabled={imageUpload.uploading}
-          >
-            Adicionar Planta
-          </Button>
-        </DialogActions>
-      </Dialog>
+      {renderAddLocationDialog()}
     </Box>
   );
 };

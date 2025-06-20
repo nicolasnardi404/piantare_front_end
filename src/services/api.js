@@ -82,8 +82,9 @@ export const plantUpdates = {
     const data = {
       plantLocationId: updateData.plantLocationId,
       healthStatus: updateData.healthStatus,
-      notes: updateData.observations || "",
+      notes: updateData.notes || "",
       imageUrl: updateData.imageUrl,
+      measurements: updateData.measurements,
     };
 
     console.log("Sending update data:", data);
