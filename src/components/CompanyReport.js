@@ -261,9 +261,15 @@ const CompanyReport = ({ geoAnalysis, locations, companyStats }) => {
                       "Nome científico não disponível"}
                   </Text>
                 </View>
-                {plant?.imageUrl && (
+                {plant?.updates?.length > 0 &&
+                plant.updates[plant.updates.length - 1]?.imageUrl ? (
+                  <Image
+                    src={plant.updates[plant.updates.length - 1].imageUrl}
+                    style={styles.plantImage}
+                  />
+                ) : plant?.imageUrl ? (
                   <Image src={plant.imageUrl} style={styles.plantImage} />
-                )}
+                ) : null}
               </View>
 
               <View style={styles.detailsGrid}>
@@ -339,6 +345,18 @@ const CompanyReport = ({ geoAnalysis, locations, companyStats }) => {
                             </Text>
                             {update.notes}
                           </Text>
+                        )}
+                        {update?.imageUrl && (
+                          <Image
+                            src={update.imageUrl}
+                            style={{
+                              width: 100,
+                              height: 100,
+                              objectFit: "cover",
+                              borderRadius: 4,
+                              marginTop: 8,
+                            }}
+                          />
                         )}
                       </View>
                     ))}
