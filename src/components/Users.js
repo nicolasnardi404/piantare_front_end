@@ -310,6 +310,7 @@ const Users = ({ translations }) => {
                             variant="outlined"
                             onClick={() => {
                               setSelectedCompanyId("");
+                              setSelectedUser(plant);
                               setIsDialogOpen(true);
                             }}
                           >
