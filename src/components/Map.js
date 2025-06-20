@@ -461,7 +461,7 @@ const LocationButton = styled(IconButton)(({ theme }) => ({
   },
 }));
 
-const Map = () => {
+const LocationMap = () => {
   const { user, token } = useAuth();
   const [locations, setLocations] = useState([]);
   const [companies, setCompanies] = useState([]);
@@ -610,6 +610,17 @@ const Map = () => {
     try {
       const response = await plantLocations.getAll();
       console.log("API Response:", response.data);
+      // Log unique farmers with their details
+      const farmersMap = new Map();
+      response.data.forEach((location) => {
+        if (location.addedBy && !farmersMap.has(location.addedBy.id)) {
+          farmersMap.set(location.addedBy.id, location.addedBy);
+        }
+      });
+      console.log(
+        "Unique Farmers with details:",
+        Array.from(farmersMap.values())
+      );
       setLocations(response.data);
     } catch (err) {
       console.error("Error loading locations:", err);
@@ -2653,4 +2664,4 @@ const styleSheet = document.createElement("style");
 styleSheet.innerText = styles;
 document.head.appendChild(styleSheet);
 
-export default Map;
+export default LocationMap;

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Page,
   Text,
@@ -10,6 +10,7 @@ import {
 } from "@react-pdf/renderer";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import axios from "axios";
 
 // Register fonts
 Font.register({
@@ -102,6 +103,7 @@ const styles = StyleSheet.create({
   },
   plantInfo: {
     flex: 1,
+    marginRight: 15,
   },
   plantTitle: {
     fontSize: 16,
@@ -113,6 +115,12 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontStyle: "italic",
     color: "#666",
+    marginBottom: 8,
+  },
+  plantDescription: {
+    fontSize: 11,
+    color: "#424242",
+    lineHeight: 1.4,
   },
   plantImage: {
     width: 120,
@@ -152,6 +160,15 @@ const styles = StyleSheet.create({
     borderLeft: 1,
     borderLeftColor: "#2e7d32",
   },
+  plantingDay: {
+    marginBottom: 15,
+    paddingLeft: 10,
+    borderLeft: 2,
+    borderLeftColor: "#1b5e20",
+    backgroundColor: "#f1f8e9",
+    padding: 10,
+    borderRadius: 4,
+  },
   table: {
     marginVertical: 15,
   },
@@ -184,10 +201,130 @@ const styles = StyleSheet.create({
     borderTopColor: "#e0e0e0",
     paddingTop: 10,
   },
+  farmerSection: {
+    marginBottom: 30,
+  },
+  farmerTitle: {
+    fontSize: 18,
+    color: "#1b5e20",
+    marginBottom: 15,
+    fontWeight: 700,
+    backgroundColor: "#f1f8e9",
+    padding: 10,
+    borderRadius: 4,
+  },
+  farmerGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 20,
+  },
+  farmerCard: {
+    width: "45%",
+    backgroundColor: "#ffffff",
+    borderRadius: 8,
+    padding: 15,
+    borderWidth: 1,
+    borderColor: "#e0e0e0",
+  },
+  farmerHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 10,
+    gap: 10,
+  },
+  farmerImage: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    objectFit: "cover",
+  },
+  farmerInfo: {
+    flex: 1,
+  },
+  farmerName: {
+    fontSize: 14,
+    fontWeight: 700,
+    color: "#1b5e20",
+  },
+  farmerEmail: {
+    fontSize: 11,
+    color: "#666666",
+    marginTop: 2,
+  },
+  farmerStats: {
+    flexDirection: "row",
+    gap: 10,
+    marginTop: 10,
+    backgroundColor: "#f1f8e9",
+    padding: 8,
+    borderRadius: 4,
+  },
+  farmerStatItem: {
+    flex: 1,
+  },
+  farmerStatLabel: {
+    fontSize: 10,
+    color: "#666666",
+  },
+  farmerStatValue: {
+    fontSize: 12,
+    fontWeight: 700,
+    color: "#1b5e20",
+  },
 });
 
 const CompanyReport = ({ geoAnalysis, locations, companyStats }) => {
   const today = new Date();
+  const [locationDetails, setLocationDetails] = useState({});
+
+  // Function to get city name from coordinates
+  useEffect(() => {
+    const fetchCityNames = async () => {
+      const details = {};
+      for (const plant of locations) {
+        try {
+          const response = await axios.get(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${plant.latitude}&lon=${plant.longitude}&zoom=10`
+          );
+
+          const address = response.data.address;
+          const city =
+            address.city ||
+            address.town ||
+            address.village ||
+            address.municipality ||
+            "Cidade não identificada";
+          const state = address.state || "Estado não identificado";
+          const country = address.country || "País não identificado";
+
+          details[plant.id] = {
+            city,
+            state,
+            country,
+          };
+        } catch (error) {
+          console.error("Error fetching location details:", error);
+          details[plant.id] = {
+            city: "Cidade não identificada",
+            state: "Estado não identificado",
+            country: "País não identificado",
+          };
+        }
+      }
+      setLocationDetails(details);
+    };
+
+    fetchCityNames();
+  }, [locations]);
+
+  // Log all incoming data
+  console.log("PDF Generation Data:", {
+    geoAnalysis: JSON.stringify(geoAnalysis, null, 2),
+    locations: JSON.stringify(locations, null, 2),
+    companyStats: JSON.stringify(companyStats, null, 2),
+    locationDetails: JSON.stringify(locationDetails, null, 2),
+    timestamp: format(today, "dd/MM/yyyy 'às' HH:mm"),
+  });
 
   // Add safety checks for props
   const safeGeoAnalysis = geoAnalysis || {};
@@ -196,6 +333,42 @@ const CompanyReport = ({ geoAnalysis, locations, companyStats }) => {
     totalPlants: 0,
     categoryDistribution: {},
   };
+
+  // Process farmers data
+  const getFarmersData = () => {
+    const farmersMap = new Map();
+
+    locations.forEach((location) => {
+      if (location.addedBy && !farmersMap.has(location.addedBy.id)) {
+        const farmerPlants = locations.filter(
+          (l) => l.addedBy.id === location.addedBy.id
+        );
+        const plantCategories = new Set(
+          farmerPlants.map((p) => p.plant.categoria)
+        );
+
+        farmersMap.set(location.addedBy.id, {
+          id: location.addedBy.id,
+          name: location.addedBy.name,
+          email: location.addedBy.email,
+          imageUrl: location.addedBy.imageUrl,
+          bio: location.addedBy.bio,
+          totalPlants: farmerPlants.length,
+          categories: plantCategories.size,
+          lastPlantingDate: new Date(
+            Math.max(
+              ...farmerPlants.map((p) => new Date(p.plantedAt || p.createdAt))
+            )
+          ),
+        });
+        console.log(farmersMap);
+      }
+    });
+
+    return Array.from(farmersMap.values());
+  };
+
+  const farmers = getFarmersData();
 
   return (
     <Document>
@@ -246,6 +419,52 @@ const CompanyReport = ({ geoAnalysis, locations, companyStats }) => {
           </View>
         </View>
 
+        {/* Partner Farmers Section */}
+        <View style={styles.farmerSection}>
+          <Text style={styles.farmerTitle}>Fazendas Parceiras</Text>
+          <View style={styles.farmerGrid}>
+            {farmers.map((farmer) => (
+              <View key={farmer.id} style={styles.farmerCard}>
+                <View style={styles.farmerHeader}>
+                  {farmer.imageUrl ? (
+                    <Image src={farmer.imageUrl} style={styles.farmerImage} />
+                  ) : (
+                    <View
+                      style={[
+                        styles.farmerImage,
+                        { backgroundColor: "#e0e0e0" },
+                      ]}
+                    />
+                  )}
+                  <View style={styles.farmerInfo}>
+                    <Text style={styles.farmerName}>{farmer.name}</Text>
+                    <Text style={styles.farmerEmail}>{farmer.email}</Text>
+                  </View>
+                </View>
+                {farmer.bio && <Text style={styles.text}>{farmer.bio}</Text>}
+                <View style={styles.farmerStats}>
+                  <View style={styles.farmerStatItem}>
+                    <Text style={styles.farmerStatLabel}>Total de Plantas</Text>
+                    <Text style={styles.farmerStatValue}>
+                      {farmer.totalPlants}
+                    </Text>
+                  </View>
+                  <View style={styles.farmerStatItem}>
+                    <Text style={styles.farmerStatLabel}>Categorias</Text>
+                    <Text style={styles.farmerStatValue}>
+                      {farmer.categories}
+                    </Text>
+                  </View>
+                </View>
+                <Text style={[styles.text, { marginTop: 8, fontSize: 10 }]}>
+                  Último plantio:{" "}
+                  {format(farmer.lastPlantingDate, "dd/MM/yyyy")}
+                </Text>
+              </View>
+            ))}
+          </View>
+        </View>
+
         {/* Plant Inventory */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Inventário de Plantas</Text>
@@ -260,6 +479,11 @@ const CompanyReport = ({ geoAnalysis, locations, companyStats }) => {
                     {plant?.plant?.nomeCientifico ||
                       "Nome científico não disponível"}
                   </Text>
+                  {plant?.plant?.description && (
+                    <Text style={styles.plantDescription}>
+                      {plant.plant.description}
+                    </Text>
+                  )}
                 </View>
                 {plant?.updates?.length > 0 &&
                 plant.updates[plant.updates.length - 1]?.imageUrl ? (
@@ -276,54 +500,108 @@ const CompanyReport = ({ geoAnalysis, locations, companyStats }) => {
                 <View style={styles.detailItem}>
                   <Text style={styles.text}>
                     <Text style={{ fontWeight: 700 }}>Categoria: </Text>
-                    {formatPlantCategory(plant?.plant?.category) ||
+                    {formatPlantCategory(plant?.plant?.categoria) ||
                       "Não especificada"}
                   </Text>
                 </View>
                 <View style={styles.detailItem}>
                   <Text style={styles.text}>
                     <Text style={{ fontWeight: 700 }}>Localização: </Text>
-                    {plant?.location?.address || "Endereço não disponível"}
+                    {plant?.latitude?.toFixed(6)},{" "}
+                    {plant?.longitude?.toFixed(6)}
+                    {locationDetails[plant?.id] && (
+                      <Text style={{ fontStyle: "italic" }}>
+                        {"\n"}
+                        {locationDetails[plant.id].city},{" "}
+                        {locationDetails[plant.id].state},{" "}
+                        {locationDetails[plant.id].country}
+                      </Text>
+                    )}
                   </Text>
                 </View>
                 <View style={styles.detailItem}>
                   <Text style={styles.text}>
                     <Text style={{ fontWeight: 700 }}>Altura: </Text>
-                    {plant?.plant?.height
-                      ? `${plant.plant.height} metros`
-                      : "Não especificada"}
+                    {plant?.plant?.altura || "Não especificada"}
                   </Text>
                 </View>
                 <View style={styles.detailItem}>
                   <Text style={styles.text}>
                     <Text style={{ fontWeight: 700 }}>Origem: </Text>
-                    {plant?.plant?.origin || "Não especificada"}
+                    {plant?.plant?.origem || "Não especificada"}
                   </Text>
                 </View>
-                {plant?.plant?.specifications && (
+                <View style={styles.detailItem}>
+                  <Text style={styles.text}>
+                    <Text style={{ fontWeight: 700 }}>Agricultor: </Text>
+                    {plant?.addedBy?.name || "Não especificado"}
+                  </Text>
+                </View>
+                <View style={styles.detailItem}>
+                  <Text style={styles.text}>
+                    <Text style={{ fontWeight: 700 }}>Email: </Text>
+                    {plant?.addedBy?.email || "Não especificado"}
+                  </Text>
+                </View>
+                {plant?.plant?.especificacao && (
                   <View style={styles.detailItem}>
                     <Text style={styles.text}>
                       <Text style={{ fontWeight: 700 }}>Especificações: </Text>
-                      {plant.plant.specifications}
+                      {plant.plant.especificacao}
                     </Text>
                   </View>
                 )}
-                {plant?.plant?.description && (
+                {plant?.description && (
                   <View style={styles.detailItem}>
                     <Text style={styles.text}>
-                      <Text style={{ fontWeight: 700 }}>Descrição: </Text>
-                      {plant.plant.description}
+                      <Text style={{ fontWeight: 700 }}>
+                        Descrição do plantio:{" "}
+                      </Text>
+                      {plant.description}
                     </Text>
                   </View>
                 )}
               </View>
 
-              {plant?.updates?.length > 0 && (
+              {(plant?.updates?.length > 0 || plant?.imageUrl) && (
                 <View style={styles.updateSection}>
                   <Text style={styles.updateTitle}>
                     Histórico de Atualizações
                   </Text>
                   <View style={styles.updateGrid}>
+                    {/* Initial planting entry */}
+                    <View style={styles.plantingDay}>
+                      <Text style={styles.text}>
+                        <Text style={{ fontWeight: 700, color: "#1b5e20" }}>
+                          🌱 Dia do Plantio:{" "}
+                          {format(
+                            new Date(plant?.plantedAt || plant?.createdAt),
+                            "dd/MM/yyyy"
+                          )}
+                        </Text>
+                      </Text>
+                      {plant?.description && (
+                        <Text style={styles.text}>
+                          <Text style={{ fontWeight: 700 }}>
+                            Descrição inicial:{" "}
+                          </Text>
+                          {plant.description}
+                        </Text>
+                      )}
+                      {plant?.imageUrl && (
+                        <Image
+                          src={plant.imageUrl}
+                          style={{
+                            width: 100,
+                            height: 100,
+                            objectFit: "cover",
+                            borderRadius: 4,
+                            marginTop: 8,
+                          }}
+                        />
+                      )}
+                    </View>
+                    {/* Regular updates */}
                     {plant.updates.map((update, index) => (
                       <View key={index} style={styles.updateItem}>
                         <Text style={styles.text}>

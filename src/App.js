@@ -9,7 +9,7 @@ import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import Login from "./components/Login";
 import Layout from "./components/Layout";
-import Map from "./components/Map";
+import LocationMap from "./components/Map";
 import Users from "./components/Users";
 import Home from "./pages/Home";
 import About from "./pages/About";
@@ -112,7 +112,7 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Layout>
-                    <Map />
+                    <LocationMap />
                   </Layout>
                 </ProtectedRoute>
               }
