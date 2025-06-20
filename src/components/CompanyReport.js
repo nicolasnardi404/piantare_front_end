@@ -573,7 +573,7 @@ const CompanyReport = ({ geoAnalysis, locations, companyStats }) => {
                     <View style={styles.plantingDay}>
                       <Text style={styles.text}>
                         <Text style={{ fontWeight: 700, color: "#1b5e20" }}>
-                          🌱 Dia do Plantio:{" "}
+                          Dia do Plantio:{" "}
                           {format(
                             new Date(plant?.plantedAt || plant?.createdAt),
                             "dd/MM/yyyy"

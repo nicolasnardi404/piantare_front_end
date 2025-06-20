@@ -51,6 +51,7 @@ export const users = {
 
 export const plantLocations = {
   getAll: () => api.get("/plant-locations"),
+  getCompanyPlants: () => api.get("/plant-locations/company/plants"),
   create: (locationData) => api.post("/plant-locations", locationData),
   getOne: (id) => api.get(`/plant-locations/${id}`),
   assignCompany: (id, data) =>

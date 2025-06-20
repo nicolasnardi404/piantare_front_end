@@ -608,7 +608,13 @@ const LocationMap = () => {
     }
 
     try {
-      const response = await plantLocations.getAll();
+      let response;
+      if (user?.role === "COMPANY") {
+        response = await plantLocations.getCompanyPlants();
+      } else {
+        response = await plantLocations.getAll();
+      }
+
       console.log("API Response:", response.data);
       // Log unique farmers with their details
       const farmersMap = new Map();

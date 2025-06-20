@@ -177,6 +177,8 @@ const Users = ({ translations }) => {
       loadPlants();
       setSelectedCompanyId("");
       setError("");
+      setIsDialogOpen(false);
+      setSelectedUser(null);
     } catch (err) {
       setError("Falha ao atribuir empresa à planta");
     }
