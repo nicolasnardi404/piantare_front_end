@@ -2395,19 +2395,21 @@ const LocationMap = () => {
                     boxShadow: "0 4px 24px -1px rgba(0, 0, 0, 0.1)",
                     overflow: "hidden",
                     border: "1px solid rgba(76, 175, 80, 0.1)",
+                    width: "150%",
                   }}
                 >
                   <Box
                     sx={{
-                      p: 2,
+                      p: 3,
                       display: "flex",
                       justifyContent: "space-between",
                       alignItems: "center",
                       borderBottom: "1px solid rgba(76, 175, 80, 0.1)",
+                      background: "rgba(76, 175, 80, 0.05)",
                     }}
                   >
                     <Typography
-                      variant="h6"
+                      variant="h5"
                       sx={{ fontWeight: 600, color: "primary.main" }}
                     >
                       Histórico de Atualizações
@@ -2417,7 +2419,6 @@ const LocationMap = () => {
                         <Button
                           startIcon={<UpdateIcon />}
                           variant="contained"
-                          size="small"
                           onClick={() =>
                             setUpdateDialogState({
                               open: true,
@@ -2430,7 +2431,7 @@ const LocationMap = () => {
                         </Button>
                       )}
                   </Box>
-                  <Box sx={{ p: 2 }}>
+                  <Box sx={{ p: 3 }}>
                     {selectedPlant?.updates &&
                     selectedPlant.updates.length > 0 ? (
                       <Box sx={{ position: "relative" }}>
@@ -2480,44 +2481,129 @@ const LocationMap = () => {
                               sx={{
                                 background: "white",
                                 borderRadius: "12px",
-                                p: 2,
+                                p: 3,
                                 boxShadow: "0 2px 12px rgba(0,0,0,0.08)",
                                 border: "1px solid rgba(76, 175, 80, 0.1)",
                               }}
                             >
-                              <Box sx={{ mb: 2 }}>
-                                <Typography
-                                  variant="subtitle1"
-                                  sx={{
-                                    fontWeight: 600,
-                                    color: "primary.main",
-                                  }}
-                                >
-                                  {update.healthStatus === "HEALTHY"
-                                    ? "Saudável"
-                                    : update.healthStatus === "NEEDS_ATTENTION"
-                                    ? "Precisa de Atenção"
-                                    : "Doente"}
-                                </Typography>
-                                <Typography
-                                  variant="caption"
-                                  sx={{ color: "text.secondary" }}
-                                >
-                                  {new Date(
-                                    update.updateDate
-                                  ).toLocaleDateString()}
-                                </Typography>
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                  alignItems: "flex-start",
+                                  mb: 3,
+                                }}
+                              >
+                                <Box>
+                                  <Typography
+                                    variant="h6"
+                                    sx={{
+                                      fontWeight: 600,
+                                      color: "primary.main",
+                                      mb: 0.5,
+                                    }}
+                                  >
+                                    {update.healthStatus === "HEALTHY"
+                                      ? "Saudável"
+                                      : update.healthStatus ===
+                                        "NEEDS_ATTENTION"
+                                      ? "Precisa de Atenção"
+                                      : "Doente"}
+                                  </Typography>
+                                  <Typography
+                                    variant="subtitle1"
+                                    sx={{ color: "text.secondary" }}
+                                  >
+                                    {new Date(
+                                      update.updateDate
+                                    ).toLocaleDateString()}
+                                  </Typography>
+                                </Box>
                               </Box>
+
+                              {/* Measurements Section */}
+                              <Box
+                                sx={{
+                                  mb: 3,
+                                  display: "flex",
+                                  justifyContent: "center",
+                                  gap: 4,
+                                  backgroundColor: "rgba(76, 175, 80, 0.05)",
+                                  p: 2.5,
+                                  borderRadius: "12px",
+                                }}
+                              >
+                                <Box>
+                                  <Typography
+                                    variant="body2"
+                                    color="text.secondary"
+                                    sx={{ mb: 0.5 }}
+                                  >
+                                    Altura
+                                  </Typography>
+                                  <Typography
+                                    variant="h6"
+                                    fontWeight="600"
+                                    color="primary.main"
+                                  >
+                                    {update.measurements.height}m
+                                  </Typography>
+                                </Box>
+                                <Box>
+                                  <Typography
+                                    variant="body2"
+                                    color="text.secondary"
+                                    sx={{ mb: 0.5 }}
+                                  >
+                                    Largura
+                                  </Typography>
+                                  <Typography
+                                    variant="h6"
+                                    fontWeight="600"
+                                    color="primary.main"
+                                  >
+                                    {update.measurements.width}m
+                                  </Typography>
+                                </Box>
+                              </Box>
+
                               {update.notes && (
                                 <Typography
                                   sx={{
                                     color: "text.secondary",
-                                    mb: update.imageUrl ? 2 : 0,
+                                    mb: 3,
                                     fontStyle: "italic",
+                                    fontSize: "1.1rem",
+                                    lineHeight: 1.6,
                                   }}
                                 >
                                   "{update.notes}"
                                 </Typography>
+                              )}
+
+                              {/* Image Section */}
+                              {update.imageUrl && (
+                                <Box
+                                  sx={{
+                                    borderRadius: "12px",
+                                    overflow: "hidden",
+                                    border: "1px solid rgba(76, 175, 80, 0.1)",
+                                    boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+                                  }}
+                                >
+                                  <Box
+                                    component="img"
+                                    src={update.imageUrl}
+                                    alt={`Update on ${new Date(
+                                      update.updateDate
+                                    ).toLocaleDateString()}`}
+                                    sx={{
+                                      width: "100%",
+                                      height: "300px",
+                                      objectFit: "cover",
+                                    }}
+                                  />
+                                </Box>
                               )}
                             </Box>
                           </Box>
@@ -2525,7 +2611,12 @@ const LocationMap = () => {
                       </Box>
                     ) : (
                       <Typography
-                        sx={{ textAlign: "center", color: "text.secondary" }}
+                        sx={{
+                          textAlign: "center",
+                          color: "text.secondary",
+                          py: 4,
+                          fontSize: "1.1rem",
+                        }}
                       >
                         Nenhuma atualização registrada
                       </Typography>
