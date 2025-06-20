@@ -510,6 +510,8 @@ const LocationMap = () => {
     data: null,
     error: null,
   });
+  const [locationDetails, setLocationDetails] = useState({});
+  const [locationAddress, setLocationAddress] = useState(null);
 
   // São Paulo coordinates as default center
   const defaultPosition = [-23.5505, -46.6333];
@@ -663,13 +665,38 @@ const LocationMap = () => {
     }
   };
 
-  const handleMarkerClick = (location) => {
+  const getAddressFromCoordinates = async (latitude, longitude) => {
+    try {
+      const response = await axios.get(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`,
+        {
+          headers: {
+            "User-Agent": "PlantasApp/1.0",
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching address:", error);
+      return null;
+    }
+  };
+
+  const handleMarkerClick = async (location) => {
     console.log("Selected Plant:", location);
     console.log("Current User:", user);
     console.log("Is user a farmer?", user?.role === "FARMER");
     console.log("Plant added by:", location?.addedBy?.id);
     console.log("User ID:", user?.userId);
     console.log("Do IDs match?", location?.addedBy?.id === user?.userId);
+
+    // Get location address
+    const addressData = await getAddressFromCoordinates(
+      location.latitude,
+      location.longitude
+    );
+    setLocationAddress(addressData);
+
     setSelectedPlant(location);
     setIsDetailModalOpen(true);
   };
@@ -1273,8 +1300,10 @@ const LocationMap = () => {
                               color: "text.secondary",
                             }}
                           >
-                            📍 {plant.latitude.toFixed(6)},{" "}
-                            {plant.longitude.toFixed(6)}
+                            📍{" "}
+                            {locationDetails[plant.id]?.city || "Carregando..."}
+                            , {locationDetails[plant.id]?.state || ""} -{" "}
+                            {locationDetails[plant.id]?.country || ""}
                           </Typography>
                           <Typography
                             variant="caption"
@@ -1612,8 +1641,10 @@ const LocationMap = () => {
                             color: "text.secondary",
                           }}
                         >
-                          📍 {plant.latitude.toFixed(6)},{" "}
-                          {plant.longitude.toFixed(6)}
+                          📍{" "}
+                          {locationDetails[plant.id]?.city || "Carregando..."},{" "}
+                          {locationDetails[plant.id]?.state || ""} -{" "}
+                          {locationDetails[plant.id]?.country || ""}
                         </Typography>
                         {plant.description && (
                           <Typography
@@ -2096,6 +2127,27 @@ const LocationMap = () => {
     </Dialog>
   );
 
+  const getLocationDetails = async (latitude, longitude) => {
+    try {
+      const response = await axios.get(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+      );
+      const address = response.data.address;
+      return {
+        city: address.city || address.town || address.village || "N/A",
+        state: address.state || "N/A",
+        country: address.country || "N/A",
+      };
+    } catch (error) {
+      console.error("Error fetching location details:", error);
+      return {
+        city: "N/A",
+        state: "N/A",
+        country: "N/A",
+      };
+    }
+  };
+
   return (
     <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
       {error && (
@@ -2370,10 +2422,31 @@ const LocationMap = () => {
                 <Typography variant="subtitle2" color="text.secondary">
                   Localização
                 </Typography>
-                <Typography>
-                  {selectedPlant?.latitude.toFixed(6)},{" "}
-                  {selectedPlant?.longitude.toFixed(6)}
-                </Typography>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 0.5,
+                    mt: 0.5,
+                  }}
+                >
+                  <Typography sx={{ fontSize: "1rem" }}>
+                    {locationAddress ? (
+                      <>
+                        {locationAddress.address.city ||
+                          locationAddress.address.town ||
+                          locationAddress.address.village ||
+                          ""}
+                        {locationAddress.address.state
+                          ? `, ${locationAddress.address.state}`
+                          : ""}{" "}
+                        -{locationAddress.address.country || ""}
+                      </>
+                    ) : (
+                      "Carregando endereço..."
+                    )}
+                  </Typography>
+                </Box>
               </Grid>
               {selectedPlant?.description && (
                 <Grid item xs={12}>
@@ -2383,404 +2456,306 @@ const LocationMap = () => {
                   <Typography>{selectedPlant.description}</Typography>
                 </Grid>
               )}
+            </Grid>
+          </Box>
 
-              {/* Updates Section - Now First */}
-              <Grid item xs={12}>
+          {/* Timeline Section */}
+          <Box sx={{ mt: 4 }}>
+            <Typography variant="h6" sx={{ mb: 2, color: "primary.main" }}>
+              Histórico de Atualizações
+            </Typography>
+            {selectedPlant?.updates && selectedPlant.updates.length > 0 ? (
+              <Box sx={{ position: "relative" }}>
+                {/* Timeline line */}
                 <Box
                   sx={{
-                    background:
-                      "linear-gradient(145deg, rgba(255,255,255,0.9), rgba(255,255,255,0.95))",
-                    backdropFilter: "blur(10px)",
-                    borderRadius: "16px",
-                    boxShadow: "0 4px 24px -1px rgba(0, 0, 0, 0.1)",
-                    overflow: "hidden",
-                    border: "1px solid rgba(76, 175, 80, 0.1)",
-                    width: "150%",
+                    position: "absolute",
+                    left: "16px",
+                    top: 0,
+                    bottom: 0,
+                    width: "2px",
+                    background: "rgba(76, 175, 80, 0.2)",
+                    zIndex: 0,
                   }}
-                >
+                />
+                {selectedPlant.updates.map((update, index) => (
+                  <Box
+                    key={update.id}
+                    sx={{
+                      position: "relative",
+                      mb: index !== selectedPlant.updates.length - 1 ? 4 : 0,
+                      ml: 5,
+                      "&::before": {
+                        content: '""',
+                        position: "absolute",
+                        left: "-24px",
+                        top: "24px",
+                        width: "16px",
+                        height: "16px",
+                        borderRadius: "50%",
+                        backgroundColor:
+                          update.healthStatus === "HEALTHY"
+                            ? "#4caf50"
+                            : update.healthStatus === "NEEDS_ATTENTION"
+                            ? "#ff9800"
+                            : "#f44336",
+                        border: "3px solid white",
+                        boxShadow: "0 0 0 2px rgba(76, 175, 80, 0.2)",
+                        zIndex: 1,
+                      },
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        background: "white",
+                        borderRadius: "12px",
+                        p: 2,
+                        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                        border: "1px solid rgba(76, 175, 80, 0.1)",
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "flex-start",
+                          mb: 2,
+                        }}
+                      >
+                        <Box>
+                          <Typography
+                            variant="subtitle1"
+                            sx={{
+                              fontWeight: 600,
+                              color: "primary.main",
+                              mb: 0.5,
+                            }}
+                          >
+                            {update.healthStatus === "HEALTHY"
+                              ? "Saudável"
+                              : update.healthStatus === "NEEDS_ATTENTION"
+                              ? "Precisa de Atenção"
+                              : "Doente"}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            {new Date(update.updateDate).toLocaleDateString()}
+                          </Typography>
+                        </Box>
+                      </Box>
+
+                      {/* Measurements Section */}
+                      <Box
+                        sx={{
+                          mb: 2,
+                          display: "flex",
+                          justifyContent: "flex-start",
+                          gap: 4,
+                          backgroundColor: "rgba(76, 175, 80, 0.05)",
+                          p: 2,
+                          borderRadius: "8px",
+                        }}
+                      >
+                        <Box>
+                          <Typography variant="body2" color="text.secondary">
+                            Altura
+                          </Typography>
+                          <Typography variant="subtitle2" fontWeight="600">
+                            {update.measurements.height}m
+                          </Typography>
+                        </Box>
+                        <Box>
+                          <Typography variant="body2" color="text.secondary">
+                            Largura
+                          </Typography>
+                          <Typography variant="subtitle2" fontWeight="600">
+                            {update.measurements.width}m
+                          </Typography>
+                        </Box>
+                      </Box>
+
+                      {update.notes && (
+                        <Typography
+                          sx={{
+                            color: "text.secondary",
+                            fontStyle: "italic",
+                            fontSize: "0.9rem",
+                          }}
+                        >
+                          "{update.notes}"
+                        </Typography>
+                      )}
+
+                      {update.imageUrl && (
+                        <Box
+                          sx={{
+                            mt: 2,
+                            borderRadius: "8px",
+                            overflow: "hidden",
+                          }}
+                        >
+                          <Box
+                            component="img"
+                            src={update.imageUrl}
+                            alt={`Update on ${new Date(
+                              update.updateDate
+                            ).toLocaleDateString()}`}
+                            sx={{
+                              width: "100%",
+                              height: "200px",
+                              objectFit: "cover",
+                            }}
+                          />
+                        </Box>
+                      )}
+                    </Box>
+                  </Box>
+                ))}
+              </Box>
+            ) : (
+              <Typography
+                sx={{
+                  textAlign: "center",
+                  color: "text.secondary",
+                  py: 3,
+                }}
+              >
+                Nenhuma atualização registrada
+              </Typography>
+            )}
+          </Box>
+
+          {/* General Information Section */}
+          <Box
+            sx={{
+              mt: 4,
+              background: "rgba(76, 175, 80, 0.05)",
+              borderRadius: "12px",
+              overflow: "hidden",
+              border: "1px solid rgba(76, 175, 80, 0.1)",
+              position: "relative",
+            }}
+          >
+            <Box
+              sx={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                height: "3px",
+                background: "linear-gradient(90deg, #4caf50, #81c784)",
+              }}
+            />
+            <Typography
+              variant="h6"
+              sx={{
+                p: 2,
+                pb: 1,
+                color: "primary.main",
+                fontWeight: 600,
+              }}
+            >
+              Informações Gerais
+            </Typography>
+            <Box sx={{ p: 2 }}>
+              <Grid container spacing={2}>
+                <Grid item xs={12}>
                   <Box
                     sx={{
-                      p: 3,
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      borderBottom: "1px solid rgba(76, 175, 80, 0.1)",
-                      background: "rgba(76, 175, 80, 0.05)",
+                      p: 1.5,
+                      background: "white",
+                      borderRadius: "8px",
+                      border: "1px solid rgba(76, 175, 80, 0.1)",
                     }}
                   >
                     <Typography
-                      variant="h5"
-                      sx={{ fontWeight: 600, color: "primary.main" }}
+                      sx={{
+                        fontWeight: 600,
+                        color: "primary.main",
+                        mb: 0.5,
+                      }}
                     >
-                      Histórico de Atualizações
+                      Categoria
                     </Typography>
-                    {user?.role === "FARMER" &&
-                      selectedPlant?.addedBy?.id === user?.userId && (
-                        <Button
-                          startIcon={<UpdateIcon />}
-                          variant="contained"
-                          onClick={() =>
-                            setUpdateDialogState({
-                              open: true,
-                              plantId: selectedPlant.id,
-                              plantName: selectedPlant.plant?.nomePopular,
-                            })
-                          }
-                        >
-                          Nova Atualização
-                        </Button>
-                      )}
+                    <Typography>
+                      {formatPlantCategory(selectedPlant?.plant?.categoria)}
+                    </Typography>
                   </Box>
-                  <Box sx={{ p: 3 }}>
-                    {selectedPlant?.updates &&
-                    selectedPlant.updates.length > 0 ? (
-                      <Box sx={{ position: "relative" }}>
-                        {/* Timeline line */}
-                        <Box
-                          sx={{
-                            position: "absolute",
-                            left: "24px",
-                            top: 0,
-                            bottom: 0,
-                            width: "2px",
-                            background: "rgba(76, 175, 80, 0.2)",
-                            zIndex: 0,
-                          }}
-                        />
-                        {selectedPlant.updates.map((update, index) => (
-                          <Box
-                            key={update.id}
-                            sx={{
-                              position: "relative",
-                              mb:
-                                index !== selectedPlant.updates.length - 1
-                                  ? 4
-                                  : 0,
-                              ml: 6,
-                              "&::before": {
-                                content: '""',
-                                position: "absolute",
-                                left: "-28px",
-                                top: "24px",
-                                width: "16px",
-                                height: "16px",
-                                borderRadius: "50%",
-                                backgroundColor:
-                                  update.healthStatus === "HEALTHY"
-                                    ? "#4caf50"
-                                    : update.healthStatus === "NEEDS_ATTENTION"
-                                    ? "#ff9800"
-                                    : "#f44336",
-                                border: "3px solid white",
-                                boxShadow: "0 0 0 2px rgba(76, 175, 80, 0.2)",
-                                zIndex: 1,
-                              },
-                            }}
-                          >
-                            <Box
-                              sx={{
-                                background: "white",
-                                borderRadius: "12px",
-                                p: 3,
-                                boxShadow: "0 2px 12px rgba(0,0,0,0.08)",
-                                border: "1px solid rgba(76, 175, 80, 0.1)",
-                              }}
-                            >
-                              <Box
-                                sx={{
-                                  display: "flex",
-                                  justifyContent: "space-between",
-                                  alignItems: "flex-start",
-                                  mb: 3,
-                                }}
-                              >
-                                <Box>
-                                  <Typography
-                                    variant="h6"
-                                    sx={{
-                                      fontWeight: 600,
-                                      color: "primary.main",
-                                      mb: 0.5,
-                                    }}
-                                  >
-                                    {update.healthStatus === "HEALTHY"
-                                      ? "Saudável"
-                                      : update.healthStatus ===
-                                        "NEEDS_ATTENTION"
-                                      ? "Precisa de Atenção"
-                                      : "Doente"}
-                                  </Typography>
-                                  <Typography
-                                    variant="subtitle1"
-                                    sx={{ color: "text.secondary" }}
-                                  >
-                                    {new Date(
-                                      update.updateDate
-                                    ).toLocaleDateString()}
-                                  </Typography>
-                                </Box>
-                              </Box>
-
-                              {/* Measurements Section */}
-                              <Box
-                                sx={{
-                                  mb: 3,
-                                  display: "flex",
-                                  justifyContent: "center",
-                                  gap: 4,
-                                  backgroundColor: "rgba(76, 175, 80, 0.05)",
-                                  p: 2.5,
-                                  borderRadius: "12px",
-                                }}
-                              >
-                                <Box>
-                                  <Typography
-                                    variant="body2"
-                                    color="text.secondary"
-                                    sx={{ mb: 0.5 }}
-                                  >
-                                    Altura
-                                  </Typography>
-                                  <Typography
-                                    variant="h6"
-                                    fontWeight="600"
-                                    color="primary.main"
-                                  >
-                                    {update.measurements.height}m
-                                  </Typography>
-                                </Box>
-                                <Box>
-                                  <Typography
-                                    variant="body2"
-                                    color="text.secondary"
-                                    sx={{ mb: 0.5 }}
-                                  >
-                                    Largura
-                                  </Typography>
-                                  <Typography
-                                    variant="h6"
-                                    fontWeight="600"
-                                    color="primary.main"
-                                  >
-                                    {update.measurements.width}m
-                                  </Typography>
-                                </Box>
-                              </Box>
-
-                              {update.notes && (
-                                <Typography
-                                  sx={{
-                                    color: "text.secondary",
-                                    mb: 3,
-                                    fontStyle: "italic",
-                                    fontSize: "1.1rem",
-                                    lineHeight: 1.6,
-                                  }}
-                                >
-                                  "{update.notes}"
-                                </Typography>
-                              )}
-
-                              {/* Image Section */}
-                              {update.imageUrl && (
-                                <Box
-                                  sx={{
-                                    borderRadius: "12px",
-                                    overflow: "hidden",
-                                    border: "1px solid rgba(76, 175, 80, 0.1)",
-                                    boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
-                                  }}
-                                >
-                                  <Box
-                                    component="img"
-                                    src={update.imageUrl}
-                                    alt={`Update on ${new Date(
-                                      update.updateDate
-                                    ).toLocaleDateString()}`}
-                                    sx={{
-                                      width: "100%",
-                                      height: "300px",
-                                      objectFit: "cover",
-                                    }}
-                                  />
-                                </Box>
-                              )}
-                            </Box>
-                          </Box>
-                        ))}
-                      </Box>
-                    ) : (
+                </Grid>
+                {selectedPlant?.plant?.altura && (
+                  <Grid item xs={12} sm={6}>
+                    <Box
+                      sx={{
+                        p: 1.5,
+                        background: "white",
+                        borderRadius: "8px",
+                        border: "1px solid rgba(76, 175, 80, 0.1)",
+                        height: "100%",
+                      }}
+                    >
                       <Typography
                         sx={{
-                          textAlign: "center",
-                          color: "text.secondary",
-                          py: 4,
-                          fontSize: "1.1rem",
+                          fontWeight: 600,
+                          color: "primary.main",
+                          mb: 0.5,
                         }}
                       >
-                        Nenhuma atualização registrada
+                        Altura
                       </Typography>
-                    )}
-                  </Box>
-                </Box>
+                      <Typography>{selectedPlant.plant.altura}</Typography>
+                    </Box>
+                  </Grid>
+                )}
+                {selectedPlant?.plant?.origem && (
+                  <Grid item xs={12} sm={6}>
+                    <Box
+                      sx={{
+                        p: 1.5,
+                        background: "white",
+                        borderRadius: "8px",
+                        border: "1px solid rgba(76, 175, 80, 0.1)",
+                        height: "100%",
+                      }}
+                    >
+                      <Typography
+                        sx={{
+                          fontWeight: 600,
+                          color: "primary.main",
+                          mb: 0.5,
+                        }}
+                      >
+                        Origem
+                      </Typography>
+                      <Typography>{selectedPlant.plant.origem}</Typography>
+                    </Box>
+                  </Grid>
+                )}
+                {selectedPlant?.plant?.especificacao && (
+                  <Grid item xs={12}>
+                    <Box
+                      sx={{
+                        p: 1.5,
+                        background: "white",
+                        borderRadius: "8px",
+                        border: "1px solid rgba(76, 175, 80, 0.1)",
+                      }}
+                    >
+                      <Typography
+                        sx={{
+                          fontWeight: 600,
+                          color: "primary.main",
+                          mb: 0.5,
+                        }}
+                      >
+                        Especificações
+                      </Typography>
+                      <Typography sx={{ lineHeight: 1.6 }}>
+                        {selectedPlant.plant.especificacao}
+                      </Typography>
+                    </Box>
+                  </Grid>
+                )}
               </Grid>
-
-              {/* General Information Section - Now Second */}
-              <Grid item xs={12}>
-                <Box
-                  sx={{
-                    mt: 3,
-                    background:
-                      "linear-gradient(145deg, rgba(255,255,255,0.9), rgba(255,255,255,0.95))",
-                    backdropFilter: "blur(10px)",
-                    borderRadius: "16px",
-                    boxShadow: "0 4px 24px -1px rgba(0, 0, 0, 0.1)",
-                    overflow: "hidden",
-                    border: "1px solid rgba(76, 175, 80, 0.1)",
-                    position: "relative",
-                  }}
-                >
-                  <Box
-                    sx={{
-                      position: "absolute",
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      height: "4px",
-                      background: "linear-gradient(90deg, #4caf50, #81c784)",
-                    }}
-                  />
-                  <Typography
-                    variant="h6"
-                    sx={{
-                      p: 2,
-                      pb: 1,
-                      color: "primary.main",
-                      fontWeight: 600,
-                    }}
-                  >
-                    Informações Gerais
-                  </Typography>
-                  <Box sx={{ p: 2 }}>
-                    <Grid container spacing={2}>
-                      <Grid item xs={12}>
-                        <Box
-                          sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            p: 1.5,
-                            background: "rgba(76, 175, 80, 0.05)",
-                            borderRadius: "12px",
-                            mb: 1,
-                          }}
-                        >
-                          <Box
-                            sx={{
-                              display: "flex",
-                              flexDirection: "column",
-                              flex: 1,
-                            }}
-                          >
-                            <Typography
-                              sx={{
-                                fontWeight: 600,
-                                color: "primary.main",
-                                mb: 0.5,
-                              }}
-                            >
-                              Categoria
-                            </Typography>
-                            <Typography>
-                              {formatPlantCategory(
-                                selectedPlant?.plant?.categoria
-                              )}
-                            </Typography>
-                          </Box>
-                        </Box>
-                      </Grid>
-                      {selectedPlant?.plant?.altura && (
-                        <Grid item xs={12} sm={6}>
-                          <Box
-                            sx={{
-                              p: 1.5,
-                              background: "rgba(76, 175, 80, 0.05)",
-                              borderRadius: "12px",
-                              height: "100%",
-                            }}
-                          >
-                            <Typography
-                              sx={{
-                                fontWeight: 600,
-                                color: "primary.main",
-                                mb: 0.5,
-                              }}
-                            >
-                              Altura
-                            </Typography>
-                            <Typography>
-                              {selectedPlant.plant.altura}
-                            </Typography>
-                          </Box>
-                        </Grid>
-                      )}
-                      {selectedPlant?.plant?.origem && (
-                        <Grid item xs={12} sm={6}>
-                          <Box
-                            sx={{
-                              p: 1.5,
-                              background: "rgba(76, 175, 80, 0.05)",
-                              borderRadius: "12px",
-                              height: "100%",
-                            }}
-                          >
-                            <Typography
-                              sx={{
-                                fontWeight: 600,
-                                color: "primary.main",
-                                mb: 0.5,
-                              }}
-                            >
-                              Origem
-                            </Typography>
-                            <Typography>
-                              {selectedPlant.plant.origem}
-                            </Typography>
-                          </Box>
-                        </Grid>
-                      )}
-                      {selectedPlant?.plant?.especificacao && (
-                        <Grid item xs={12}>
-                          <Box
-                            sx={{
-                              p: 1.5,
-                              background: "rgba(76, 175, 80, 0.05)",
-                              borderRadius: "12px",
-                            }}
-                          >
-                            <Typography
-                              sx={{
-                                fontWeight: 600,
-                                color: "primary.main",
-                                mb: 0.5,
-                              }}
-                            >
-                              Especificações
-                            </Typography>
-                            <Typography
-                              sx={{
-                                lineHeight: 1.6,
-                              }}
-                            >
-                              {selectedPlant.plant.especificacao}
-                            </Typography>
-                          </Box>
-                        </Grid>
-                      )}
-                    </Grid>
-                  </Box>
-                </Box>
-              </Grid>
-            </Grid>
+            </Box>
           </Box>
         </DialogContent>
         <DialogActions>

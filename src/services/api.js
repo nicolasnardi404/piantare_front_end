@@ -99,6 +99,15 @@ export const geoGpt = {
   analyze: (plants) => api.post("/geogpt/analyze", { plants }),
 };
 
+export const geocoding = {
+  getLocationDetails: async (latitude, longitude) => {
+    const response = await api.get(
+      `/geogpt/location?latitude=${latitude}&longitude=${longitude}`
+    );
+    return response.data;
+  },
+};
+
 // Export both named exports and default export
 export { api };
 export default api;
