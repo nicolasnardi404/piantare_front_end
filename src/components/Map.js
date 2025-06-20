@@ -20,6 +20,7 @@ import {
 } from "../services/api";
 import { b2Service } from "../services/b2";
 import axios from "axios";
+import { format } from "date-fns";
 import {
   Button,
   Dialog,
@@ -57,6 +58,10 @@ import GrassIcon from "@mui/icons-material/Grass";
 import DeleteIcon from "@mui/icons-material/Delete";
 import UpdateIcon from "@mui/icons-material/Update";
 import HealthAndSafetyIcon from "@mui/icons-material/HealthAndSafety";
+import AutorenewIcon from "@mui/icons-material/Autorenew";
+import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import CompanyReport from "./CompanyReport";
 
 // Import marker cluster CSS
 import "leaflet.markercluster/dist/MarkerCluster.css";
@@ -566,11 +571,8 @@ const Map = () => {
         plantsByCategory,
         recentPlants: sortedPlants,
       });
-
-      // Trigger environmental impact analysis
-      analyzeEnvironmentalImpact(companyPlants);
     }
-  }, [locations, user, analyzeEnvironmentalImpact]);
+  }, [locations, user]);
 
   // Calculate farmer statistics whenever locations change
   useEffect(() => {
@@ -876,9 +878,58 @@ const Map = () => {
             >
               Análise de Impacto Ambiental
             </Typography>
-            {geoAnalysis.loading && (
-              <CircularProgress size={24} color="primary" />
-            )}
+            <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
+              {geoAnalysis.loading && (
+                <CircularProgress size={24} color="primary" />
+              )}
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => {
+                  if (companyStats.recentPlants.length > 0) {
+                    analyzeEnvironmentalImpact(companyStats.recentPlants);
+                  }
+                }}
+                disabled={
+                  geoAnalysis.loading || companyStats.recentPlants.length === 0
+                }
+                startIcon={<AutorenewIcon />}
+              >
+                Gerar Análise
+              </Button>
+              {geoAnalysis.data && (
+                <PDFDownloadLink
+                  document={
+                    <CompanyReport
+                      companyStats={companyStats}
+                      geoAnalysis={geoAnalysis}
+                      locations={locations}
+                    />
+                  }
+                  fileName={`relatorio-impacto-ambiental-${format(
+                    new Date(),
+                    "dd-MM-yyyy"
+                  )}.pdf`}
+                >
+                  {({ blob, url, loading, error }) => (
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      disabled={loading}
+                      startIcon={<PictureAsPdfIcon />}
+                      sx={{
+                        bgcolor: "secondary.main",
+                        "&:hover": {
+                          bgcolor: "secondary.dark",
+                        },
+                      }}
+                    >
+                      {loading ? "Gerando PDF..." : "Baixar Relatório"}
+                    </Button>
+                  )}
+                </PDFDownloadLink>
+              )}
+            </Box>
           </Box>
           <Box sx={{ p: 3 }}>
             {geoAnalysis.error ? (
