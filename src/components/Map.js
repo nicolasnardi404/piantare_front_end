@@ -67,6 +67,16 @@ import BusinessIcon from "@mui/icons-material/Business";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import DescriptionIcon from "@mui/icons-material/Description";
 import Autocomplete from "@mui/material/Autocomplete";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip as RechartsTooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
 
 // Import marker cluster CSS
 import "leaflet.markercluster/dist/MarkerCluster.css";
@@ -2092,6 +2102,58 @@ const LocationMap = () => {
     }
   };
 
+  // Add this component before LocationMap
+  const GrowthChart = ({ updates }) => {
+    const chartData = updates
+      .slice()
+      .reverse()
+      .map((update) => ({
+        date: new Date(update.updateDate).toLocaleDateString(),
+        height: parseFloat(update.height),
+        width: parseFloat(update.width),
+      }));
+
+    return (
+      <Box sx={{ width: "100%", height: 300, mt: 3 }}>
+        <Typography variant="h6" sx={{ mb: 2, color: "primary.main" }}>
+          Crescimento da Planta
+        </Typography>
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart data={chartData}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="date" />
+            <YAxis unit="m" />
+            <RechartsTooltip
+              contentStyle={{
+                backgroundColor: "rgba(255, 255, 255, 0.9)",
+                borderRadius: "8px",
+                border: "1px solid rgba(76, 175, 80, 0.2)",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+              }}
+            />
+            <Legend />
+            <Line
+              type="monotone"
+              dataKey="height"
+              name="Altura (m)"
+              stroke="#4caf50"
+              strokeWidth={2}
+              dot={{ fill: "#4caf50" }}
+            />
+            <Line
+              type="monotone"
+              dataKey="width"
+              name="Largura (m)"
+              stroke="#81c784"
+              strokeWidth={2}
+              dot={{ fill: "#81c784" }}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </Box>
+    );
+  };
+
   return (
     <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
       {error && (
@@ -2601,176 +2663,203 @@ const LocationMap = () => {
                 </Box>
               )}
             </Box>
-          </Box>
 
-          {/* Timeline Section */}
-          <Box sx={{ mt: 4 }}>
-            <Typography
-              variant="h6"
-              sx={{ mb: 3, color: "primary.main", fontWeight: 600 }}
-            >
-              Histórico de Atualizações
-            </Typography>
-            {selectedPlant?.updates && selectedPlant.updates.length > 0 ? (
-              <Box sx={{ position: "relative" }}>
-                {/* Timeline line */}
-                <Box
-                  sx={{
-                    position: "absolute",
-                    left: "16px",
-                    top: 0,
-                    bottom: 0,
-                    width: "2px",
-                    background: "rgba(76, 175, 80, 0.2)",
-                    zIndex: 0,
-                  }}
-                />
-                {selectedPlant.updates.map((update, index) => (
+            {/* Growth Chart */}
+            {selectedPlant?.updates && selectedPlant.updates.length > 1 && (
+              <Box
+                sx={{
+                  background: "white",
+                  borderRadius: "16px",
+                  boxShadow: "0 4px 20px rgba(0, 0, 0, 0.08)",
+                  border: "1px solid rgba(76, 175, 80, 0.1)",
+                  p: 3,
+                  mt: 3,
+                }}
+              >
+                <GrowthChart updates={selectedPlant.updates} />
+              </Box>
+            )}
+
+            {/* Updates Timeline */}
+            <Box sx={{ mt: 4 }}>
+              <Typography
+                variant="h6"
+                sx={{ mb: 3, color: "primary.main", fontWeight: 600 }}
+              >
+                Histórico de Atualizações
+              </Typography>
+              {selectedPlant?.updates && selectedPlant.updates.length > 0 ? (
+                <Box sx={{ position: "relative" }}>
+                  {/* Timeline line */}
                   <Box
-                    key={update.id}
                     sx={{
-                      position: "relative",
-                      mb: index !== selectedPlant.updates.length - 1 ? 4 : 0,
-                      ml: 5,
-                      "&::before": {
-                        content: '""',
-                        position: "absolute",
-                        left: "-24px",
-                        top: "24px",
-                        width: "16px",
-                        height: "16px",
-                        borderRadius: "50%",
-                        backgroundColor:
-                          update.healthStatus === "HEALTHY"
-                            ? "#4caf50"
-                            : update.healthStatus === "NEEDS_ATTENTION"
-                            ? "#ff9800"
-                            : "#f44336",
-                        border: "3px solid white",
-                        boxShadow: "0 0 0 2px rgba(76, 175, 80, 0.2)",
-                        zIndex: 1,
-                      },
+                      position: "absolute",
+                      left: "16px",
+                      top: 0,
+                      bottom: 0,
+                      width: "2px",
+                      background: "rgba(76, 175, 80, 0.2)",
+                      zIndex: 0,
                     }}
-                  >
+                  />
+                  {selectedPlant.updates.map((update, index) => (
                     <Box
+                      key={update.id}
                       sx={{
-                        background: "white",
-                        borderRadius: "16px",
-                        overflow: "hidden",
-                        boxShadow: "0 4px 20px rgba(0, 0, 0, 0.08)",
-                        border: "1px solid rgba(76, 175, 80, 0.1)",
+                        position: "relative",
+                        mb: index !== selectedPlant.updates.length - 1 ? 4 : 0,
+                        ml: 5,
+                        "&::before": {
+                          content: '""',
+                          position: "absolute",
+                          left: "-24px",
+                          top: "24px",
+                          width: "16px",
+                          height: "16px",
+                          borderRadius: "50%",
+                          backgroundColor:
+                            update.healthStatus === "HEALTHY"
+                              ? "#4caf50"
+                              : update.healthStatus === "NEEDS_ATTENTION"
+                              ? "#ff9800"
+                              : "#f44336",
+                          border: "3px solid white",
+                          boxShadow: "0 0 0 2px rgba(76, 175, 80, 0.2)",
+                          zIndex: 1,
+                        },
                       }}
                     >
-                      <Box sx={{ p: 3 }}>
-                        <Box
-                          sx={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            alignItems: "flex-start",
-                            mb: 2,
-                          }}
-                        >
-                          <Box>
-                            <Typography
-                              variant="h6"
-                              sx={{
-                                fontWeight: 600,
-                                color: "primary.main",
-                                mb: 0.5,
-                              }}
-                            >
-                              {update.healthStatus === "HEALTHY"
-                                ? "Saudável"
-                                : update.healthStatus === "NEEDS_ATTENTION"
-                                ? "Precisa de Atenção"
-                                : "Doente"}
-                            </Typography>
-                            <Typography variant="body2" color="text.secondary">
-                              {new Date(update.updateDate).toLocaleDateString()}
-                            </Typography>
-                          </Box>
-                        </Box>
-
-                        {/* Measurements Section */}
-                        <Box
-                          sx={{
-                            mb: 2,
-                            display: "flex",
-                            gap: 4,
-                            backgroundColor: "rgba(76, 175, 80, 0.05)",
-                            p: 2,
-                            borderRadius: "12px",
-                          }}
-                        >
-                          <Box>
-                            <Typography variant="body2" color="text.secondary">
-                              Altura
-                            </Typography>
-                            <Typography variant="subtitle2" fontWeight="600">
-                              {update.height}m
-                            </Typography>
-                          </Box>
-                          <Box>
-                            <Typography variant="body2" color="text.secondary">
-                              Largura
-                            </Typography>
-                            <Typography variant="subtitle2" fontWeight="600">
-                              {update.width}m
-                            </Typography>
-                          </Box>
-                        </Box>
-
-                        {update.notes && (
-                          <Typography
+                      <Box
+                        sx={{
+                          background: "white",
+                          borderRadius: "16px",
+                          overflow: "hidden",
+                          boxShadow: "0 4px 20px rgba(0, 0, 0, 0.08)",
+                          border: "1px solid rgba(76, 175, 80, 0.1)",
+                        }}
+                      >
+                        <Box sx={{ p: 3 }}>
+                          <Box
                             sx={{
-                              color: "text.secondary",
-                              fontStyle: "italic",
+                              display: "flex",
+                              justifyContent: "space-between",
+                              alignItems: "flex-start",
                               mb: 2,
                             }}
                           >
-                            "{update.notes}"
-                          </Typography>
-                        )}
+                            <Box>
+                              <Typography
+                                variant="h6"
+                                sx={{
+                                  fontWeight: 600,
+                                  color: "primary.main",
+                                  mb: 0.5,
+                                }}
+                              >
+                                {update.healthStatus === "HEALTHY"
+                                  ? "Saudável"
+                                  : update.healthStatus === "NEEDS_ATTENTION"
+                                  ? "Precisa de Atenção"
+                                  : "Doente"}
+                              </Typography>
+                              <Typography
+                                variant="body2"
+                                color="text.secondary"
+                              >
+                                {new Date(
+                                  update.updateDate
+                                ).toLocaleDateString()}
+                              </Typography>
+                            </Box>
+                          </Box>
 
-                        {update.imageUrl && (
+                          {/* Measurements Section */}
                           <Box
                             sx={{
+                              mb: 2,
+                              display: "flex",
+                              gap: 4,
+                              backgroundColor: "rgba(76, 175, 80, 0.05)",
+                              p: 2,
                               borderRadius: "12px",
-                              overflow: "hidden",
-                              maxWidth: "600px",
-                              margin: "0 auto",
                             }}
                           >
-                            <Box
-                              component="img"
-                              src={update.imageUrl}
-                              alt={`Update on ${new Date(
-                                update.updateDate
-                              ).toLocaleDateString()}`}
-                              sx={{
-                                width: "100%",
-                                height: "300px",
-                                objectFit: "cover",
-                              }}
-                            />
+                            <Box>
+                              <Typography
+                                variant="body2"
+                                color="text.secondary"
+                              >
+                                Altura
+                              </Typography>
+                              <Typography variant="subtitle2" fontWeight="600">
+                                {update.height}m
+                              </Typography>
+                            </Box>
+                            <Box>
+                              <Typography
+                                variant="body2"
+                                color="text.secondary"
+                              >
+                                Largura
+                              </Typography>
+                              <Typography variant="subtitle2" fontWeight="600">
+                                {update.width}m
+                              </Typography>
+                            </Box>
                           </Box>
-                        )}
+
+                          {update.notes && (
+                            <Typography
+                              sx={{
+                                color: "text.secondary",
+                                fontStyle: "italic",
+                                mb: 2,
+                              }}
+                            >
+                              "{update.notes}"
+                            </Typography>
+                          )}
+
+                          {update.imageUrl && (
+                            <Box
+                              sx={{
+                                borderRadius: "12px",
+                                overflow: "hidden",
+                                maxWidth: "600px",
+                                margin: "0 auto",
+                              }}
+                            >
+                              <Box
+                                component="img"
+                                src={update.imageUrl}
+                                alt={`Update on ${new Date(
+                                  update.updateDate
+                                ).toLocaleDateString()}`}
+                                sx={{
+                                  width: "100%",
+                                  height: "300px",
+                                  objectFit: "cover",
+                                }}
+                              />
+                            </Box>
+                          )}
+                        </Box>
                       </Box>
                     </Box>
-                  </Box>
-                ))}
-              </Box>
-            ) : (
-              <Typography
-                sx={{
-                  textAlign: "center",
-                  color: "text.secondary",
-                  py: 3,
-                }}
-              >
-                Nenhuma atualização registrada
-              </Typography>
-            )}
+                  ))}
+                </Box>
+              ) : (
+                <Typography
+                  sx={{
+                    textAlign: "center",
+                    color: "text.secondary",
+                    py: 3,
+                  }}
+                >
+                  Nenhuma atualização registrada
+                </Typography>
+              )}
+            </Box>
           </Box>
 
           {/* General Information Card */}
