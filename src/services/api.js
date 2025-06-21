@@ -85,7 +85,8 @@ export const plantUpdates = {
       healthStatus: updateData.healthStatus,
       notes: updateData.notes || "",
       imageUrl: updateData.imageUrl,
-      measurements: updateData.measurements,
+      height: parseFloat(updateData.height),
+      width: parseFloat(updateData.width),
     };
 
     console.log("Sending update data:", data);

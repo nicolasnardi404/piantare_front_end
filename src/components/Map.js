@@ -98,15 +98,15 @@ const redIcon = new L.Icon({
 // Add this mapping function near the top of the file, after the imports
 const formatPlantCategory = (category) => {
   const categoryMap = {
-    ARVORES: "Árvores",
-    ARVORES_FRUTIFERAS: "Árvores Frutíferas",
-    CAPINS: "Capins",
-    FOLHAGENS_ALTAS: "Folhagens Altas",
-    ARBUSTOS: "Arbustos",
-    TREPADEIRAS: "Trepadeiras",
-    AROMATICAS_E_COMESTIVEIS: "Aromáticas e Comestíveis",
-    PLANTAS_DE_FORRACAO: "Plantas de Forração",
-    PLANTAS_AQUATICAS_OU_PALUSTRES: "Plantas Aquáticas ou Palustres",
+    TREES: "Árvores",
+    FRUIT_TREES: "Árvores Frutíferas",
+    GRASSES: "Capins",
+    TALL_FOLIAGE: "Folhagens Altas",
+    SHRUBS: "Arbustos",
+    CLIMBING_PLANTS: "Trepadeiras",
+    AROMATIC_AND_EDIBLE: "Aromáticas e Comestíveis",
+    GROUND_COVER: "Plantas de Forração",
+    AQUATIC_OR_MARSH: "Plantas Aquáticas ou Palustres",
   };
 
   return categoryMap[category] || category;
@@ -477,12 +477,9 @@ const LocationMap = () => {
     longitude: null,
     plantId: null,
     description: "",
-    measurements: {
-      height: "",
-      width: "",
-      health: "HEALTHY",
-      notes: "",
-    },
+    height: "",
+    width: "",
+    notes: "",
   });
   const [availablePlants, setAvailablePlants] = useState([]);
   const [error, setError] = useState("");
@@ -561,7 +558,7 @@ const LocationMap = () => {
 
       // Calculate plants by category
       const plantsByCategory = companyPlants.reduce((acc, location) => {
-        const category = location.plant?.categoria || "OUTROS";
+        const category = location.plant?.category || "OUTROS";
         if (!acc[category]) {
           acc[category] = [];
         }
@@ -719,11 +716,8 @@ const LocationMap = () => {
         return;
       }
 
-      if (
-        !newLocation.measurements.height ||
-        !newLocation.measurements.diameter
-      ) {
-        setError("Por favor, preencha a altura e o diâmetro da planta");
+      if (!newLocation.height || !newLocation.width) {
+        setError("Por favor, preencha a altura e a largura da planta");
         return;
       }
 
@@ -766,12 +760,9 @@ const LocationMap = () => {
         plantId: newLocation.plantId,
         description: newLocation.description,
         imageUrl,
-        measurements: {
-          height: parseFloat(newLocation.measurements.height),
-          diameter: parseFloat(newLocation.measurements.diameter),
-          notes: newLocation.measurements.notes,
-          health: "HEALTHY",
-        },
+        height: parseFloat(newLocation.height),
+        width: parseFloat(newLocation.width),
+        notes: newLocation.notes,
       };
 
       await plantLocations.create(locationData);
@@ -782,12 +773,9 @@ const LocationMap = () => {
         longitude: null,
         plantId: null,
         description: "",
-        measurements: {
-          height: "",
-          diameter: "",
-          health: "HEALTHY",
-          notes: "",
-        },
+        height: "",
+        width: "",
+        notes: "",
       });
       setImageUpload({
         file: null,
@@ -910,27 +898,21 @@ const LocationMap = () => {
           }
         );
 
-        // Get the URL from the upload response
         imageUrl = uploadResponse.data.url;
       }
 
-      // Create the update with the image URL and measurements
+      // Create the update with consistent measurements structure
       const updateResponse = await plantUpdates.create({
         plantLocationId: plantId,
         healthStatus,
         notes: observations,
         imageUrl,
-        measurements: {
-          height: height.toString(),
-          width: width.toString(),
-          health: healthStatus,
-          notes: observations,
-        },
+        height: parseFloat(height),
+        width: parseFloat(width),
       });
 
       console.log("Update created:", updateResponse);
 
-      // Refresh the locations to get the latest updates
       await loadLocations();
       setUpdateDialogState({ open: false, plantId: null, plantName: "" });
     } catch (error) {
@@ -1245,7 +1227,7 @@ const LocationMap = () => {
                                 variant="subtitle1"
                                 sx={{ fontWeight: 600 }}
                               >
-                                {plant.plant?.nomePopular}
+                                {plant.plant?.commonName}
                               </Typography>
                               {plant.updates && plant.updates.length > 0 && (
                                 <Box
@@ -1273,165 +1255,10 @@ const LocationMap = () => {
                                 mb: 1,
                               }}
                             >
-                              {plant.plant?.nomeCientifico}
+                              {plant.plant?.scientificName}
                             </Typography>
-                            {plant.description && (
-                              <Typography
-                                variant="body2"
-                                sx={{
-                                  color: "text.secondary",
-                                  mb: 1,
-                                }}
-                              >
-                                {plant.description}
-                              </Typography>
-                            )}
-                          </Box>
-                          <Box
-                            sx={{
-                              display: "flex",
-                              gap: 1,
-                              alignItems: "flex-start",
-                            }}
-                          >
-                            {plant.updates && plant.updates.length > 0 && (
-                              <Box
-                                component="img"
-                                src={plant.updates[0].imageUrl}
-                                alt={plant.plant?.nomePopular}
-                                sx={{
-                                  width: 60,
-                                  height: 60,
-                                  borderRadius: "8px",
-                                  objectFit: "cover",
-                                }}
-                              />
-                            )}
                           </Box>
                         </Box>
-                        <Box
-                          sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 2,
-                            mt: 1,
-                          }}
-                        >
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              display: "flex",
-                              alignItems: "center",
-                              color: "text.secondary",
-                            }}
-                          >
-                            📍{" "}
-                            {locationDetails[plant.id]?.city || "Carregando..."}
-                            , {locationDetails[plant.id]?.state || ""} -{" "}
-                            {locationDetails[plant.id]?.country || ""}
-                          </Typography>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "text.secondary",
-                              display: "flex",
-                              alignItems: "center",
-                            }}
-                          >
-                            👤 {plant.addedBy.name}
-                          </Typography>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "text.secondary",
-                              display: "flex",
-                              alignItems: "center",
-                            }}
-                          >
-                            📅{" "}
-                            {new Date(
-                              plant.plantedAt || plant.createdAt
-                            ).toLocaleDateString()}
-                          </Typography>
-                        </Box>
-                        {plant.updates && plant.updates.length > 0 && (
-                          <Box
-                            sx={{
-                              mt: 1,
-                              pt: 1,
-                              borderTop: "1px dashed rgba(76, 175, 80, 0.2)",
-                              fontSize: "0.75rem",
-                              color: "text.secondary",
-                            }}
-                          >
-                            <Box
-                              sx={{
-                                display: "flex",
-                                gap: 2,
-                                alignItems: "flex-start",
-                              }}
-                            >
-                              <Box sx={{ flex: 1 }}>
-                                <Typography
-                                  variant="caption"
-                                  sx={{ display: "block" }}
-                                >
-                                  Última atualização:{" "}
-                                  {new Date(
-                                    plant.updates[0].updateDate
-                                  ).toLocaleDateString()}
-                                </Typography>
-                                <Typography
-                                  variant="caption"
-                                  sx={{
-                                    display: "block",
-                                    color:
-                                      plant.updates[0].healthStatus ===
-                                      "HEALTHY"
-                                        ? "#4caf50"
-                                        : plant.updates[0].healthStatus ===
-                                          "NEEDS_ATTENTION"
-                                        ? "#ff9800"
-                                        : "#f44336",
-                                    fontWeight: 600,
-                                  }}
-                                >
-                                  {plant.updates[0].healthStatus === "HEALTHY"
-                                    ? "Saudável"
-                                    : plant.updates[0].healthStatus ===
-                                      "NEEDS_ATTENTION"
-                                    ? "Precisa de Atenção"
-                                    : "Doente"}
-                                </Typography>
-                                {plant.updates[0].notes && (
-                                  <Typography
-                                    variant="caption"
-                                    sx={{
-                                      display: "block",
-                                      mt: 0.5,
-                                      fontStyle: "italic",
-                                    }}
-                                  >
-                                    "{plant.updates[0].notes}"
-                                  </Typography>
-                                )}
-                              </Box>
-                              {plant.updates[0].imageUrl && (
-                                <Box
-                                  component="img"
-                                  src={plant.updates[0].imageUrl}
-                                  alt="Latest update"
-                                  sx={{
-                                    width: 60,
-                                    height: 60,
-                                    borderRadius: "8px",
-                                    objectFit: "cover",
-                                  }}
-                                />
-                              )}
-                            </Box>
-                          </Box>
-                        )}
                       </Box>
                     ))}
                   </Box>
@@ -1449,7 +1276,7 @@ const LocationMap = () => {
 
     // Group plants by category
     const plantsByCategory = farmerStats.recentPlants.reduce((acc, plant) => {
-      const category = plant.plant?.categoria || "OUTROS";
+      const category = plant.plant?.category || "OUTROS";
       if (!acc[category]) {
         acc[category] = [];
       }
@@ -1579,7 +1406,7 @@ const LocationMap = () => {
                               variant="subtitle1"
                               sx={{ fontWeight: 600 }}
                             >
-                              {plant.plant?.nomePopular}
+                              {plant.plant?.commonName}
                             </Typography>
                             {plant.updates && plant.updates.length > 0 && (
                               <Box
@@ -1606,142 +1433,10 @@ const LocationMap = () => {
                               mb: 1,
                             }}
                           >
-                            {plant.plant?.nomeCientifico}
+                            {plant.plant?.scientificName}
                           </Typography>
                         </Box>
-                        <Box
-                          sx={{
-                            display: "flex",
-                            gap: 1,
-                            alignItems: "flex-start",
-                          }}
-                        >
-                          <IconButton
-                            size="small"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setUpdateDialogState({
-                                open: true,
-                                plantId: plant.id,
-                                plantName: plant.plant?.nomePopular,
-                              });
-                            }}
-                            sx={{
-                              bgcolor: "rgba(76, 175, 80, 0.1)",
-                              "&:hover": {
-                                bgcolor: "rgba(76, 175, 80, 0.2)",
-                              },
-                            }}
-                          >
-                            <UpdateIcon color="primary" />
-                          </IconButton>
-                          {plant.updates && plant.updates.length > 0 && (
-                            <Box
-                              component="img"
-                              src={plant.updates[0].imageUrl}
-                              alt={plant.plant?.nomePopular}
-                              sx={{
-                                width: 60,
-                                height: 60,
-                                borderRadius: "8px",
-                                objectFit: "cover",
-                              }}
-                            />
-                          )}
-                        </Box>
                       </Box>
-                      <Box
-                        sx={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 2,
-                          mt: 1,
-                        }}
-                      >
-                        <Typography
-                          variant="caption"
-                          sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            color: "text.secondary",
-                          }}
-                        >
-                          📍{" "}
-                          {locationDetails[plant.id]?.city || "Carregando..."},{" "}
-                          {locationDetails[plant.id]?.state || ""} -{" "}
-                          {locationDetails[plant.id]?.country || ""}
-                        </Typography>
-                        {plant.description && (
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "text.secondary",
-                              display: "flex",
-                              alignItems: "center",
-                            }}
-                          >
-                            📝 {plant.description.substring(0, 50)}
-                            {plant.description.length > 50 ? "..." : ""}
-                          </Typography>
-                        )}
-                      </Box>
-                      {plant.updates && plant.updates.length > 0 && (
-                        <Box
-                          sx={{
-                            mt: 1,
-                            pt: 1,
-                            borderTop: "1px dashed rgba(76, 175, 80, 0.2)",
-                            fontSize: "0.75rem",
-                            color: "text.secondary",
-                          }}
-                        >
-                          {console.log("Plant updates in card:", plant.updates)}
-                          <Box
-                            sx={{
-                              display: "flex",
-                              gap: 2,
-                              alignItems: "flex-start",
-                            }}
-                          >
-                            <Box sx={{ flex: 1 }}>
-                              <Typography
-                                variant="caption"
-                                sx={{ display: "block" }}
-                              >
-                                Última atualização:{" "}
-                                {new Date(
-                                  plant.updates[0].updateDate
-                                ).toLocaleDateString()}
-                              </Typography>
-                              {plant.updates[0].notes && (
-                                <Typography
-                                  variant="caption"
-                                  sx={{
-                                    display: "block",
-                                    mt: 0.5,
-                                    fontStyle: "italic",
-                                  }}
-                                >
-                                  "{plant.updates[0].notes}"
-                                </Typography>
-                              )}
-                            </Box>
-                            {plant.updates[0].imageUrl && (
-                              <Box
-                                component="img"
-                                src={plant.updates[0].imageUrl}
-                                alt="Latest update"
-                                sx={{
-                                  width: 60,
-                                  height: 60,
-                                  borderRadius: "8px",
-                                  objectFit: "cover",
-                                }}
-                              />
-                            )}
-                          </Box>
-                        </Box>
-                      )}
                     </Box>
                   ))}
                 </Box>
@@ -2153,14 +1848,11 @@ const LocationMap = () => {
                       fullWidth
                       label="Altura (metros)"
                       type="number"
-                      value={newLocation.measurements.height}
+                      value={newLocation.height}
                       onChange={(e) =>
                         setNewLocation((prev) => ({
                           ...prev,
-                          measurements: {
-                            ...prev.measurements,
-                            height: e.target.value,
-                          },
+                          height: e.target.value,
                         }))
                       }
                       inputProps={{ step: "0.01", min: "0" }}
@@ -2181,14 +1873,11 @@ const LocationMap = () => {
                       fullWidth
                       label="Diâmetro (metros)"
                       type="number"
-                      value={newLocation.measurements.diameter}
+                      value={newLocation.width}
                       onChange={(e) =>
                         setNewLocation((prev) => ({
                           ...prev,
-                          measurements: {
-                            ...prev.measurements,
-                            diameter: e.target.value,
-                          },
+                          width: e.target.value,
                         }))
                       }
                       inputProps={{ step: "0.01", min: "0" }}
@@ -2224,14 +1913,11 @@ const LocationMap = () => {
                   rows={4}
                   label="Observações Iniciais"
                   placeholder="Adicione notas sobre o estado inicial da planta"
-                  value={newLocation.measurements.notes}
+                  value={newLocation.notes}
                   onChange={(e) =>
                     setNewLocation((prev) => ({
                       ...prev,
-                      measurements: {
-                        ...prev.measurements,
-                        notes: e.target.value,
-                      },
+                      notes: e.target.value,
                     }))
                   }
                   sx={{
@@ -2466,12 +2152,9 @@ const LocationMap = () => {
                           longitude: null,
                           plantId: null,
                           description: "",
-                          measurements: {
-                            height: "",
-                            width: "",
-                            health: "HEALTHY",
-                            notes: "",
-                          },
+                          height: "",
+                          width: "",
+                          notes: "",
                         });
                       }
                     }}
@@ -2547,14 +2230,14 @@ const LocationMap = () => {
                     }}
                   >
                     <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-                      {location.plant?.nomePopular || "Unknown Plant"}
+                      {location.plant?.commonName || "Planta Desconhecida"}
                     </Typography>
                     <Typography
                       variant="caption"
                       color="text.secondary"
                       sx={{ display: "block" }}
                     >
-                      {location.plant?.nomeCientifico}
+                      {location.plant?.scientificName}
                     </Typography>
                     <Typography variant="body2" sx={{ mt: 1 }}>
                       {location.description}
@@ -2563,14 +2246,14 @@ const LocationMap = () => {
                       variant="caption"
                       sx={{ display: "block", mt: 1, color: "text.secondary" }}
                     >
-                      Added by: {location.addedBy.name}
+                      Adicionado por: {location.addedBy.name}
                     </Typography>
                     {location.company && (
                       <Typography
                         variant="caption"
                         sx={{ display: "block", color: "text.secondary" }}
                       >
-                        Company: {location.company.name}
+                        Empresa: {location.company.name}
                       </Typography>
                     )}
                     <Typography
@@ -2582,7 +2265,7 @@ const LocationMap = () => {
                         fontStyle: "italic",
                       }}
                     >
-                      Click for more details
+                      Clique para mais detalhes
                     </Typography>
                   </Box>
                 </Popup>
@@ -2648,14 +2331,14 @@ const LocationMap = () => {
             component="div"
             sx={{ fontWeight: 600, color: "primary.main" }}
           >
-            {selectedPlant?.plant?.nomePopular}
+            {selectedPlant?.plant?.commonName}
           </Typography>
           <Typography
             variant="subtitle1"
             color="text.secondary"
             sx={{ mt: 0.5 }}
           >
-            {selectedPlant?.plant?.nomeCientifico}
+            {selectedPlant?.plant?.scientificName}
           </Typography>
         </DialogTitle>
         <DialogContent>
@@ -2736,7 +2419,7 @@ const LocationMap = () => {
                     <Typography variant="h6" sx={{ fontWeight: 600 }}>
                       {selectedPlant?.updates &&
                       selectedPlant.updates.length > 0
-                        ? `${selectedPlant.updates[0].measurements.height}m x ${selectedPlant.updates[0].measurements.width}m`
+                        ? `${selectedPlant.updates[0].height}m x ${selectedPlant.updates[0].width}m`
                         : "Não informado"}
                     </Typography>
                   </Box>
@@ -3024,7 +2707,7 @@ const LocationMap = () => {
                               Altura
                             </Typography>
                             <Typography variant="subtitle2" fontWeight="600">
-                              {update.measurements.height}m
+                              {update.height}m
                             </Typography>
                           </Box>
                           <Box>
@@ -3032,7 +2715,7 @@ const LocationMap = () => {
                               Largura
                             </Typography>
                             <Typography variant="subtitle2" fontWeight="600">
-                              {update.measurements.width}m
+                              {update.width}m
                             </Typography>
                           </Box>
                         </Box>
@@ -3111,12 +2794,6 @@ const LocationMap = () => {
               <Grid container spacing={3}>
                 <Grid item xs={12} sm={4}>
                   <Box sx={{ mb: 3 }}>
-                    <Typography
-                      variant="subtitle1"
-                      sx={{ fontWeight: 600, color: "primary.main", mb: 2 }}
-                    >
-                      Identificação
-                    </Typography>
                     <Box
                       sx={{
                         display: "flex",
@@ -3129,7 +2806,7 @@ const LocationMap = () => {
                           Nome Popular
                         </Typography>
                         <Typography variant="body1" fontWeight="500">
-                          {selectedPlant?.plant?.nomePopular}
+                          {selectedPlant?.plant?.commonName}
                         </Typography>
                       </Box>
                       <Box>
@@ -3141,43 +2818,7 @@ const LocationMap = () => {
                           fontWeight="500"
                           sx={{ fontStyle: "italic" }}
                         >
-                          {selectedPlant?.plant?.nomeCientifico}
-                        </Typography>
-                      </Box>
-                      <Box>
-                        <Typography variant="body2" color="text.secondary">
-                          Categoria
-                        </Typography>
-                        <Typography variant="body1" fontWeight="500">
-                          {formatPlantCategory(
-                            selectedPlant?.plant?.categoria || "OUTROS"
-                          )}
-                        </Typography>
-                      </Box>
-                    </Box>
-                  </Box>
-                </Grid>
-                <Grid item xs={12} sm={4}>
-                  <Box sx={{ mb: 3 }}>
-                    <Typography
-                      variant="subtitle1"
-                      sx={{ fontWeight: 600, color: "primary.main", mb: 2 }}
-                    >
-                      Características
-                    </Typography>
-                    <Box
-                      sx={{
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: 2,
-                      }}
-                    >
-                      <Box>
-                        <Typography variant="body2" color="text.secondary">
-                          Altura Esperada
-                        </Typography>
-                        <Typography variant="body1" fontWeight="500">
-                          {selectedPlant?.plant?.altura || "Não informado"}
+                          {selectedPlant?.plant?.scientificName}
                         </Typography>
                       </Box>
                       <Box>
@@ -3185,7 +2826,15 @@ const LocationMap = () => {
                           Origem
                         </Typography>
                         <Typography variant="body1" fontWeight="500">
-                          {selectedPlant?.plant?.origem || "Não informado"}
+                          {selectedPlant?.plant?.origin || "Não informado"}
+                        </Typography>
+                      </Box>
+                      <Box>
+                        <Typography variant="body2" color="text.secondary">
+                          Altura Esperada
+                        </Typography>
+                        <Typography variant="body1" fontWeight="500">
+                          {selectedPlant?.plant?.height || "Não informado"}
                         </Typography>
                       </Box>
                       <Box>
@@ -3193,7 +2842,7 @@ const LocationMap = () => {
                           Especificação
                         </Typography>
                         <Typography variant="body1" fontWeight="500">
-                          {selectedPlant?.plant?.especificacao ||
+                          {selectedPlant?.plant?.specification ||
                             "Não informado"}
                         </Typography>
                       </Box>
@@ -3208,13 +2857,31 @@ const LocationMap = () => {
           {(user?.role === "ADMIN" ||
             (user?.role === "FARMER" &&
               selectedPlant?.addedBy?.id === user?.userId)) && (
-            <Button
-              onClick={() => handleDeletePlant(selectedPlant.id)}
-              color="error"
-              startIcon={<DeleteIcon />}
-            >
-              Excluir
-            </Button>
+            <>
+              <Button
+                onClick={() => handleDeletePlant(selectedPlant.id)}
+                color="error"
+                startIcon={<DeleteIcon />}
+              >
+                Excluir
+              </Button>
+              {user?.role === "FARMER" && (
+                <Button
+                  onClick={() => {
+                    setUpdateDialogState({
+                      open: true,
+                      plantId: selectedPlant.id,
+                      plantName: selectedPlant.plant?.commonName,
+                    });
+                    setIsDetailModalOpen(false);
+                  }}
+                  color="primary"
+                  startIcon={<UpdateIcon />}
+                >
+                  Atualizar
+                </Button>
+              )}
+            </>
           )}
           <Button onClick={() => setIsDetailModalOpen(false)}>Fechar</Button>
         </DialogActions>
