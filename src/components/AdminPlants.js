@@ -37,20 +37,10 @@ const PlantForm = ({ plant, onSubmit, onClose }) => {
     plant || {
       commonName: "",
       scientificName: "",
-      category: "",
-      description: "",
-      height: "",
-      crownDiameter: "",
       origin: "",
-      lifeCycle: "",
-      climate: "",
-      soil: "",
-      lighting: "",
-      irrigation: "",
-      propagation: "",
-      pruning: "",
-      pests: "",
-      observations: "",
+      height: "",
+      specification: "",
+      category: "",
     }
   );
 
@@ -60,9 +50,10 @@ const PlantForm = ({ plant, onSubmit, onClose }) => {
     const fetchCategories = async () => {
       try {
         const response = await api.get("/plants/categories");
+        // Ensure we're using the exact enum values from the backend
         setCategories(response.data);
       } catch (error) {
-        console.error("Error fetching categories:", error);
+        console.error("Erro ao buscar categorias:", error);
       }
     };
     fetchCategories();
@@ -77,12 +68,24 @@ const PlantForm = ({ plant, onSubmit, onClose }) => {
     onSubmit(formData);
   };
 
+  const categoryLabels = {
+    TREES: "Árvores",
+    FRUIT_TREES: "Árvores Frutíferas",
+    GRASSES: "Capins",
+    TALL_FOLIAGE: "Folhagens Altas",
+    SHRUBS: "Arbustos",
+    CLIMBING_PLANTS: "Trepadeiras",
+    AROMATIC_AND_EDIBLE: "Aromáticas e Comestíveis",
+    GROUND_COVER: "Plantas de Forração",
+    AQUATIC_OR_MARSH: "Plantas Aquáticas ou Palustres",
+  };
+
   return (
     <form onSubmit={handleSubmit}>
       <Stack spacing={2}>
         <TextField
           fullWidth
-          label="Common Name"
+          label="Nome Popular"
           name="commonName"
           value={formData.commonName}
           onChange={handleChange}
@@ -90,14 +93,14 @@ const PlantForm = ({ plant, onSubmit, onClose }) => {
         />
         <TextField
           fullWidth
-          label="Scientific Name"
+          label="Nome Científico"
           name="scientificName"
           value={formData.scientificName}
           onChange={handleChange}
           required
         />
         <FormControl fullWidth>
-          <InputLabel>Category</InputLabel>
+          <InputLabel>Categoria</InputLabel>
           <Select
             name="category"
             value={formData.category}
@@ -106,110 +109,38 @@ const PlantForm = ({ plant, onSubmit, onClose }) => {
           >
             {categories.map((category) => (
               <MenuItem key={category} value={category}>
-                {category}
+                {categoryLabels[category] || category}
               </MenuItem>
             ))}
           </Select>
         </FormControl>
         <TextField
           fullWidth
-          label="Description"
-          name="description"
-          value={formData.description}
-          onChange={handleChange}
-          multiline
-          rows={3}
-        />
-        <TextField
-          fullWidth
-          label="Height"
-          name="height"
-          value={formData.height}
-          onChange={handleChange}
-        />
-        <TextField
-          fullWidth
-          label="Crown Diameter"
-          name="crownDiameter"
-          value={formData.crownDiameter}
-          onChange={handleChange}
-        />
-        <TextField
-          fullWidth
-          label="Origin"
+          label="Origem"
           name="origin"
           value={formData.origin}
           onChange={handleChange}
         />
         <TextField
           fullWidth
-          label="Life Cycle"
-          name="lifeCycle"
-          value={formData.lifeCycle}
+          label="Altura"
+          name="height"
+          value={formData.height}
           onChange={handleChange}
         />
         <TextField
           fullWidth
-          label="Climate"
-          name="climate"
-          value={formData.climate}
-          onChange={handleChange}
-        />
-        <TextField
-          fullWidth
-          label="Soil"
-          name="soil"
-          value={formData.soil}
-          onChange={handleChange}
-        />
-        <TextField
-          fullWidth
-          label="Lighting"
-          name="lighting"
-          value={formData.lighting}
-          onChange={handleChange}
-        />
-        <TextField
-          fullWidth
-          label="Irrigation"
-          name="irrigation"
-          value={formData.irrigation}
-          onChange={handleChange}
-        />
-        <TextField
-          fullWidth
-          label="Propagation"
-          name="propagation"
-          value={formData.propagation}
-          onChange={handleChange}
-        />
-        <TextField
-          fullWidth
-          label="Pruning"
-          name="pruning"
-          value={formData.pruning}
-          onChange={handleChange}
-        />
-        <TextField
-          fullWidth
-          label="Pests"
-          name="pests"
-          value={formData.pests}
-          onChange={handleChange}
-        />
-        <TextField
-          fullWidth
-          label="Observations"
-          name="observations"
-          value={formData.observations}
+          label="Especificações"
+          name="specification"
+          value={formData.specification}
           onChange={handleChange}
           multiline
           rows={3}
         />
         <DialogActions>
-          <Button onClick={onClose}>Cancel</Button>
+          <Button onClick={onClose}>Cancelar</Button>
           <Button type="submit" variant="contained" color="primary">
-            Save
+            Salvar
           </Button>
         </DialogActions>
       </Stack>
@@ -229,6 +160,18 @@ const AdminPlants = () => {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [categories, setCategories] = useState([]);
 
+  const categoryLabels = {
+    TREES: "Árvores",
+    FRUIT_TREES: "Árvores Frutíferas",
+    GRASSES: "Capins",
+    TALL_FOLIAGE: "Folhagens Altas",
+    SHRUBS: "Arbustos",
+    CLIMBING_PLANTS: "Trepadeiras",
+    AROMATIC_AND_EDIBLE: "Aromáticas e Comestíveis",
+    GROUND_COVER: "Plantas de Forração",
+    AQUATIC_OR_MARSH: "Plantas Aquáticas ou Palustres",
+  };
+
   useEffect(() => {
     fetchPlants();
     fetchCategories();
@@ -247,8 +190,8 @@ const AdminPlants = () => {
       setPlants(response.data.plants);
       setLoading(false);
     } catch (error) {
-      console.error("Error fetching plants:", error);
-      setError("Failed to fetch plants");
+      console.error("Erro ao buscar plantas:", error);
+      setError("Falha ao carregar plantas");
       setLoading(false);
     }
   };
@@ -258,7 +201,7 @@ const AdminPlants = () => {
       const response = await api.get("/plants/categories");
       setCategories(response.data);
     } catch (error) {
-      console.error("Error fetching categories:", error);
+      console.error("Erro ao buscar categorias:", error);
     }
   };
 
@@ -277,8 +220,8 @@ const AdminPlants = () => {
       setOpenDialog(false);
       fetchPlants();
     } catch (error) {
-      console.error("Error creating plant:", error);
-      setError("Failed to create plant");
+      console.error("Erro ao criar planta:", error);
+      setError("Falha ao criar planta");
     }
   };
 
@@ -289,31 +232,31 @@ const AdminPlants = () => {
       setSelectedPlant(null);
       fetchPlants();
     } catch (error) {
-      console.error("Error updating plant:", error);
-      setError("Failed to update plant");
+      console.error("Erro ao atualizar planta:", error);
+      setError("Falha ao atualizar planta");
     }
   };
 
   const handleDeletePlant = async (id) => {
-    if (window.confirm("Are you sure you want to delete this plant?")) {
+    if (window.confirm("Tem certeza que deseja excluir esta planta?")) {
       try {
         await api.delete(`/plants/${id}`);
         fetchPlants();
       } catch (error) {
-        console.error("Error deleting plant:", error);
-        setError("Failed to delete plant");
+        console.error("Erro ao excluir planta:", error);
+        setError("Falha ao excluir planta");
       }
     }
   };
 
-  if (loading) return <Typography>Loading...</Typography>;
+  if (loading) return <Typography>Carregando...</Typography>;
   if (error) return <Alert severity="error">{error}</Alert>;
 
   return (
     <Box>
       <Box sx={{ mb: 2, display: "flex", gap: 2, alignItems: "center" }}>
         <TextField
-          label="Search"
+          label="Buscar"
           variant="outlined"
           size="small"
           value={search}
@@ -323,16 +266,16 @@ const AdminPlants = () => {
           }}
         />
         <FormControl size="small" sx={{ minWidth: 200 }}>
-          <InputLabel>Category</InputLabel>
+          <InputLabel>Categoria</InputLabel>
           <Select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            label="Category"
+            label="Categoria"
           >
-            <MenuItem value="">All</MenuItem>
+            <MenuItem value="">Todas</MenuItem>
             {categories.map((category) => (
               <MenuItem key={category} value={category}>
-                {category}
+                {categoryLabels[category] || category}
               </MenuItem>
             ))}
           </Select>
@@ -345,7 +288,7 @@ const AdminPlants = () => {
             setOpenDialog(true);
           }}
         >
-          Add Plant
+          Adicionar Planta
         </Button>
       </Box>
 
@@ -353,10 +296,10 @@ const AdminPlants = () => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Common Name</TableCell>
-              <TableCell>Scientific Name</TableCell>
-              <TableCell>Category</TableCell>
-              <TableCell>Actions</TableCell>
+              <TableCell>Nome Popular</TableCell>
+              <TableCell>Nome Científico</TableCell>
+              <TableCell>Categoria</TableCell>
+              <TableCell>Ações</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -364,7 +307,9 @@ const AdminPlants = () => {
               <TableRow key={plant.id}>
                 <TableCell>{plant.commonName}</TableCell>
                 <TableCell>{plant.scientificName}</TableCell>
-                <TableCell>{plant.category}</TableCell>
+                <TableCell>
+                  {categoryLabels[plant.category] || plant.category}
+                </TableCell>
                 <TableCell>
                   <IconButton
                     onClick={() => {
@@ -389,6 +334,10 @@ const AdminPlants = () => {
           onPageChange={handleChangePage}
           rowsPerPage={rowsPerPage}
           onRowsPerPageChange={handleChangeRowsPerPage}
+          labelRowsPerPage="Itens por página"
+          labelDisplayedRows={({ from, to, count }) =>
+            `${from}-${to} de ${count}`
+          }
         />
       </TableContainer>
 
@@ -402,7 +351,7 @@ const AdminPlants = () => {
         fullWidth
       >
         <DialogTitle>
-          {selectedPlant ? "Edit Plant" : "Add New Plant"}
+          {selectedPlant ? "Editar Planta" : "Adicionar Nova Planta"}
         </DialogTitle>
         <DialogContent>
           <PlantForm
