@@ -35,22 +35,22 @@ import api from "../services/api";
 const PlantForm = ({ plant, onSubmit, onClose }) => {
   const [formData, setFormData] = useState(
     plant || {
-      nomePopular: "",
-      nomeCientifico: "",
-      categoria: "",
-      descricao: "",
-      altura: "",
-      diametroCopa: "",
-      origem: "",
-      cicloVida: "",
-      clima: "",
-      solo: "",
-      luminosidade: "",
-      irrigacao: "",
-      propagacao: "",
-      podas: "",
-      pragas: "",
-      observacoes: "",
+      commonName: "",
+      scientificName: "",
+      category: "",
+      description: "",
+      height: "",
+      crownDiameter: "",
+      origin: "",
+      lifeCycle: "",
+      climate: "",
+      soil: "",
+      lighting: "",
+      irrigation: "",
+      propagation: "",
+      pruning: "",
+      pests: "",
+      observations: "",
     }
   );
 
@@ -62,7 +62,7 @@ const PlantForm = ({ plant, onSubmit, onClose }) => {
         const response = await api.get("/plants/categories");
         setCategories(response.data);
       } catch (error) {
-        console.error("Erro ao buscar categorias:", error);
+        console.error("Error fetching categories:", error);
       }
     };
     fetchCategories();
@@ -82,25 +82,25 @@ const PlantForm = ({ plant, onSubmit, onClose }) => {
       <Stack spacing={2}>
         <TextField
           fullWidth
-          label="Nome Popular"
-          name="nomePopular"
-          value={formData.nomePopular}
+          label="Common Name"
+          name="commonName"
+          value={formData.commonName}
           onChange={handleChange}
           required
         />
         <TextField
           fullWidth
-          label="Nome Científico"
-          name="nomeCientifico"
-          value={formData.nomeCientifico}
+          label="Scientific Name"
+          name="scientificName"
+          value={formData.scientificName}
           onChange={handleChange}
           required
         />
         <FormControl fullWidth>
-          <InputLabel>Categoria</InputLabel>
+          <InputLabel>Category</InputLabel>
           <Select
-            name="categoria"
-            value={formData.categoria}
+            name="category"
+            value={formData.category}
             onChange={handleChange}
             required
           >
@@ -113,144 +113,142 @@ const PlantForm = ({ plant, onSubmit, onClose }) => {
         </FormControl>
         <TextField
           fullWidth
-          label="Descrição"
-          name="descricao"
-          value={formData.descricao}
+          label="Description"
+          name="description"
+          value={formData.description}
           onChange={handleChange}
           multiline
           rows={3}
         />
         <TextField
           fullWidth
-          label="Altura"
-          name="altura"
-          value={formData.altura}
+          label="Height"
+          name="height"
+          value={formData.height}
           onChange={handleChange}
         />
         <TextField
           fullWidth
-          label="Diâmetro da Copa"
-          name="diametroCopa"
-          value={formData.diametroCopa}
+          label="Crown Diameter"
+          name="crownDiameter"
+          value={formData.crownDiameter}
           onChange={handleChange}
         />
         <TextField
           fullWidth
-          label="Origem"
-          name="origem"
-          value={formData.origem}
+          label="Origin"
+          name="origin"
+          value={formData.origin}
           onChange={handleChange}
         />
         <TextField
           fullWidth
-          label="Ciclo de Vida"
-          name="cicloVida"
-          value={formData.cicloVida}
+          label="Life Cycle"
+          name="lifeCycle"
+          value={formData.lifeCycle}
           onChange={handleChange}
         />
         <TextField
           fullWidth
-          label="Clima"
-          name="clima"
-          value={formData.clima}
+          label="Climate"
+          name="climate"
+          value={formData.climate}
           onChange={handleChange}
         />
         <TextField
           fullWidth
-          label="Solo"
-          name="solo"
-          value={formData.solo}
+          label="Soil"
+          name="soil"
+          value={formData.soil}
           onChange={handleChange}
         />
         <TextField
           fullWidth
-          label="Luminosidade"
-          name="luminosidade"
-          value={formData.luminosidade}
+          label="Lighting"
+          name="lighting"
+          value={formData.lighting}
           onChange={handleChange}
         />
         <TextField
           fullWidth
-          label="Irrigação"
-          name="irrigacao"
-          value={formData.irrigacao}
+          label="Irrigation"
+          name="irrigation"
+          value={formData.irrigation}
           onChange={handleChange}
         />
         <TextField
           fullWidth
-          label="Propagação"
-          name="propagacao"
-          value={formData.propagacao}
+          label="Propagation"
+          name="propagation"
+          value={formData.propagation}
           onChange={handleChange}
         />
         <TextField
           fullWidth
-          label="Podas"
-          name="podas"
-          value={formData.podas}
+          label="Pruning"
+          name="pruning"
+          value={formData.pruning}
           onChange={handleChange}
         />
         <TextField
           fullWidth
-          label="Pragas"
-          name="pragas"
-          value={formData.pragas}
+          label="Pests"
+          name="pests"
+          value={formData.pests}
           onChange={handleChange}
         />
         <TextField
           fullWidth
-          label="Observações"
-          name="observacoes"
-          value={formData.observacoes}
+          label="Observations"
+          name="observations"
+          value={formData.observations}
           onChange={handleChange}
           multiline
           rows={3}
         />
+        <DialogActions>
+          <Button onClick={onClose}>Cancel</Button>
+          <Button type="submit" variant="contained" color="primary">
+            Save
+          </Button>
+        </DialogActions>
       </Stack>
-      <DialogActions>
-        <Button onClick={onClose}>Cancelar</Button>
-        <Button type="submit" variant="contained" color="primary">
-          {plant ? "Atualizar" : "Criar"}
-        </Button>
-      </DialogActions>
     </form>
   );
 };
 
 const AdminPlants = () => {
   const [plants, setPlants] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [selectedPlant, setSelectedPlant] = useState(null);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [totalPlants, setTotalPlants] = useState(0);
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [categories, setCategories] = useState([]);
-  const [openDialog, setOpenDialog] = useState(false);
-  const [selectedPlant, setSelectedPlant] = useState(null);
-  const [alertMessage, setAlertMessage] = useState(null);
+
+  useEffect(() => {
+    fetchPlants();
+    fetchCategories();
+  }, [page, rowsPerPage, search, selectedCategory]);
 
   const fetchPlants = async () => {
     try {
-      setLoading(true);
       const response = await api.get("/plants", {
         params: {
           page: page + 1,
           limit: rowsPerPage,
           search,
-          categoria: selectedCategory,
+          category: selectedCategory,
         },
       });
-      setPlants(response.data.plants || []);
-      setTotalPlants(response.data.total || 0);
-      setError(null);
+      setPlants(response.data.plants);
+      setLoading(false);
     } catch (error) {
-      setError("Erro ao carregar plantas");
       console.error("Error fetching plants:", error);
-      setPlants([]);
-      setTotalPlants(0);
-    } finally {
+      setError("Failed to fetch plants");
       setLoading(false);
     }
   };
@@ -260,14 +258,9 @@ const AdminPlants = () => {
       const response = await api.get("/plants/categories");
       setCategories(response.data);
     } catch (error) {
-      console.error("Erro ao buscar categorias:", error);
+      console.error("Error fetching categories:", error);
     }
   };
-
-  useEffect(() => {
-    fetchPlants();
-    fetchCategories();
-  }, [page, rowsPerPage, search, selectedCategory]);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -281,77 +274,62 @@ const AdminPlants = () => {
   const handleCreatePlant = async (plantData) => {
     try {
       await api.post("/plants", plantData);
-      setAlertMessage({ type: "success", text: "Planta criada com sucesso!" });
       setOpenDialog(false);
       fetchPlants();
     } catch (error) {
-      setAlertMessage({ type: "error", text: "Erro ao criar planta" });
+      console.error("Error creating plant:", error);
+      setError("Failed to create plant");
     }
   };
 
   const handleUpdatePlant = async (plantData) => {
     try {
       await api.put(`/plants/${selectedPlant.id}`, plantData);
-      setAlertMessage({
-        type: "success",
-        text: "Planta atualizada com sucesso!",
-      });
       setOpenDialog(false);
+      setSelectedPlant(null);
       fetchPlants();
     } catch (error) {
-      setAlertMessage({ type: "error", text: "Erro ao atualizar planta" });
+      console.error("Error updating plant:", error);
+      setError("Failed to update plant");
     }
   };
 
   const handleDeletePlant = async (id) => {
-    if (window.confirm("Tem certeza que deseja excluir esta planta?")) {
+    if (window.confirm("Are you sure you want to delete this plant?")) {
       try {
         await api.delete(`/plants/${id}`);
-        setAlertMessage({
-          type: "success",
-          text: "Planta removida com sucesso!",
-        });
         fetchPlants();
       } catch (error) {
-        setAlertMessage({ type: "error", text: "Erro ao remover planta" });
+        console.error("Error deleting plant:", error);
+        setError("Failed to delete plant");
       }
     }
   };
 
+  if (loading) return <Typography>Loading...</Typography>;
+  if (error) return <Alert severity="error">{error}</Alert>;
+
   return (
-    <Box sx={{ p: 3 }}>
-      <Typography variant="h4" gutterBottom>
-        Gerenciamento de Plantas
-      </Typography>
-
-      {alertMessage && (
-        <Alert
-          severity={alertMessage.type}
-          onClose={() => setAlertMessage(null)}
-          sx={{ mb: 2 }}
-        >
-          {alertMessage.text}
-        </Alert>
-      )}
-
-      <Box sx={{ mb: 2, display: "flex", gap: 2 }}>
+    <Box>
+      <Box sx={{ mb: 2, display: "flex", gap: 2, alignItems: "center" }}>
         <TextField
-          label="Buscar"
+          label="Search"
           variant="outlined"
+          size="small"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           InputProps={{
             endAdornment: <SearchIcon />,
           }}
         />
-        <FormControl sx={{ minWidth: 200 }}>
-          <InputLabel>Categoria</InputLabel>
+        <FormControl size="small" sx={{ minWidth: 200 }}>
+          <InputLabel>Category</InputLabel>
           <Select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            label="Categoria"
+            label="Category"
           >
-            <MenuItem value="">Todas</MenuItem>
+            <MenuItem value="">All</MenuItem>
             {categories.map((category) => (
               <MenuItem key={category} value={category}>
                 {category}
@@ -367,7 +345,7 @@ const AdminPlants = () => {
             setOpenDialog(true);
           }}
         >
-          Nova Planta
+          Add Plant
         </Button>
       </Box>
 
@@ -375,18 +353,18 @@ const AdminPlants = () => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Nome Popular</TableCell>
-              <TableCell>Nome Científico</TableCell>
-              <TableCell>Categoria</TableCell>
-              <TableCell>Ações</TableCell>
+              <TableCell>Common Name</TableCell>
+              <TableCell>Scientific Name</TableCell>
+              <TableCell>Category</TableCell>
+              <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {plants.map((plant) => (
               <TableRow key={plant.id}>
-                <TableCell>{plant.nomePopular}</TableCell>
-                <TableCell>{plant.nomeCientifico}</TableCell>
-                <TableCell>{plant.categoria}</TableCell>
+                <TableCell>{plant.commonName}</TableCell>
+                <TableCell>{plant.scientificName}</TableCell>
+                <TableCell>{plant.category}</TableCell>
                 <TableCell>
                   <IconButton
                     onClick={() => {
@@ -404,32 +382,36 @@ const AdminPlants = () => {
             ))}
           </TableBody>
         </Table>
+        <TablePagination
+          component="div"
+          count={plants.length}
+          page={page}
+          onPageChange={handleChangePage}
+          rowsPerPage={rowsPerPage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
       </TableContainer>
-
-      <TablePagination
-        component="div"
-        count={totalPlants}
-        page={page}
-        onPageChange={handleChangePage}
-        rowsPerPage={rowsPerPage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-        rowsPerPageOptions={[5, 10, 25]}
-      />
 
       <Dialog
         open={openDialog}
-        onClose={() => setOpenDialog(false)}
+        onClose={() => {
+          setOpenDialog(false);
+          setSelectedPlant(null);
+        }}
         maxWidth="md"
         fullWidth
       >
         <DialogTitle>
-          {selectedPlant ? "Editar Planta" : "Nova Planta"}
+          {selectedPlant ? "Edit Plant" : "Add New Plant"}
         </DialogTitle>
         <DialogContent>
           <PlantForm
             plant={selectedPlant}
             onSubmit={selectedPlant ? handleUpdatePlant : handleCreatePlant}
-            onClose={() => setOpenDialog(false)}
+            onClose={() => {
+              setOpenDialog(false);
+              setSelectedPlant(null);
+            }}
           />
         </DialogContent>
       </Dialog>

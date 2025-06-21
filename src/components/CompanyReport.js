@@ -271,6 +271,29 @@ const styles = StyleSheet.create({
     fontWeight: 700,
     color: "#1b5e20",
   },
+  growthSection: {
+    marginTop: 15,
+    padding: 15,
+    backgroundColor: "#f1f8e9",
+    borderRadius: 4,
+    borderLeft: 2,
+    borderLeftColor: "#558b2f",
+  },
+  growthTitle: {
+    fontSize: 12,
+    color: "#33691e",
+    fontWeight: 700,
+    marginBottom: 10,
+  },
+  measurementTimeline: {
+    marginTop: 10,
+  },
+  timelinePoint: {
+    marginBottom: 8,
+    paddingLeft: 12,
+    borderLeft: 1,
+    borderLeftColor: "#7cb342",
+  },
 });
 
 const CompanyReport = ({ geoAnalysis, locations, companyStats }) => {
@@ -369,6 +392,13 @@ const CompanyReport = ({ geoAnalysis, locations, companyStats }) => {
   };
 
   const farmers = getFarmersData();
+
+  const formatMeasurements = (measurements) => {
+    if (!measurements) return "Não informado";
+    const height = measurements.height || "0";
+    const width = measurements.width || "0";
+    return `${height}m x ${width}m`;
+  };
 
   return (
     <Document>
@@ -602,42 +632,51 @@ const CompanyReport = ({ geoAnalysis, locations, companyStats }) => {
                       )}
                     </View>
                     {/* Regular updates */}
-                    {plant.updates.map((update, index) => (
-                      <View key={index} style={styles.updateItem}>
-                        <Text style={styles.text}>
-                          <Text style={{ fontWeight: 700 }}>
-                            {format(
-                              new Date(update?.date || today),
-                              "dd/MM/yyyy"
-                            )}
-                          </Text>
-                        </Text>
-                        <Text style={styles.text}>
-                          <Text style={{ fontWeight: 700 }}>Estado: </Text>
-                          {update?.health || "Não especificado"}
-                        </Text>
-                        {update?.notes && (
+                    {[...plant.updates]
+                      .sort(
+                        (a, b) =>
+                          new Date(b.updateDate) - new Date(a.updateDate)
+                      )
+                      .map((update, index) => (
+                        <View key={index} style={styles.updateItem}>
                           <Text style={styles.text}>
                             <Text style={{ fontWeight: 700 }}>
-                              Observações:{" "}
+                              {format(
+                                new Date(update?.date || today),
+                                "dd/MM/yyyy"
+                              )}
                             </Text>
-                            {update.notes}
                           </Text>
-                        )}
-                        {update?.imageUrl && (
-                          <Image
-                            src={update.imageUrl}
-                            style={{
-                              width: 100,
-                              height: 100,
-                              objectFit: "cover",
-                              borderRadius: 4,
-                              marginTop: 8,
-                            }}
-                          />
-                        )}
-                      </View>
-                    ))}
+                          <Text style={styles.text}>
+                            <Text style={{ fontWeight: 700 }}>Estado: </Text>
+                            {update?.health || "Não especificado"}
+                          </Text>
+                          <Text style={styles.text}>
+                            <Text style={{ fontWeight: 700 }}>Medições: </Text>
+                            {formatMeasurements(update.measurements)}
+                          </Text>
+                          {update?.notes && (
+                            <Text style={styles.text}>
+                              <Text style={{ fontWeight: 700 }}>
+                                Observações:{" "}
+                              </Text>
+                              {update.notes}
+                            </Text>
+                          )}
+                          {update?.imageUrl && (
+                            <Image
+                              src={update.imageUrl}
+                              style={{
+                                width: 100,
+                                height: 100,
+                                objectFit: "cover",
+                                borderRadius: 4,
+                                marginTop: 8,
+                              }}
+                            />
+                          )}
+                        </View>
+                      ))}
                   </View>
                 </View>
               )}
