@@ -23,12 +23,14 @@ import {
   MenuItem,
   Stack,
   Alert,
+  DialogContentText,
 } from "@mui/material";
 import {
   Add as AddIcon,
   Edit as EditIcon,
   Delete as DeleteIcon,
   Search as SearchIcon,
+  Warning as WarningIcon,
 } from "@mui/icons-material";
 import api from "../services/api";
 
@@ -148,6 +150,35 @@ const PlantForm = ({ plant, onSubmit, onClose }) => {
   );
 };
 
+const DeleteConfirmationModal = ({ open, onClose, onConfirm, plantName }) => {
+  return (
+    <Dialog open={open} onClose={onClose}>
+      <DialogTitle sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+        <WarningIcon color="warning" />
+        Confirmar Exclusão
+      </DialogTitle>
+      <DialogContent>
+        <DialogContentText>
+          Tem certeza que deseja excluir a planta <strong>{plantName}</strong>?
+          <br />
+          Esta ação não pode ser desfeita.
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose}>Cancelar</Button>
+        <Button
+          onClick={onConfirm}
+          variant="contained"
+          color="error"
+          startIcon={<DeleteIcon />}
+        >
+          Excluir
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
+
 const AdminPlants = () => {
   const [plants, setPlants] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -159,6 +190,8 @@ const AdminPlants = () => {
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [categories, setCategories] = useState([]);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [plantToDelete, setPlantToDelete] = useState(null);
 
   const categoryLabels = {
     TREES: "Árvores",
@@ -237,16 +270,26 @@ const AdminPlants = () => {
     }
   };
 
-  const handleDeletePlant = async (id) => {
-    if (window.confirm("Tem certeza que deseja excluir esta planta?")) {
-      try {
-        await api.delete(`/plants/${id}`);
-        fetchPlants();
-      } catch (error) {
-        console.error("Erro ao excluir planta:", error);
-        setError("Falha ao excluir planta");
-      }
+  const handleDeleteClick = (plant) => {
+    setPlantToDelete(plant);
+    setDeleteModalOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    try {
+      await api.delete(`/plants/${plantToDelete.id}`);
+      setDeleteModalOpen(false);
+      setPlantToDelete(null);
+      fetchPlants();
+    } catch (error) {
+      console.error("Erro ao excluir planta:", error);
+      setError("Falha ao excluir planta");
     }
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteModalOpen(false);
+    setPlantToDelete(null);
   };
 
   if (loading) return <Typography>Carregando...</Typography>;
@@ -316,10 +359,16 @@ const AdminPlants = () => {
                       setSelectedPlant(plant);
                       setOpenDialog(true);
                     }}
+                    color="primary"
+                    title="Editar planta"
                   >
                     <EditIcon />
                   </IconButton>
-                  <IconButton onClick={() => handleDeletePlant(plant.id)}>
+                  <IconButton
+                    onClick={() => handleDeleteClick(plant)}
+                    color="error"
+                    title="Excluir planta"
+                  >
                     <DeleteIcon />
                   </IconButton>
                 </TableCell>
@@ -364,6 +413,13 @@ const AdminPlants = () => {
           />
         </DialogContent>
       </Dialog>
+
+      <DeleteConfirmationModal
+        open={deleteModalOpen}
+        onClose={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        plantName={plantToDelete?.commonName}
+      />
     </Box>
   );
 };
