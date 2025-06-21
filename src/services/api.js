@@ -61,6 +61,7 @@ export const plantLocations = {
 
 export const plants = {
   getAll: () => api.get("/plants"),
+  getList: () => api.get("/plants/list"), // New endpoint for getting all plants without pagination
   getOne: (id) => api.get(`/plants/${id}`),
   create: (plantData) => api.post("/plants", plantData),
   update: (id, plantData) => api.put(`/plants/${id}`, plantData),
