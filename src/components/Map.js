@@ -6,6 +6,7 @@ import {
   Popup,
   useMapEvents,
   useMap,
+  LayersControl,
 } from "react-leaflet";
 import MarkerClusterGroup from "react-leaflet-markercluster";
 import L from "leaflet";
@@ -47,6 +48,7 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import "leaflet/dist/leaflet.css";
+import "leaflet.markercluster/dist/MarkerCluster.css";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import SearchIcon from "@mui/icons-material/Search";
 import MyLocationIcon from "@mui/icons-material/MyLocation";
@@ -82,7 +84,10 @@ import {
 import "leaflet.markercluster/dist/MarkerCluster.css";
 import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 
+// Constants
 const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8000/api";
+// São Paulo coordinates as default center
+const defaultPosition = [-23.5505, -46.6333];
 
 // Fix for default marker icon
 delete L.Icon.Default.prototype._getIconUrl;
@@ -476,6 +481,33 @@ const LocationButton = styled(IconButton)(({ theme }) => ({
   },
 }));
 
+// In the MapContainer component:
+<MapContainer
+  center={defaultPosition}
+  zoom={13}
+  style={{ height: "100%", width: "100%" }}
+>
+  <LayersControl position="bottomright">
+    <LayersControl.BaseLayer checked name="Street Map">
+      <TileLayer
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      />
+    </LayersControl.BaseLayer>
+    <LayersControl.BaseLayer name="Satellite">
+      <TileLayer
+        url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+        attribution="Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community"
+        maxZoom={19}
+        minZoom={0}
+        tileSize={256}
+      />
+    </LayersControl.BaseLayer>
+  </LayersControl>
+
+  {/* ... rest of your existing MapContainer content ... */}
+</MapContainer>;
+
 const LocationMap = () => {
   const { user, token } = useAuth();
   const [locations, setLocations] = useState([]);
@@ -524,9 +556,6 @@ const LocationMap = () => {
   });
   const [locationDetails, setLocationDetails] = useState({});
   const [locationAddress, setLocationAddress] = useState(null);
-
-  // São Paulo coordinates as default center
-  const defaultPosition = [-23.5505, -46.6333];
 
   useEffect(() => {
     loadLocations();
@@ -2168,6 +2197,13 @@ const LocationMap = () => {
           height: { xs: "calc(100vh - 150px)", md: "calc(100vh - 200px)" },
           mb: { xs: 2, md: 4 },
           position: "relative",
+          width: "100%", // Add explicit width
+          "& .leaflet-container": {
+            // Add specific Leaflet container styles
+            height: "100%",
+            width: "100%",
+            zIndex: 1,
+          },
         }}
       >
         <MapContainer
@@ -2175,10 +2211,24 @@ const LocationMap = () => {
           zoom={13}
           style={{ height: "100%", width: "100%" }}
         >
-          <TileLayer
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          />
+          <LayersControl position="bottomright">
+            <LayersControl.BaseLayer checked name="Street Map">
+              <TileLayer
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              />
+            </LayersControl.BaseLayer>
+            <LayersControl.BaseLayer name="Satellite">
+              <TileLayer
+                url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+                attribution="Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community"
+                maxZoom={19}
+                minZoom={0}
+                tileSize={256}
+              />
+            </LayersControl.BaseLayer>
+          </LayersControl>
+
           {user?.role === "FARMER" && isAddMode && (
             <AddMarkerToClick onLocationSelected={handleMapClick} />
           )}
