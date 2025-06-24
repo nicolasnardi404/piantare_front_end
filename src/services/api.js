@@ -110,6 +110,14 @@ export const geocoding = {
   },
 };
 
+export const projects = {
+  getList: () => api.get("/projects"),
+  getById: (id) => api.get(`/projects/${id}`),
+  create: (projectData) => api.post("/projects", projectData),
+  update: (id, projectData) => api.put(`/projects/${id}`, projectData),
+  delete: (id) => api.delete(`/projects/${id}`),
+};
+
 // Export both named exports and default export
 export { api };
 export default api;
