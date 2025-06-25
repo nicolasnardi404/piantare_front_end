@@ -967,7 +967,7 @@ const LocationMap = () => {
     observations,
     image,
     height,
-    width
+    diameter
   ) => {
     try {
       let imageUrl = null;
@@ -988,14 +988,13 @@ const LocationMap = () => {
         imageUrl = uploadResponse.data.url;
       }
 
-      // Update to match new schema structure
       const updateResponse = await plantUpdates.create({
-        plantedPlantId: plantId, // Changed from plantLocationId
+        plantedPlantId: plantId,
         healthStatus,
         notes: observations,
         imageUrl,
         height: parseFloat(height),
-        diameter: parseFloat(width), // Changed from width to diameter
+        diameter: parseFloat(diameter),
       });
 
       console.log("Update created:", updateResponse);
@@ -1540,7 +1539,7 @@ const LocationMap = () => {
     const [healthStatus, setHealthStatus] = useState("HEALTHY");
     const [observations, setObservations] = useState("");
     const [height, setHeight] = useState("");
-    const [width, setWidth] = useState("");
+    const [diameter, setDiameter] = useState("");
     const [imageUpload, setImageUpload] = useState({
       file: null,
       preview: null,
@@ -1588,8 +1587,8 @@ const LocationMap = () => {
     };
 
     const handleSubmit = async () => {
-      if (!height || !width) {
-        setError("Por favor, preencha a altura e largura da planta");
+      if (!height || !diameter) {
+        setError("Por favor, preencha a altura e diâmetro da planta");
         return;
       }
 
@@ -1600,13 +1599,13 @@ const LocationMap = () => {
           observations,
           imageUpload.file,
           height,
-          width
+          diameter
         );
         // Reset form
         setHealthStatus("HEALTHY");
         setObservations("");
         setHeight("");
-        setWidth("");
+        setDiameter("");
         setImageUpload({
           file: null,
           preview: null,
@@ -1695,10 +1694,10 @@ const LocationMap = () => {
               <Grid item xs={6}>
                 <TextField
                   fullWidth
-                  label="Largura (metros)"
+                  label="Diâmetro (metros)"
                   type="number"
-                  value={width}
-                  onChange={(e) => setWidth(e.target.value)}
+                  value={diameter}
+                  onChange={(e) => setDiameter(e.target.value)}
                   inputProps={{ step: "0.01" }}
                   required
                 />
@@ -1789,7 +1788,7 @@ const LocationMap = () => {
           projectId: null,
           description: "",
           height: "",
-          width: "",
+          diameter: "",
           notes: "",
         });
       }}

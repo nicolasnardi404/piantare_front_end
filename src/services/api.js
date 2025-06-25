@@ -98,19 +98,15 @@ export const uploads = {
 };
 
 export const plantUpdates = {
-  create: (updateData) => {
-    // Create a regular object instead of FormData since we already have the imageUrl
-    const data = {
-      plantLocationId: updateData.plantLocationId,
-      healthStatus: updateData.healthStatus,
-      notes: updateData.notes || "",
-      imageUrl: updateData.imageUrl,
-      height: parseFloat(updateData.height),
-      width: parseFloat(updateData.width),
-    };
-
-    console.log("Sending update data:", data);
-    return api.post("/plant-updates", data);
+  create: async (data) => {
+    return api.post("/plant-updates", {
+      plantedPlantId: data.plantedPlantId,
+      healthStatus: data.healthStatus,
+      notes: data.notes,
+      imageUrl: data.imageUrl,
+      height: parseFloat(data.height),
+      diameter: parseFloat(data.diameter),
+    });
   },
   getByPlantId: (plantLocationId) =>
     api.get(`/plant-updates/plant/${plantLocationId}`),
