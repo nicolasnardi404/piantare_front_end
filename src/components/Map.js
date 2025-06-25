@@ -46,6 +46,7 @@ import {
   InputAdornment,
   Tooltip,
   CircularProgress,
+  Fade,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import "leaflet/dist/leaflet.css";
@@ -80,6 +81,8 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import { Polygon } from "react-leaflet";
+import LegendToggleIcon from "@mui/icons-material/LegendToggle";
 
 // Import marker cluster CSS
 import "leaflet.markercluster/dist/MarkerCluster.css";
@@ -559,6 +562,8 @@ const LocationMap = () => {
   const [locationDetails, setLocationDetails] = useState({});
   const [locationAddress, setLocationAddress] = useState(null);
   const [projects, setProjects] = useState([]);
+  const [projectPolygons, setProjectPolygons] = useState([]);
+  const [showLegend, setShowLegend] = useState(false);
 
   useEffect(() => {
     loadLocations();
@@ -579,6 +584,33 @@ const LocationMap = () => {
     };
     loadProjects();
   }, [user, isAddingLocation]);
+
+  useEffect(() => {
+    const loadProjectPolygons = async () => {
+      if (user?.role === "FARMER") {
+        try {
+          const response = await farmer.getProjects();
+          const projectsWithArea = response.data
+            .filter((project) => project.areaCoordinates)
+            .map((project) => ({
+              ...project,
+              // Ensure coordinates are in the correct format: [[lat, lng], [lat, lng], ...]
+              areaCoordinates: Array.isArray(project.areaCoordinates)
+                ? project.areaCoordinates.map((coord) =>
+                    Array.isArray(coord) ? [coord[0], coord[1]] : coord
+                  )
+                : JSON.parse(project.areaCoordinates).map((coord) =>
+                    Array.isArray(coord) ? [coord[0], coord[1]] : coord
+                  ),
+            }));
+          setProjectPolygons(projectsWithArea);
+        } catch (error) {
+          console.error("Error loading project areas:", error);
+        }
+      }
+    };
+    loadProjectPolygons();
+  }, [user]);
 
   const analyzeEnvironmentalImpact = useCallback(async (plants) => {
     try {
@@ -2460,6 +2492,111 @@ const LocationMap = () => {
                 </Popup>
               </Marker>
             )}
+
+          {/* Add Project Polygons */}
+          {projectPolygons.map((project) =>
+            project.areaCoordinates && project.areaCoordinates.length > 0 ? (
+              <Polygon
+                key={project.id}
+                positions={[project.areaCoordinates]}
+                pathOptions={{
+                  color:
+                    project.status === "IN_PROGRESS"
+                      ? "#4caf50"
+                      : project.status === "COMPLETED"
+                      ? "#2196f3"
+                      : project.status === "PLANNING"
+                      ? "#ff9800"
+                      : project.status === "ON_HOLD"
+                      ? "#fdd835"
+                      : "#f44336",
+                  fillColor:
+                    project.status === "IN_PROGRESS"
+                      ? "#4caf5033"
+                      : project.status === "COMPLETED"
+                      ? "#2196f333"
+                      : project.status === "PLANNING"
+                      ? "#ff980033"
+                      : project.status === "ON_HOLD"
+                      ? "#fdd83533"
+                      : "#f4433633",
+                  fillOpacity: 0.3,
+                  weight: 2,
+                }}
+                eventHandlers={{
+                  click: (e) => {
+                    if (isAddMode) {
+                      // If in add mode, allow plant placement
+                      e.originalEvent.stopPropagation();
+                      handleMapClick({
+                        latitude: e.latlng.lat,
+                        longitude: e.latlng.lng,
+                      });
+                    }
+                  },
+                  mouseover: (e) => {
+                    const statusText =
+                      project.status === "IN_PROGRESS"
+                        ? "Em Andamento"
+                        : project.status === "COMPLETED"
+                        ? "Concluído"
+                        : project.status === "PLANNING"
+                        ? "Em Planejamento"
+                        : project.status === "ON_HOLD"
+                        ? "Em Espera"
+                        : "Cancelado";
+
+                    const statusColor =
+                      project.status === "IN_PROGRESS"
+                        ? "#4caf50"
+                        : project.status === "COMPLETED"
+                        ? "#2196f3"
+                        : project.status === "PLANNING"
+                        ? "#ff9800"
+                        : project.status === "ON_HOLD"
+                        ? "#fdd835"
+                        : "#f44336";
+
+                    const popup = L.popup({
+                      closeButton: false,
+                      offset: [0, -10],
+                    })
+                      .setLatLng(e.latlng)
+                      .setContent(
+                        `<div style="padding: 12px; min-width: 220px; font-family: Arial, sans-serif;">
+                          <h4 style="margin: 0 0 12px 0; color: #1b5e20; font-size: 16px;">${
+                            project.name
+                          }</h4>
+                          <div style="display: flex; align-items: center; margin: 8px 0;">
+                            <span style="
+                              width: 10px;
+                              height: 10px;
+                              border-radius: 50%;
+                              background-color: ${statusColor};
+                              display: inline-block;
+                              margin-right: 8px;">
+                            </span>
+                            <span style="color: #666; font-size: 14px;">Status: ${statusText}</span>
+                          </div>
+                          ${
+                            project.description
+                              ? `<p style="margin: 8px 0 0 0; color: #555; font-size: 13px; line-height: 1.4;">
+                                 ${project.description}
+                               </p>`
+                              : ""
+                          }
+                        </div>`
+                      )
+                      .openOn(e.target._map);
+
+                    e.target.on("mouseout", () => {
+                      e.target._map.closePopup(popup);
+                    });
+                  },
+                }}
+              ></Polygon>
+            ) : null
+          )}
         </MapContainer>
       </Box>
 
@@ -2951,6 +3088,88 @@ const LocationMap = () => {
       </Dialog>
 
       {renderAddLocationDialog()}
+
+      {/* Legend Toggle Button */}
+      {user?.role === "FARMER" && projectPolygons.length > 0 && (
+        <Box
+          sx={{
+            position: "absolute",
+            bottom: 200,
+            right: 30,
+            zIndex: 1000,
+          }}
+        >
+          <Tooltip
+            title={showLegend ? "Ocultar Legenda" : "Mostrar Legenda"}
+            placement="left"
+          >
+            <IconButton
+              onClick={() => setShowLegend(!showLegend)}
+              sx={{
+                backgroundColor: "rgba(255, 255, 255, 0.9)",
+                boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+                "&:hover": {
+                  backgroundColor: "rgba(255, 255, 255, 0.95)",
+                },
+              }}
+            >
+              <LegendToggleIcon color={showLegend ? "primary" : "inherit"} />
+            </IconButton>
+          </Tooltip>
+
+          <Fade in={showLegend}>
+            <Box
+              sx={{
+                position: "absolute",
+                top: "100%",
+                right: 0,
+                mt: 1,
+                backgroundColor: "rgba(255, 255, 255, 0.9)",
+                borderRadius: 1,
+                p: 1,
+                boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+                minWidth: "180px",
+              }}
+            >
+              <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
+                Áreas dos Projetos
+              </Typography>
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <Box
+                    sx={{ width: 16, height: 16, backgroundColor: "#4caf50" }}
+                  />
+                  <Typography variant="caption">Em Andamento</Typography>
+                </Box>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <Box
+                    sx={{ width: 16, height: 16, backgroundColor: "#2196f3" }}
+                  />
+                  <Typography variant="caption">Concluído</Typography>
+                </Box>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <Box
+                    sx={{ width: 16, height: 16, backgroundColor: "#ff9800" }}
+                  />
+                  <Typography variant="caption">Em Planejamento</Typography>
+                </Box>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <Box
+                    sx={{ width: 16, height: 16, backgroundColor: "#fdd835" }}
+                  />
+                  <Typography variant="caption">Em Espera</Typography>
+                </Box>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <Box
+                    sx={{ width: 16, height: 16, backgroundColor: "#f44336" }}
+                  />
+                  <Typography variant="caption">Cancelado</Typography>
+                </Box>
+              </Box>
+            </Box>
+          </Fade>
+        </Box>
+      )}
     </Box>
   );
 };
