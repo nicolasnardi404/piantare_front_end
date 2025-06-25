@@ -50,13 +50,32 @@ export const users = {
 };
 
 export const plantLocations = {
-  getAll: () => api.get("/plant-locations"),
-  getCompanyPlants: () => api.get("/plant-locations/company/plants"),
-  create: (locationData) => api.post("/plant-locations", locationData),
-  getOne: (id) => api.get(`/plant-locations/${id}`),
-  assignCompany: (id, data) =>
-    api.put(`/plant-locations/${id}/assign-company`, data),
-  delete: (id) => api.delete(`/plant-locations/${id}`),
+  // Get basic map markers data
+  getMapMarkers: () => api.get("/planted-plants/map-markers"),
+
+  // Get farmer's plants with relevant data
+  getFarmerPlants: () => api.get("/planted-plants/farmer/plants"),
+
+  // Get company's plants with relevant data
+  getCompanyPlants: () => api.get("/planted-plants/company/plants"),
+
+  // Get detailed plant information
+  getPlantDetails: (id) => api.get(`/planted-plants/details/${id}`),
+
+  // Create new planted plant
+  create: (data) =>
+    api.post("/planted-plants", {
+      ...data,
+      speciesId: parseInt(data.speciesId),
+      projectId: parseInt(data.projectId),
+      height: parseFloat(data.height),
+      diameter: parseFloat(data.diameter), // Changed from width to diameter
+      latitude: parseFloat(data.latitude),
+      longitude: parseFloat(data.longitude),
+    }),
+
+  // Delete planted plant
+  delete: (id) => api.delete(`/planted-plants/${id}`),
 };
 
 export const plants = {

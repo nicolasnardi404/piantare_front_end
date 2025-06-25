@@ -660,22 +660,12 @@ const LocationMap = () => {
       let response;
       if (user?.role === "COMPANY") {
         response = await plantLocations.getCompanyPlants();
+      } else if (user?.role === "FARMER") {
+        response = await plantLocations.getFarmerPlants();
       } else {
-        response = await plantLocations.getAll();
+        response = await plantLocations.getMapMarkers();
       }
 
-      console.log("API Response:", response.data);
-      // Log unique farmers with their details
-      const farmersMap = new Map();
-      response.data.forEach((location) => {
-        if (location.addedBy && !farmersMap.has(location.addedBy.id)) {
-          farmersMap.set(location.addedBy.id, location.addedBy);
-        }
-      });
-      console.log(
-        "Unique Farmers with details:",
-        Array.from(farmersMap.values())
-      );
       setLocations(response.data);
     } catch (err) {
       console.error("Error loading locations:", err);
@@ -724,22 +714,26 @@ const LocationMap = () => {
   };
 
   const handleMarkerClick = async (location) => {
-    console.log("Selected Plant:", location);
-    console.log("Current User:", user);
-    console.log("Is user a farmer?", user?.role === "FARMER");
-    console.log("Plant added by:", location?.addedBy?.id);
-    console.log("User ID:", user?.userId);
-    console.log("Do IDs match?", location?.addedBy?.id === user?.userId);
+    try {
+      // Get detailed plant information
+      const detailedResponse = await plantLocations.getPlantDetails(
+        location.id
+      );
+      const detailedLocation = detailedResponse.data;
 
-    // Get location address
-    const addressData = await getAddressFromCoordinates(
-      location.latitude,
-      location.longitude
-    );
-    setLocationAddress(addressData);
+      // Get location address
+      const addressData = await getAddressFromCoordinates(
+        location.latitude,
+        location.longitude
+      );
+      setLocationAddress(addressData);
 
-    setSelectedPlant(location);
-    setIsDetailModalOpen(true);
+      setSelectedPlant(detailedLocation);
+      setIsDetailModalOpen(true);
+    } catch (error) {
+      console.error("Error fetching plant details:", error);
+      setError("Failed to load plant details");
+    }
   };
 
   const handleAddLocation = async () => {
