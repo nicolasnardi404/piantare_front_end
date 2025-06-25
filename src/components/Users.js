@@ -47,6 +47,9 @@ const Users = ({ translations }) => {
     password: "",
     name: "",
     companyName: "",
+    farmSize: "",
+    location: "",
+    expertise: [],
   });
   const [selectedCompanyId, setSelectedCompanyId] = useState("");
 
@@ -67,9 +70,10 @@ const Users = ({ translations }) => {
 
   const loadPlants = async () => {
     try {
-      const response = await plantLocations.getAll();
+      const response = await plantLocations.getAdminPlantsList();
       setPlantsList(response.data);
     } catch (err) {
+      console.error("Error loading plants:", err);
       setError("Falha ao carregar plantas");
     }
   };
@@ -92,6 +96,9 @@ const Users = ({ translations }) => {
         password: "",
         name: user.name,
         companyName: user.role === "COMPANY" ? user.company?.name || "" : "",
+        farmSize: user.farmer?.farmSize || "",
+        location: user.farmer?.location || "",
+        expertise: user.farmer?.expertise || [],
       });
     } else {
       setIsEditMode(false);
@@ -101,6 +108,9 @@ const Users = ({ translations }) => {
         password: "",
         name: "",
         companyName: "",
+        farmSize: "",
+        location: "",
+        expertise: [],
       });
     }
     setIsDialogOpen(true);
@@ -113,6 +123,9 @@ const Users = ({ translations }) => {
       password: "",
       name: "",
       companyName: "",
+      farmSize: "",
+      location: "",
+      expertise: [],
     });
     setError("");
   };
@@ -125,22 +138,25 @@ const Users = ({ translations }) => {
         return;
       }
 
-      const submitData = { ...formData };
-      const isCompany = activeTab === 1;
+      const submitData = {
+        email: formData.email,
+        name: formData.name,
+        role: activeTab === 0 ? "FARMER" : "COMPANY",
+      };
 
-      if (isCompany && !submitData.companyName) {
-        setError("Nome da empresa é obrigatório");
-        return;
+      // Only include password if it's provided
+      if (formData.password) {
+        submitData.password = formData.password;
       }
 
-      // Add role based on active tab
-      submitData.role = isCompany ? "COMPANY" : "FARMER";
+      // Add farmer-specific fields
+      if (submitData.role === "FARMER") {
+        submitData.farmSize = formData.farmSize;
+        submitData.location = formData.location;
+        submitData.expertise = formData.expertise || [];
+      }
 
       if (isEditMode) {
-        if (!submitData.password) {
-          delete submitData.password;
-        }
-        delete submitData.companyName; // Remove companyName as it's not needed for updates
         await users.update(selectedUser.id, submitData);
       } else {
         await users.create(submitData);
@@ -191,6 +207,9 @@ const Users = ({ translations }) => {
       password: "",
       name: "",
       companyName: "",
+      farmSize: "",
+      location: "",
+      expertise: [],
     });
     setError("");
   };
@@ -236,7 +255,13 @@ const Users = ({ translations }) => {
                   <TableRow>
                     <TableCell>Nome</TableCell>
                     <TableCell>Email</TableCell>
-                    {activeTab === 1 && <TableCell>Nome da Empresa</TableCell>}
+                    {activeTab === 0 && (
+                      <>
+                        <TableCell>Tamanho da Fazenda</TableCell>
+                        <TableCell>Localização</TableCell>
+                        <TableCell>Especialidades</TableCell>
+                      </>
+                    )}
                     <TableCell>Ações</TableCell>
                   </TableRow>
                 </TableHead>
@@ -245,8 +270,22 @@ const Users = ({ translations }) => {
                     <TableRow key={user.id}>
                       <TableCell>{user.name}</TableCell>
                       <TableCell>{user.email}</TableCell>
-                      {activeTab === 1 && (
-                        <TableCell>{user.company?.name}</TableCell>
+                      {activeTab === 0 && (
+                        <>
+                          <TableCell>
+                            {user.farmer?.farmSize
+                              ? `${user.farmer.farmSize} hectares`
+                              : "Não informado"}
+                          </TableCell>
+                          <TableCell>
+                            {user.farmer?.location || "Não informado"}
+                          </TableCell>
+                          <TableCell>
+                            {user.farmer?.expertise?.length > 0
+                              ? user.farmer.expertise.join(", ")
+                              : "Não informado"}
+                          </TableCell>
+                        </>
                       )}
                       <TableCell>
                         <IconButton
@@ -281,7 +320,7 @@ const Users = ({ translations }) => {
                 <TableHead>
                   <TableRow>
                     <TableCell>Espécie</TableCell>
-                    <TableCell>Adicionado Por</TableCell>
+                    <TableCell>Projeto</TableCell>
                     <TableCell>Empresa</TableCell>
                     <TableCell>Localização</TableCell>
                     <TableCell>Ações</TableCell>
@@ -290,12 +329,22 @@ const Users = ({ translations }) => {
                 <TableBody>
                   {plantsList.map((plant) => (
                     <TableRow key={plant.id}>
-                      <TableCell>{plant.species}</TableCell>
-                      <TableCell>{plant.addedBy?.name}</TableCell>
                       <TableCell>
-                        {plant.company ? (
-                          plant.company.name
-                        ) : (
+                        {plant.species?.commonName || "Não informado"}
+                        <Typography
+                          variant="caption"
+                          display="block"
+                          color="text.secondary"
+                          sx={{ fontStyle: "italic" }}
+                        >
+                          {plant.species?.scientificName}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        {plant.project?.name || "Não informado"}
+                      </TableCell>
+                      <TableCell>
+                        {plant.company?.user?.name || (
                           <Typography color="text.secondary">
                             Não atribuída
                           </Typography>
@@ -331,11 +380,30 @@ const Users = ({ translations }) => {
               onClose={() => {
                 setIsDialogOpen(false);
                 setSelectedCompanyId("");
+                setError("");
               }}
             >
               <DialogTitle>Atribuir Planta à Empresa</DialogTitle>
               <DialogContent>
-                <FormControl fullWidth sx={{ mt: 2 }}>
+                {error && (
+                  <Alert severity="error" sx={{ mb: 2 }}>
+                    {error}
+                  </Alert>
+                )}
+                <Box sx={{ mt: 2 }}>
+                  <Typography variant="subtitle1" gutterBottom>
+                    Planta: {selectedUser?.species?.commonName}
+                  </Typography>
+                  <Typography
+                    variant="caption"
+                    display="block"
+                    color="text.secondary"
+                    sx={{ mb: 2, fontStyle: "italic" }}
+                  >
+                    {selectedUser?.species?.scientificName}
+                  </Typography>
+                </Box>
+                <FormControl fullWidth>
                   <InputLabel>Selecionar Empresa</InputLabel>
                   <Select
                     value={selectedCompanyId}
@@ -344,7 +412,7 @@ const Users = ({ translations }) => {
                   >
                     {companyList.map((company) => (
                       <MenuItem key={company.id} value={company.id}>
-                        {company.name}
+                        {company.user?.name}
                       </MenuItem>
                     ))}
                   </Select>
@@ -355,6 +423,7 @@ const Users = ({ translations }) => {
                   onClick={() => {
                     setIsDialogOpen(false);
                     setSelectedCompanyId("");
+                    setError("");
                   }}
                 >
                   Cancelar
@@ -363,6 +432,7 @@ const Users = ({ translations }) => {
                   onClick={() => handleAssignCompany(selectedUser?.id)}
                   variant="contained"
                   color="primary"
+                  disabled={!selectedCompanyId}
                 >
                   Atribuir
                 </Button>
@@ -433,17 +503,41 @@ const Users = ({ translations }) => {
                 setFormData({ ...formData, password: e.target.value })
               }
             />
-            {activeTab === 1 && (
-              <TextField
-                margin="dense"
-                label="Nome da Empresa"
-                fullWidth
-                required
-                value={formData.companyName}
-                onChange={(e) =>
-                  setFormData({ ...formData, companyName: e.target.value })
-                }
-              />
+            {activeTab === 0 && (
+              <>
+                <TextField
+                  margin="dense"
+                  label="Tamanho da Fazenda (hectares)"
+                  type="number"
+                  fullWidth
+                  value={formData.farmSize || ""}
+                  onChange={(e) =>
+                    setFormData({ ...formData, farmSize: e.target.value })
+                  }
+                />
+                <TextField
+                  margin="dense"
+                  label="Localização"
+                  fullWidth
+                  value={formData.location || ""}
+                  onChange={(e) =>
+                    setFormData({ ...formData, location: e.target.value })
+                  }
+                />
+                <TextField
+                  margin="dense"
+                  label="Especialidades (separadas por vírgula)"
+                  fullWidth
+                  value={formData.expertise?.join(", ") || ""}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      expertise: e.target.value.split(",").map((s) => s.trim()),
+                    })
+                  }
+                  helperText="Ex: Fruticultura, Horticultura, Silvicultura"
+                />
+              </>
             )}
           </DialogContent>
           <DialogActions>

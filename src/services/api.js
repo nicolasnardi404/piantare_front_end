@@ -53,6 +53,9 @@ export const plantLocations = {
   // Get basic map markers data
   getMapMarkers: () => api.get("/planted-plants/map-markers"),
 
+  // Get admin plants list
+  getAdminPlantsList: () => api.get("/planted-plants/admin/plants"),
+
   // Get farmer's plants with relevant data
   getFarmerPlants: () => api.get("/planted-plants/farmer/plants"),
 
@@ -62,17 +65,21 @@ export const plantLocations = {
   // Get detailed plant information
   getPlantDetails: (id) => api.get(`/planted-plants/details/${id}`),
 
+  // Assign plant to company
+  assignCompany: (plantId, data) =>
+    api.put(`/planted-plants/${plantId}/assign-company`, data),
+
   // Create new planted plant
   create: (data) =>
     api.post("/planted-plants", {
       latitude: parseFloat(data.latitude),
       longitude: parseFloat(data.longitude),
-      speciesId: parseInt(data.plantId), // Changed from speciesId to match frontend
+      speciesId: parseInt(data.plantId),
       description: data.description,
       projectId: parseInt(data.projectId),
       imageUrl: data.imageUrl,
       height: parseFloat(data.height),
-      diameter: parseFloat(data.width), // Using width as diameter
+      diameter: parseFloat(data.width),
     }),
 
   // Delete planted plant
