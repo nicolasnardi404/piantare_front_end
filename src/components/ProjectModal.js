@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -22,13 +22,17 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import "leaflet/dist/leaflet.css";
-import { projects } from "../services/api";
+import { projects, uploads } from "../services/api";
 import {
   Edit as EditIcon,
   Save as SaveIcon,
   Close as CloseIcon,
+  Camera as CameraIcon,
+  Delete as DeleteIcon,
 } from "@mui/icons-material";
 import ProjectAreaMap from "./ProjectAreaMap";
+import html2canvas from "html2canvas";
+import L from "leaflet";
 
 // São Paulo coordinates as default center
 const defaultPosition = [-23.5505, -46.6333];
@@ -56,6 +60,9 @@ const ProjectModal = ({ open, onClose, projectId, onUpdate }) => {
   const [editing, setEditing] = useState(false);
   const [editedProject, setEditedProject] = useState(null);
   const [error, setError] = useState(null);
+  const [capturedMap, setCapturedMap] = useState(null);
+  const mapRef = useRef(null);
+  const mapInstanceRef = useRef(null);
 
   useEffect(() => {
     if (projectId) {
@@ -89,6 +96,65 @@ const ProjectModal = ({ open, onClose, projectId, onUpdate }) => {
     }
   };
 
+  const handleMapInstance = (map) => {
+    console.log("Map instance received:", map);
+    mapInstanceRef.current = map;
+  };
+
+  const captureMap = async () => {
+    try {
+      const mapContainerElement =
+        mapRef.current?.querySelector(".leaflet-container");
+      if (!mapContainerElement) {
+        console.error("Map element not found");
+        return null;
+      }
+
+      // Create canvas with the map's dimensions
+      const canvas = await html2canvas(mapContainerElement, {
+        useCORS: true,
+        allowTaint: true,
+        logging: false,
+        scale: 1,
+      });
+
+      // Convert canvas to blob
+      return new Promise((resolve) => {
+        canvas.toBlob((blob) => {
+          if (!blob) {
+            console.error("Failed to create blob from canvas");
+            resolve(null);
+            return;
+          }
+          resolve(blob);
+        }, "image/png");
+      });
+    } catch (error) {
+      console.error("Error capturing map:", error);
+      return null;
+    }
+  };
+
+  const handleAreaChange = async (coordinates) => {
+    console.log("Area drawing completed with coordinates:", coordinates);
+
+    // Update coordinates
+    setEditedProject((prev) => ({
+      ...prev,
+      areaCoordinates: coordinates,
+    }));
+
+    // Wait a bit for the map to settle after drawing
+    setTimeout(async () => {
+      console.log("Starting map capture after delay");
+      const blob = await captureMap();
+      if (blob) {
+        console.log("Map captured successfully, storing blob");
+        setCapturedMap(blob);
+      }
+    }, 500);
+  };
+
   const handleSave = async () => {
     try {
       setLoading(true);
@@ -98,10 +164,51 @@ const ProjectModal = ({ open, onClose, projectId, onUpdate }) => {
         return;
       }
 
+      console.log("Preparing project data for save...");
+
+      let mapImageUrl = null;
+
+      // If we have a captured map, upload it first
+      if (capturedMap) {
+        try {
+          console.log("Uploading captured map...");
+          const file = new File([capturedMap], "map.png", {
+            type: "image/png",
+          });
+          const formData = new FormData();
+          formData.append("file", file);
+
+          const response = await uploads.uploadFile(formData);
+          console.log("Map upload successful:", response.data);
+          mapImageUrl = response.data.url;
+        } catch (error) {
+          console.error("Error uploading map:", error);
+          setError("Erro ao fazer upload do mapa");
+          setLoading(false);
+          return;
+        }
+      }
+
+      // Create project data
+      const projectData = {
+        name: editedProject.name,
+        description: editedProject.description,
+        status: editedProject.status,
+        startDate: editedProject.startDate,
+        endDate: editedProject.endDate,
+        areaCoordinates: editedProject.areaCoordinates,
+        mapImageUrl: mapImageUrl,
+      };
+
+      console.log("Saving project with data:", projectData);
+
+      // Save the project
       if (projectId) {
-        await projects.update(projectId, editedProject);
+        await projects.update(projectId, projectData);
+        console.log("Project updated successfully");
       } else {
-        await projects.create(editedProject);
+        await projects.create(projectData);
+        console.log("Project created successfully");
       }
       onUpdate?.();
       onClose();
@@ -110,14 +217,6 @@ const ProjectModal = ({ open, onClose, projectId, onUpdate }) => {
       setError("Erro ao salvar o projeto");
       setLoading(false);
     }
-  };
-
-  const handleAreaChange = (coordinates) => {
-    console.log("New area coordinates:", coordinates);
-    setEditedProject((prev) => ({
-      ...prev,
-      areaCoordinates: coordinates,
-    }));
   };
 
   const getStatusColor = (status) => {
@@ -347,14 +446,54 @@ const ProjectModal = ({ open, onClose, projectId, onUpdate }) => {
             </Grid>
 
             <Grid item xs={12}>
-              <Typography
-                variant="subtitle2"
-                color="text.secondary"
-                gutterBottom
-              >
-                Área do Projeto
-              </Typography>
               <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  mb: 1,
+                }}
+              >
+                <Typography variant="subtitle2" color="text.secondary">
+                  Área do Projeto
+                </Typography>
+              </Box>
+
+              {/* Map preview if captured */}
+              {capturedMap && (
+                <Box sx={{ mb: 2, position: "relative" }}>
+                  <img
+                    src={URL.createObjectURL(capturedMap)}
+                    alt="Mapa capturado"
+                    style={{
+                      width: "100%",
+                      maxWidth: 500,
+                      height: "auto",
+                      borderRadius: 8,
+                      display: "block",
+                      margin: "0 auto",
+                    }}
+                  />
+                  <IconButton
+                    onClick={() => setCapturedMap(null)}
+                    sx={{
+                      position: "absolute",
+                      top: 8,
+                      right: 8,
+                      bgcolor: "background.paper",
+                      "&:hover": {
+                        bgcolor: "action.hover",
+                      },
+                    }}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </Box>
+              )}
+
+              {/* Original map box */}
+              <Box
+                ref={mapRef}
                 sx={{
                   height: 500,
                   width: "100%",
@@ -371,27 +510,23 @@ const ProjectModal = ({ open, onClose, projectId, onUpdate }) => {
                   <ProjectAreaMap
                     initialArea={editedProject?.areaCoordinates}
                     onChange={handleAreaChange}
+                    onMapInstance={handleMapInstance}
+                    satelliteOnly={true}
                   />
                 ) : editedProject?.areaCoordinates ? (
                   <MapContainer
                     center={getMapCenter(editedProject.areaCoordinates)}
                     zoom={13}
                     style={{ height: "100%", width: "100%" }}
-                    zoomControl={false}
-                    dragging={false}
-                    scrollWheelZoom={false}
+                    zoomControl={true}
+                    dragging={true}
+                    scrollWheelZoom={true}
+                    ref={mapInstanceRef}
                   >
-                    <LayersControl position="bottomright">
-                      <LayersControl.BaseLayer checked name="Mapa">
-                        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                      </LayersControl.BaseLayer>
-                      <LayersControl.BaseLayer name="Satélite">
-                        <TileLayer
-                          url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-                          maxZoom={19}
-                        />
-                      </LayersControl.BaseLayer>
-                    </LayersControl>
+                    <TileLayer
+                      url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+                      maxZoom={19}
+                    />
                     <Polygon
                       positions={
                         typeof editedProject.areaCoordinates === "string"

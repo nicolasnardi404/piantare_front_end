@@ -424,30 +424,51 @@ const FarmerDashboard = () => {
                         },
                       }}
                     >
-                      <MapContainer
-                        center={getProjectMapCenter(project)}
-                        zoom={13}
-                        style={{ height: "100%", width: "100%" }}
-                        zoomControl={false}
-                        dragging={false}
-                        scrollWheelZoom={false}
-                      >
-                        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                        {project.areaCoordinates && (
-                          <Polygon
-                            positions={
-                              typeof project.areaCoordinates === "string"
-                                ? JSON.parse(project.areaCoordinates)
-                                : project.areaCoordinates
-                            }
-                            pathOptions={{
-                              color: "#4CAF50",
-                              fillColor: "#4CAF50",
-                              fillOpacity: 0.2,
-                            }}
+                      {project.mapImageUrl ? (
+                        <Box
+                          sx={{
+                            height: "100%",
+                            width: "100%",
+                            position: "relative",
+                            overflow: "hidden",
+                            "& img": {
+                              width: "100%",
+                              height: "100%",
+                              objectFit: "cover",
+                            },
+                          }}
+                        >
+                          <img
+                            src={project.mapImageUrl}
+                            alt={`Área do projeto ${project.name}`}
                           />
-                        )}
-                      </MapContainer>
+                        </Box>
+                      ) : (
+                        <MapContainer
+                          center={getProjectMapCenter(project)}
+                          zoom={13}
+                          style={{ height: "100%", width: "100%" }}
+                          zoomControl={false}
+                          dragging={false}
+                          scrollWheelZoom={false}
+                        >
+                          <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                          {project.areaCoordinates && (
+                            <Polygon
+                              positions={
+                                typeof project.areaCoordinates === "string"
+                                  ? JSON.parse(project.areaCoordinates)
+                                  : project.areaCoordinates
+                              }
+                              pathOptions={{
+                                color: "#4CAF50",
+                                fillColor: "#4CAF50",
+                                fillOpacity: 0.2,
+                              }}
+                            />
+                          )}
+                        </MapContainer>
+                      )}
                       <IconButton
                         sx={{
                           position: "absolute",
@@ -468,7 +489,7 @@ const FarmerDashboard = () => {
                           setShowProjectModal(true);
                         }}
                       >
-                        <MapIcon />
+                        {project.mapImageUrl ? <Edit /> : <MapIcon />}
                       </IconButton>
                     </Box>
                   )}

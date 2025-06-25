@@ -5,7 +5,6 @@ import {
   FeatureGroup,
   Polygon,
   useMap,
-  LayersControl,
 } from "react-leaflet";
 import { EditControl } from "react-leaflet-draw";
 import L from "leaflet";
@@ -36,11 +35,14 @@ const parseAreaCoordinates = (coordinates) => {
   }
 };
 
-const MapController = ({ initialArea }) => {
+const MapController = ({ initialArea, onMapInstance }) => {
   const map = useMap();
   const parsedArea = parseAreaCoordinates(initialArea);
 
   useEffect(() => {
+    // Pass the map instance to parent
+    onMapInstance(map);
+
     // Force a map resize after mounting
     setTimeout(() => {
       map.invalidateSize();
@@ -50,22 +52,25 @@ const MapController = ({ initialArea }) => {
       // If there's an initial area, fit the map to it
       if (parsedArea && Array.isArray(parsedArea) && parsedArea.length > 0) {
         const bounds = L.latLngBounds(parsedArea);
-        map.fitBounds(bounds);
+        map.fitBounds(bounds, { padding: [50, 50] });
       } else {
-        // Make sure we pass the coordinates in the correct order [lat, lng]
         map.setView([defaultPosition[0], defaultPosition[1]], 13);
       }
     } catch (error) {
       console.error("Error setting map view:", error);
-      // Fallback to default position if anything goes wrong
       map.setView([defaultPosition[0], defaultPosition[1]], 13);
     }
-  }, [map, parsedArea]);
+  }, [map, parsedArea, onMapInstance]);
 
   return null;
 };
 
-const ProjectAreaMap = ({ initialArea, onChange }) => {
+const ProjectAreaMap = ({
+  initialArea,
+  onChange,
+  onMapInstance,
+  satelliteOnly,
+}) => {
   const [drawnItems, setDrawnItems] = useState(null);
   const parsedArea = parseAreaCoordinates(initialArea);
 
@@ -78,7 +83,7 @@ const ProjectAreaMap = ({ initialArea, onChange }) => {
     const coordinates = layer
       .getLatLngs()[0]
       .map((latLng) => [latLng.lat, latLng.lng]);
-    onChange(JSON.stringify(coordinates)); // Stringify the coordinates before sending them back
+    onChange(JSON.stringify(coordinates));
   };
 
   const handleEdited = (e) => {
@@ -87,7 +92,7 @@ const ProjectAreaMap = ({ initialArea, onChange }) => {
       const coordinates = layer
         .getLatLngs()[0]
         .map((latLng) => [latLng.lat, latLng.lng]);
-      onChange(JSON.stringify(coordinates)); // Stringify the coordinates before sending them back
+      onChange(JSON.stringify(coordinates));
     });
   };
 
@@ -106,24 +111,16 @@ const ProjectAreaMap = ({ initialArea, onChange }) => {
       center={[defaultPosition[0], defaultPosition[1]]}
       zoom={13}
       style={{ height: "100%", width: "100%" }}
+      zoomControl={true}
+      scrollWheelZoom={true}
     >
-      <LayersControl position="bottomright">
-        <LayersControl.BaseLayer checked name="Mapa">
-          <TileLayer
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          />
-        </LayersControl.BaseLayer>
-        <LayersControl.BaseLayer name="Satélite">
-          <TileLayer
-            url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-            attribution="Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community"
-            maxZoom={19}
-            minZoom={0}
-            tileSize={256}
-          />
-        </LayersControl.BaseLayer>
-      </LayersControl>
+      <TileLayer
+        url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+        attribution="Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community"
+        maxZoom={19}
+        minZoom={0}
+        tileSize={256}
+      />
 
       <FeatureGroup ref={setDrawnItems}>
         <EditControl
@@ -170,7 +167,7 @@ const ProjectAreaMap = ({ initialArea, onChange }) => {
         />
       )}
 
-      <MapController initialArea={initialArea} />
+      <MapController initialArea={initialArea} onMapInstance={onMapInstance} />
     </MapContainer>
   );
 };
