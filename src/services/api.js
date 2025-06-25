@@ -137,6 +137,17 @@ export const projects = {
   delete: (id) => api.delete(`/projects/${id}`),
 };
 
+export const farmer = {
+  // Get dashboard data including plants and stats
+  getDashboardData: () => api.get("/planted-plants/farmer/dashboard"),
+
+  // Get projects list with plant counts
+  getProjects: () => api.get("/planted-plants/farmer/projects"),
+
+  // Get plants table data
+  getPlantsTable: () => api.get("/planted-plants/farmer/plants-table"),
+};
+
 // Export both named exports and default export
 export { api };
 export default api;

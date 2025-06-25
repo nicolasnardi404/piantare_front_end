@@ -40,7 +40,7 @@ import {
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useAuth } from "../context/AuthContext";
-import api, { projects } from "../services/api";
+import { farmer, projects } from "../services/api";
 import PlantUpdates from "./PlantUpdates";
 import ProjectModal from "./ProjectModal";
 import { MapContainer, TileLayer, Polygon } from "react-leaflet";
@@ -86,8 +86,8 @@ const StatCard = ({ icon, title, value, color }) => (
 );
 
 const FarmerDashboard = () => {
-  const { user, token } = useAuth();
-  const [plants, setPlants] = useState([]);
+  const { user } = useAuth();
+  const [dashboardData, setDashboardData] = useState({ stats: {}, plants: [] });
   const [projectsList, setProjectsList] = useState([]);
   const [selectedPlant, setSelectedPlant] = useState(null);
   const [page, setPage] = useState(0);
@@ -95,41 +95,40 @@ const FarmerDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
   const [showProjectModal, setShowProjectModal] = useState(false);
+  const [plantsTableData, setPlantsTableData] = useState([]);
 
   useEffect(() => {
-    console.log("Current user:", user);
-    console.log("Auth token:", token);
-    fetchPlants();
+    loadDashboardData();
     loadProjects();
+    loadPlantsTable();
   }, []);
 
-  const fetchPlants = async () => {
+  const loadDashboardData = async () => {
     try {
-      const response = await api.get("/plant-locations");
-      setPlants(response.data);
+      const response = await farmer.getDashboardData();
+      setDashboardData(response.data);
       setLoading(false);
     } catch (error) {
-      console.error("Error fetching plants:", error);
+      console.error("Error loading dashboard data:", error);
       setLoading(false);
     }
   };
 
   const loadProjects = async () => {
     try {
-      console.log("Loading projects...");
-      console.log("Current auth state:", { user, token });
-      const response = await projects.getList();
-      console.log("Projects response:", response);
+      const response = await farmer.getProjects();
       setProjectsList(response.data);
     } catch (error) {
       console.error("Error loading projects:", error);
-      console.error("Error details:", {
-        status: error.response?.status,
-        data: error.response?.data,
-        headers: error.response?.headers,
-      });
-    } finally {
-      setLoading(false);
+    }
+  };
+
+  const loadPlantsTable = async () => {
+    try {
+      const response = await farmer.getPlantsTable();
+      setPlantsTableData(response.data);
+    } catch (error) {
+      console.error("Error loading plants table:", error);
     }
   };
 
@@ -168,13 +167,13 @@ const FarmerDashboard = () => {
 
   const calculateStats = () => {
     const stats = {
-      totalPlants: plants.length,
+      totalPlants: plantsTableData.length,
       healthyPlants: 0,
       needsAttention: 0,
       sickPlants: 0,
     };
 
-    plants.forEach((plant) => {
+    plantsTableData.forEach((plant) => {
       // Get the latest update if it exists
       const lastUpdate = plant.updates?.[0];
 
@@ -230,10 +229,14 @@ const FarmerDashboard = () => {
   };
 
   if (loading) {
-    return <Typography>Carregando...</Typography>;
+    return (
+      <Box sx={{ display: "flex", justifyContent: "center", p: 3 }}>
+        <CircularProgress />
+      </Box>
+    );
   }
 
-  const stats = calculateStats();
+  const { stats } = dashboardData;
 
   return (
     <Box sx={{ p: 3 }}>
@@ -249,6 +252,42 @@ const FarmerDashboard = () => {
           </Box>
         </Stack>
       </Paper>
+
+      {/* Statistics */}
+      <Grid container spacing={3} sx={{ mb: 3 }}>
+        <Grid item xs={12} sm={6} md={3}>
+          <StatCard
+            icon={<LocalFlorist />}
+            title="Total de Plantas"
+            value={stats.totalPlants}
+            color="primary.main"
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <StatCard
+            icon={<LocalFlorist />}
+            title="Plantas Saudáveis"
+            value={stats.healthyPlants}
+            color="success.main"
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <StatCard
+            icon={<LocalFlorist />}
+            title="Precisam de Atenção"
+            value={stats.needsAttention}
+            color="warning.main"
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <StatCard
+            icon={<LocalFlorist />}
+            title="Plantas Doentes"
+            value={stats.sickPlants}
+            color="error.main"
+          />
+        </Grid>
+      </Grid>
 
       {/* Projects Section */}
       <Box
@@ -404,7 +443,7 @@ const FarmerDashboard = () => {
                       </Typography>
                     )}
                     <Typography variant="body2" color="text.secondary">
-                      Plantas: {project._count?.locations || 0}
+                      Plantas: {project._count?.plantedPlants || 0}
                     </Typography>
                   </Box>
                 </CardContent>
@@ -432,42 +471,6 @@ const FarmerDashboard = () => {
         </Grid>
       )}
 
-      {/* Statistics */}
-      <Grid container spacing={3} sx={{ mb: 3 }}>
-        <Grid item xs={12} sm={6} md={3}>
-          <StatCard
-            icon={<LocalFlorist />}
-            title="Total de Plantas"
-            value={stats.totalPlants}
-            color="primary.main"
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <StatCard
-            icon={<LocalFlorist />}
-            title="Plantas Saudáveis"
-            value={stats.healthyPlants}
-            color="success.main"
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <StatCard
-            icon={<LocalFlorist />}
-            title="Precisam de Atenção"
-            value={stats.needsAttention}
-            color="warning.main"
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <StatCard
-            icon={<LocalFlorist />}
-            title="Plantas Doentes"
-            value={stats.sickPlants}
-            color="error.main"
-          />
-        </Grid>
-      </Grid>
-
       {/* Plants Table */}
       <Paper sx={{ width: "100%", mb: 3 }}>
         <TableContainer>
@@ -482,11 +485,14 @@ const FarmerDashboard = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {plants
+              {plantsTableData
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((plant) => (
                   <TableRow key={plant.id}>
-                    <TableCell>{plant.species}</TableCell>
+                    <TableCell>
+                      {plant.species.commonName} ({plant.species.scientificName}
+                      )
+                    </TableCell>
                     <TableCell>
                       <Stack direction="row" spacing={1} alignItems="center">
                         <LocationOn color="action" fontSize="small" />
@@ -511,7 +517,7 @@ const FarmerDashboard = () => {
                     <TableCell>
                       {plant.updates?.[0]
                         ? format(
-                            new Date(plant.updates[0].updateDate),
+                            new Date(plant.updates[0].createdAt),
                             "dd/MM/yyyy HH:mm",
                             { locale: ptBR }
                           )
@@ -537,7 +543,7 @@ const FarmerDashboard = () => {
         </TableContainer>
         <TablePagination
           component="div"
-          count={plants.length}
+          count={plantsTableData.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
@@ -554,7 +560,9 @@ const FarmerDashboard = () => {
           maxWidth="md"
           fullWidth
         >
-          <DialogTitle>Histórico - {selectedPlant.species}</DialogTitle>
+          <DialogTitle>
+            Histórico - {selectedPlant.species.commonName}
+          </DialogTitle>
           <DialogContent>
             <PlantUpdates plantId={selectedPlant.id} />
           </DialogContent>
