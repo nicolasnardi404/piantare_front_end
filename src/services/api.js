@@ -133,6 +133,7 @@ export const geocoding = {
 export const projects = {
   getList: () => api.get("/projects"),
   getById: (id) => api.get(`/projects/${id}`),
+  getMapDetails: (id) => api.get(`/projects/${id}/map`),
   create: (projectData) => api.post("/projects", projectData),
   update: (id, projectData) => api.put(`/projects/${id}`, projectData),
   delete: (id) => api.delete(`/projects/${id}`),

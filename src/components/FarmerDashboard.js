@@ -116,7 +116,7 @@ const FarmerDashboard = () => {
 
   const loadProjects = async () => {
     try {
-      const response = await farmer.getProjects();
+      const response = await projects.getList();
       setProjectsList(response.data);
     } catch (error) {
       console.error("Error loading projects:", error);
@@ -295,10 +295,30 @@ const FarmerDashboard = () => {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          mb: 3,
+          mb: 4,
+          mt: 6,
+          width: "100%",
+          px: 3,
         }}
       >
-        <Typography variant="h4" component="h1">
+        <Typography
+          variant="h4"
+          component="h1"
+          sx={{
+            fontWeight: 600,
+            position: "relative",
+            "&:after": {
+              content: '""',
+              position: "absolute",
+              bottom: -8,
+              left: 0,
+              width: 60,
+              height: 4,
+              backgroundColor: "primary.main",
+              borderRadius: 2,
+            },
+          }}
+        >
           Meus Projetos
         </Typography>
         <Fab
@@ -306,6 +326,13 @@ const FarmerDashboard = () => {
           onClick={() => {
             setSelectedProjectId(null);
             setShowProjectModal(true);
+          }}
+          sx={{
+            boxShadow: 4,
+            "&:hover": {
+              transform: "scale(1.05)",
+              transition: "transform 0.2s",
+            },
           }}
         >
           <Add />
@@ -321,8 +348,11 @@ const FarmerDashboard = () => {
           sx={{
             textAlign: "center",
             py: 8,
-            bgcolor: "grey.100",
-            borderRadius: 2,
+            bgcolor: "grey.50",
+            borderRadius: 4,
+            border: "1px dashed",
+            borderColor: "grey.300",
+            mx: 2,
           }}
         >
           <Typography variant="h6" color="text.secondary" gutterBottom>
@@ -335,25 +365,74 @@ const FarmerDashboard = () => {
               setSelectedProjectId(null);
               setShowProjectModal(true);
             }}
+            sx={{
+              mt: 2,
+              boxShadow: 2,
+              "&:hover": {
+                transform: "translateY(-2px)",
+                transition: "transform 0.2s",
+              },
+            }}
           >
             Criar Novo Projeto
           </Button>
         </Box>
       ) : (
-        <Grid container spacing={3}>
+        <Grid
+          container
+          spacing={3}
+          sx={{
+            width: "100%",
+            margin: 0,
+            "& .MuiGrid-item": {
+              padding: 2,
+              width: "100%",
+            },
+          }}
+        >
           {projectsList.map((project) => (
-            <Grid item xs={12} sm={6} md={4} key={project.id}>
+            <Grid
+              item
+              xs={12}
+              key={project.id}
+              sx={{
+                width: "100%",
+                "& .MuiCard-root": {
+                  width: "100%",
+                },
+              }}
+            >
               <Card
                 sx={{
-                  height: "100%",
                   display: "flex",
-                  flexDirection: "column",
                   position: "relative",
+                  transition: "transform 0.2s, box-shadow 0.2s",
+                  "&:hover": {
+                    transform: "translateY(-4px)",
+                    boxShadow: 6,
+                  },
+                  borderRadius: 2,
+                  overflow: "hidden",
+                  height: 280,
+                  width: "100%",
                 }}
               >
                 {project.areaCoordinates && (
                   <Box
-                    sx={{ height: 200, width: "100%", position: "relative" }}
+                    sx={{
+                      width: "30%",
+                      position: "relative",
+                      "&:after": {
+                        content: '""',
+                        position: "absolute",
+                        right: 0,
+                        top: 0,
+                        bottom: 0,
+                        width: "40px",
+                        background:
+                          "linear-gradient(to left, rgba(255,255,255,1), rgba(255,255,255,0))",
+                      },
+                    }}
                   >
                     <MapContainer
                       center={getProjectMapCenter(project)}
@@ -385,7 +464,12 @@ const FarmerDashboard = () => {
                         bottom: 8,
                         right: 8,
                         bgcolor: "background.paper",
-                        "&:hover": { bgcolor: "background.paper" },
+                        boxShadow: 2,
+                        "&:hover": {
+                          bgcolor: "background.paper",
+                          transform: "scale(1.1)",
+                        },
+                        transition: "transform 0.2s",
                       }}
                       onClick={() => {
                         setSelectedProjectId(project.id);
@@ -396,75 +480,170 @@ const FarmerDashboard = () => {
                     </IconButton>
                   </Box>
                 )}
-                <CardContent sx={{ flexGrow: 1 }}>
-                  <Box
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    width: project.areaCoordinates ? "70%" : "100%",
+                    position: "relative",
+                  }}
+                >
+                  <CardContent sx={{ flexGrow: 1, p: 3 }}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "flex-start",
+                        mb: 2,
+                      }}
+                    >
+                      <Box>
+                        <Typography
+                          variant="h5"
+                          component="h2"
+                          gutterBottom
+                          sx={{
+                            fontWeight: 600,
+                            color: "text.primary",
+                          }}
+                        >
+                          {project.name}
+                        </Typography>
+                        <Typography
+                          variant="body1"
+                          color="text.secondary"
+                          sx={{
+                            mb: 3,
+                            lineHeight: 1.6,
+                            maxWidth: "80%",
+                          }}
+                        >
+                          {project.description}
+                        </Typography>
+                      </Box>
+                      <Chip
+                        label={getStatusLabel(project.status)}
+                        color={getStatusColor(project.status)}
+                        sx={{
+                          fontWeight: 500,
+                          boxShadow: 1,
+                          px: 2,
+                        }}
+                      />
+                    </Box>
+
+                    <Grid container spacing={4} sx={{ mt: 1 }}>
+                      <Grid item xs={12} md={6}>
+                        <Stack spacing={2}>
+                          <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 1,
+                            }}
+                          >
+                            <Timeline fontSize="small" color="primary" />
+                            Início:{" "}
+                            {format(new Date(project.startDate), "dd/MM/yyyy", {
+                              locale: ptBR,
+                            })}
+                          </Typography>
+                          {project.endDate && (
+                            <Typography
+                              variant="body2"
+                              color="text.secondary"
+                              sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 1,
+                              }}
+                            >
+                              <Timeline fontSize="small" color="primary" />
+                              Término:{" "}
+                              {format(new Date(project.endDate), "dd/MM/yyyy", {
+                                locale: ptBR,
+                              })}
+                            </Typography>
+                          )}
+                        </Stack>
+                      </Grid>
+                      <Grid item xs={12} md={6}>
+                        <Stack spacing={2}>
+                          <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 1,
+                            }}
+                          >
+                            <LocalFlorist fontSize="small" color="primary" />
+                            Total de Plantas:{" "}
+                            {project._count?.plantedPlants || 0}
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 1,
+                            }}
+                          >
+                            <LocationOn fontSize="small" color="primary" />
+                            Área do Projeto
+                          </Typography>
+                        </Stack>
+                      </Grid>
+                    </Grid>
+                  </CardContent>
+                  <CardActions
                     sx={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "flex-start",
-                      mb: 2,
+                      justifyContent: "flex-end",
+                      p: 2,
+                      bgcolor: "grey.50",
+                      borderTop: 1,
+                      borderColor: "grey.200",
                     }}
                   >
-                    <Typography variant="h6" component="h2" gutterBottom>
-                      {project.name}
-                    </Typography>
-                    <Chip
-                      label={getStatusLabel(project.status)}
-                      color={getStatusColor(project.status)}
+                    <Button
+                      startIcon={<Edit />}
+                      variant="outlined"
                       size="small"
-                    />
-                  </Box>
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{
-                      mb: 2,
-                      display: "-webkit-box",
-                      WebkitLineClamp: 3,
-                      WebkitBoxOrient: "vertical",
-                      overflow: "hidden",
-                    }}
-                  >
-                    {project.description}
-                  </Typography>
-                  <Box sx={{ mt: "auto" }}>
-                    <Typography variant="body2" color="text.secondary">
-                      Início:{" "}
-                      {format(new Date(project.startDate), "dd/MM/yyyy", {
-                        locale: ptBR,
-                      })}
-                    </Typography>
-                    {project.endDate && (
-                      <Typography variant="body2" color="text.secondary">
-                        Término:{" "}
-                        {format(new Date(project.endDate), "dd/MM/yyyy", {
-                          locale: ptBR,
-                        })}
-                      </Typography>
-                    )}
-                    <Typography variant="body2" color="text.secondary">
-                      Plantas: {project._count?.plantedPlants || 0}
-                    </Typography>
-                  </Box>
-                </CardContent>
-                <CardActions sx={{ justifyContent: "flex-end", p: 2 }}>
-                  <IconButton
-                    size="small"
-                    onClick={() => {
-                      setSelectedProjectId(project.id);
-                      setShowProjectModal(true);
-                    }}
-                  >
-                    <Edit />
-                  </IconButton>
-                  <IconButton
-                    size="small"
-                    color="error"
-                    onClick={() => handleDeleteProject(project.id)}
-                  >
-                    <Delete />
-                  </IconButton>
-                </CardActions>
+                      onClick={() => {
+                        setSelectedProjectId(project.id);
+                        setShowProjectModal(true);
+                      }}
+                      sx={{
+                        mr: 1,
+                        "&:hover": {
+                          transform: "translateY(-2px)",
+                        },
+                        transition: "transform 0.2s",
+                      }}
+                    >
+                      Editar
+                    </Button>
+                    <Button
+                      startIcon={<Delete />}
+                      variant="outlined"
+                      color="error"
+                      size="small"
+                      onClick={() => handleDeleteProject(project.id)}
+                      sx={{
+                        "&:hover": {
+                          transform: "translateY(-2px)",
+                        },
+                        transition: "transform 0.2s",
+                      }}
+                    >
+                      Excluir
+                    </Button>
+                  </CardActions>
+                </Box>
               </Card>
             </Grid>
           ))}
