@@ -716,6 +716,7 @@ const LocationMap = () => {
         response = await plantLocations.getMapMarkers();
       }
 
+      console.log("Loaded locations:", response.data); // Debug log
       setLocations(response.data);
     } catch (err) {
       console.error("Error loading locations:", err);
@@ -765,11 +766,13 @@ const LocationMap = () => {
 
   const handleMarkerClick = async (location) => {
     try {
+      console.log("Clicked location:", location);
       // Get detailed plant information
       const detailedResponse = await plantLocations.getPlantDetails(
         location.id
       );
       const detailedLocation = detailedResponse.data;
+      console.log("Detailed plant data received:", detailedLocation);
 
       // Get location address
       const addressData = await getAddressFromCoordinates(
@@ -778,7 +781,11 @@ const LocationMap = () => {
       );
       setLocationAddress(addressData);
 
-      setSelectedPlant(detailedLocation);
+      // Make sure we set the selected plant before opening the modal
+      await setSelectedPlant(detailedLocation);
+      console.log("Setting selected plant:", detailedLocation);
+
+      // Only open modal after setting the data
       setIsDetailModalOpen(true);
     } catch (error) {
       console.error("Error fetching plant details:", error);
@@ -981,14 +988,14 @@ const LocationMap = () => {
         imageUrl = uploadResponse.data.url;
       }
 
-      // Create the update with consistent measurements structure
+      // Update to match new schema structure
       const updateResponse = await plantUpdates.create({
-        plantLocationId: plantId,
+        plantedPlantId: plantId, // Changed from plantLocationId
         healthStatus,
         notes: observations,
         imageUrl,
         height: parseFloat(height),
-        width: parseFloat(width),
+        diameter: parseFloat(width), // Changed from width to diameter
       });
 
       console.log("Update created:", updateResponse);
@@ -3054,9 +3061,27 @@ const LocationMap = () => {
           </Box>
         </DialogContent>
         <DialogActions>
+          {console.log("=== DEBUG INFO ===")}
+          {console.log("User full data:", user)}
+          {console.log("Selected plant full data:", selectedPlant)}
+          {console.log("Project full data:", selectedPlant?.project)}
+          {console.log("Project farmer:", selectedPlant?.project?.farmer)}
+          {console.log(
+            "Project farmer user:",
+            selectedPlant?.project?.farmer?.user
+          )}
+          {console.log(
+            "Project farmer user id:",
+            selectedPlant?.project?.farmer?.user?.id
+          )}
+          {console.log("User ID:", user?.userId)}
+          {console.log(
+            "Comparison result:",
+            selectedPlant?.project?.farmer?.user?.id === user?.userId
+          )}
           {(user?.role === "ADMIN" ||
             (user?.role === "FARMER" &&
-              selectedPlant?.project?.farmerId === user.userId)) && (
+              selectedPlant?.project?.farmer?.user?.id === user?.userId)) && (
             <>
               <Button
                 onClick={() => handleDeletePlant(selectedPlant.id)}
@@ -3068,6 +3093,7 @@ const LocationMap = () => {
               {user?.role === "FARMER" && (
                 <Button
                   onClick={() => {
+                    console.log("Update button clicked");
                     setUpdateDialogState({
                       open: true,
                       plantId: selectedPlant.id,
