@@ -110,25 +110,47 @@ const ProjectModal = ({ open, onClose, projectId, onUpdate }) => {
         return null;
       }
 
-      // Create canvas with the map's dimensions
-      const canvas = await html2canvas(mapContainerElement, {
-        useCORS: true,
-        allowTaint: true,
-        logging: false,
-        scale: 1,
+      // Hide all controls before capture
+      const controls = mapContainerElement.querySelectorAll(
+        ".leaflet-control-container, .leaflet-draw"
+      );
+      const hiddenElements = [];
+      controls.forEach((element) => {
+        if (element.style.display !== "none") {
+          hiddenElements.push({
+            element,
+            display: element.style.display,
+          });
+          element.style.display = "none";
+        }
       });
 
-      // Convert canvas to blob
-      return new Promise((resolve) => {
-        canvas.toBlob((blob) => {
-          if (!blob) {
-            console.error("Failed to create blob from canvas");
-            resolve(null);
-            return;
-          }
-          resolve(blob);
-        }, "image/png");
-      });
+      try {
+        // Create canvas with the map's dimensions
+        const canvas = await html2canvas(mapContainerElement, {
+          useCORS: true,
+          allowTaint: true,
+          logging: false,
+          scale: 1,
+        });
+
+        // Convert canvas to blob
+        return new Promise((resolve) => {
+          canvas.toBlob((blob) => {
+            if (!blob) {
+              console.error("Failed to create blob from canvas");
+              resolve(null);
+              return;
+            }
+            resolve(blob);
+          }, "image/png");
+        });
+      } finally {
+        // Restore visibility of controls
+        hiddenElements.forEach(({ element, display }) => {
+          element.style.display = display;
+        });
+      }
     } catch (error) {
       console.error("Error capturing map:", error);
       return null;
