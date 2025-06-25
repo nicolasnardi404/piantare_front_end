@@ -18,6 +18,7 @@ import {
   plantUpdates,
   geoGpt,
   api,
+  farmer,
 } from "../services/api";
 import { b2Service } from "../services/b2";
 import axios from "axios";
@@ -518,6 +519,7 @@ const LocationMap = () => {
     latitude: null,
     longitude: null,
     plantId: null,
+    projectId: null,
     description: "",
     height: "",
     width: "",
@@ -556,11 +558,27 @@ const LocationMap = () => {
   });
   const [locationDetails, setLocationDetails] = useState({});
   const [locationAddress, setLocationAddress] = useState(null);
+  const [projects, setProjects] = useState([]);
 
   useEffect(() => {
     loadLocations();
     loadAvailablePlants();
   }, [user]);
+
+  useEffect(() => {
+    const loadProjects = async () => {
+      if (user?.role === "FARMER" && isAddingLocation) {
+        try {
+          const response = await farmer.getProjects();
+          setProjects(response.data);
+        } catch (error) {
+          console.error("Error loading projects:", error);
+          setError("Failed to load projects");
+        }
+      }
+    };
+    loadProjects();
+  }, [user, isAddingLocation]);
 
   const analyzeEnvironmentalImpact = useCallback(async (plants) => {
     try {
@@ -628,7 +646,7 @@ const LocationMap = () => {
     if (user?.role === "FARMER") {
       // Filter plants added by this farmer
       const farmerPlants = locations.filter(
-        (loc) => loc.addedBy.id === user.userId
+        (loc) => loc.project?.farmerId === user.userId
       );
 
       // Calculate species count
@@ -741,16 +759,14 @@ const LocationMap = () => {
       if (
         !newLocation.latitude ||
         !newLocation.longitude ||
-        !newLocation.plantId
+        !newLocation.plantId ||
+        !newLocation.projectId ||
+        !newLocation.height ||
+        !newLocation.width
       ) {
         setError(
-          "Por favor, selecione uma localização no mapa e escolha uma planta"
+          "Por favor, preencha todos os campos obrigatórios (localização, planta, projeto, altura e diâmetro)"
         );
-        return;
-      }
-
-      if (!newLocation.height || !newLocation.width) {
-        setError("Por favor, preencha a altura e a largura da planta");
         return;
       }
 
@@ -791,20 +807,22 @@ const LocationMap = () => {
         latitude: newLocation.latitude,
         longitude: newLocation.longitude,
         plantId: newLocation.plantId,
+        projectId: newLocation.projectId,
         description: newLocation.description,
         imageUrl,
         height: parseFloat(newLocation.height),
         width: parseFloat(newLocation.width),
-        notes: newLocation.notes,
       };
 
       await plantLocations.create(locationData);
+      await loadLocations();
 
       setIsAddingLocation(false);
       setNewLocation({
         latitude: null,
         longitude: null,
         plantId: null,
+        projectId: null,
         description: "",
         height: "",
         width: "",
@@ -816,13 +834,10 @@ const LocationMap = () => {
         uploading: false,
         error: null,
       });
-      loadLocations();
       setError("");
-    } catch (err) {
-      console.error("Erro ao adicionar planta:", err);
-      setError(
-        err.response?.data?.error || "Falha ao adicionar localização da planta"
-      );
+    } catch (error) {
+      console.error("Error adding location:", error);
+      setError(error.response?.data?.error || "Failed to add plant location");
     }
   };
 
@@ -1726,381 +1741,370 @@ const LocationMap = () => {
   const renderAddLocationDialog = () => (
     <Dialog
       open={isAddingLocation}
-      onClose={() => setIsAddingLocation(false)}
+      onClose={() => {
+        setIsAddingLocation(false);
+        setNewLocation({
+          latitude: null,
+          longitude: null,
+          plantId: null,
+          projectId: null,
+          description: "",
+          height: "",
+          width: "",
+          notes: "",
+        });
+      }}
       maxWidth="md"
       fullWidth
-      PaperProps={{
-        sx: {
-          borderRadius: "20px",
-          maxHeight: "90vh",
-        },
-      }}
     >
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          maxHeight: "90vh",
-        }}
-      >
-        {/* Header */}
-        <Box
-          sx={{
-            background: "linear-gradient(135deg, #4caf50 0%, #81c784 100%)",
-            p: 3,
-            color: "white",
-          }}
-        >
-          <Typography variant="h5" sx={{ fontWeight: 600 }}>
-            Adicionar Nova Planta
-          </Typography>
-          <Typography variant="subtitle1" sx={{ mt: 1, opacity: 0.9 }}>
-            Preencha os detalhes da planta para registrar sua localização
-          </Typography>
-        </Box>
+      <DialogTitle>Adicionar Nova Planta</DialogTitle>
+      <DialogContent>
+        {error && (
+          <Alert severity="error" sx={{ mb: 3 }}>
+            {error}
+          </Alert>
+        )}
 
-        {/* Content */}
-        <DialogContent
-          sx={{
-            p: 4,
-            overflowY: "auto",
-            flex: 1,
-          }}
-        >
-          {error && (
-            <Alert severity="error" sx={{ mb: 3 }}>
-              {error}
-            </Alert>
-          )}
-
-          <Grid container spacing={3}>
-            {/* Left Column */}
-            <Grid item xs={12} md={6}>
-              {/* Plant Selection */}
-              <Box sx={{ mb: 3 }}>
-                <Typography
-                  variant="subtitle1"
-                  sx={{ mb: 2, color: "primary.main", fontWeight: 500 }}
-                >
-                  Informações da Planta
-                </Typography>
-                <Autocomplete
-                  fullWidth
-                  options={availablePlants}
-                  getOptionLabel={(option) =>
-                    `${option.commonName} (${option.scientificName})`
-                  }
-                  onChange={(event, newValue) => {
+        <Grid container spacing={3}>
+          {/* Left Column */}
+          <Grid item xs={12} md={6}>
+            {/* Project and Plant Selection */}
+            <Box sx={{ mb: 3 }}>
+              <Typography
+                variant="subtitle1"
+                sx={{ mb: 2, color: "primary.main", fontWeight: 500 }}
+              >
+                Informações da Planta
+              </Typography>
+              <FormControl fullWidth sx={{ mb: 2 }}>
+                <InputLabel>Projeto</InputLabel>
+                <Select
+                  value={newLocation.projectId || ""}
+                  onChange={(e) =>
                     setNewLocation((prev) => ({
                       ...prev,
-                      plantId: newValue?.id || null,
-                    }));
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label="Buscar e Selecionar Planta"
-                      placeholder="Digite para buscar..."
-                      sx={{
-                        "& .MuiOutlinedInput-root": {
-                          "& fieldset": {
-                            borderColor: "rgba(76, 175, 80, 0.2)",
-                          },
-                          "&:hover fieldset": {
-                            borderColor: "rgba(76, 175, 80, 0.3)",
-                          },
-                          "&.Mui-focused fieldset": {
-                            borderColor: "primary.main",
-                          },
+                      projectId: e.target.value,
+                    }))
+                  }
+                  label="Projeto"
+                  required
+                >
+                  {projects.map((project) => (
+                    <MenuItem key={project.id} value={project.id}>
+                      {project.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <Autocomplete
+                fullWidth
+                options={availablePlants}
+                getOptionLabel={(option) =>
+                  `${option.commonName} (${option.scientificName})`
+                }
+                onChange={(event, newValue) => {
+                  setNewLocation((prev) => ({
+                    ...prev,
+                    plantId: newValue?.id || null,
+                  }));
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Buscar e Selecionar Planta"
+                    placeholder="Digite para buscar..."
+                    required
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        "& fieldset": {
+                          borderColor: "rgba(76, 175, 80, 0.2)",
                         },
+                        "&:hover fieldset": {
+                          borderColor: "rgba(76, 175, 80, 0.3)",
+                        },
+                        "&.Mui-focused fieldset": {
+                          borderColor: "primary.main",
+                        },
+                      },
+                    }}
+                  />
+                )}
+              />
+            </Box>
+
+            {/* Description */}
+            <Box sx={{ mb: 3 }}>
+              <TextField
+                fullWidth
+                multiline
+                rows={3}
+                label="Descrição"
+                placeholder="Adicione detalhes sobre a localização ou condição da planta"
+                value={newLocation.description}
+                onChange={(e) =>
+                  setNewLocation((prev) => ({
+                    ...prev,
+                    description: e.target.value,
+                  }))
+                }
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    "& fieldset": {
+                      borderColor: "rgba(76, 175, 80, 0.2)",
+                    },
+                    "&:hover fieldset": {
+                      borderColor: "rgba(76, 175, 80, 0.3)",
+                    },
+                  },
+                }}
+              />
+            </Box>
+
+            {/* Measurements */}
+            <Box>
+              <Typography
+                variant="subtitle1"
+                sx={{ mb: 2, color: "primary.main", fontWeight: 500 }}
+              >
+                Medidas da Planta
+              </Typography>
+              <Grid container spacing={2}>
+                <Grid item xs={6}>
+                  <TextField
+                    fullWidth
+                    label="Altura (metros)"
+                    type="number"
+                    value={newLocation.height}
+                    onChange={(e) =>
+                      setNewLocation((prev) => ({
+                        ...prev,
+                        height: e.target.value,
+                      }))
+                    }
+                    inputProps={{ step: "0.01", min: "0" }}
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        "& fieldset": {
+                          borderColor: "rgba(76, 175, 80, 0.2)",
+                        },
+                        "&:hover fieldset": {
+                          borderColor: "rgba(76, 175, 80, 0.3)",
+                        },
+                      },
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <TextField
+                    fullWidth
+                    label="Diâmetro (metros)"
+                    type="number"
+                    value={newLocation.width}
+                    onChange={(e) =>
+                      setNewLocation((prev) => ({
+                        ...prev,
+                        width: e.target.value,
+                      }))
+                    }
+                    inputProps={{ step: "0.01", min: "0" }}
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        "& fieldset": {
+                          borderColor: "rgba(76, 175, 80, 0.2)",
+                        },
+                        "&:hover fieldset": {
+                          borderColor: "rgba(76, 175, 80, 0.3)",
+                        },
+                      },
+                    }}
+                  />
+                </Grid>
+              </Grid>
+            </Box>
+          </Grid>
+
+          {/* Right Column */}
+          <Grid item xs={12} md={6}>
+            {/* Notes */}
+            <Box sx={{ mb: 3 }}>
+              <Typography
+                variant="subtitle1"
+                sx={{ mb: 2, color: "primary.main", fontWeight: 500 }}
+              >
+                Observações
+              </Typography>
+              <TextField
+                fullWidth
+                multiline
+                rows={4}
+                label="Observações Iniciais"
+                placeholder="Adicione notas sobre o estado inicial da planta"
+                value={newLocation.notes}
+                onChange={(e) =>
+                  setNewLocation((prev) => ({
+                    ...prev,
+                    notes: e.target.value,
+                  }))
+                }
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    "& fieldset": {
+                      borderColor: "rgba(76, 175, 80, 0.2)",
+                    },
+                    "&:hover fieldset": {
+                      borderColor: "rgba(76, 175, 80, 0.3)",
+                    },
+                  },
+                }}
+              />
+            </Box>
+
+            {/* Image Upload */}
+            <Box>
+              <Typography
+                variant="subtitle1"
+                sx={{ mb: 2, color: "primary.main", fontWeight: 500 }}
+              >
+                Foto da Planta
+              </Typography>
+              <Box
+                sx={{
+                  border: "2px dashed rgba(76, 175, 80, 0.2)",
+                  borderRadius: 2,
+                  p: 3,
+                  textAlign: "center",
+                  transition: "all 0.2s ease",
+                  "&:hover": {
+                    borderColor: "primary.main",
+                    bgcolor: "rgba(76, 175, 80, 0.04)",
+                  },
+                }}
+              >
+                <input
+                  type="file"
+                  hidden
+                  accept="image/*"
+                  onChange={handleImageSelect}
+                  id="plant-image-upload"
+                />
+                <label htmlFor="plant-image-upload">
+                  {imageUpload.uploading ? (
+                    <CircularProgress size={40} />
+                  ) : imageUpload.preview ? (
+                    <Box sx={{ position: "relative" }}>
+                      <Box
+                        component="img"
+                        src={imageUpload.preview}
+                        alt="Preview"
+                        sx={{
+                          maxWidth: "100%",
+                          maxHeight: 200,
+                          borderRadius: 1,
+                          mb: 2,
+                        }}
+                      />
+                      <Button
+                        variant="contained"
+                        size="small"
+                        sx={{ mt: 1 }}
+                        onClick={() =>
+                          setImageUpload({
+                            file: null,
+                            preview: null,
+                            uploading: false,
+                            error: null,
+                          })
+                        }
+                      >
+                        Trocar Imagem
+                      </Button>
+                    </Box>
+                  ) : (
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        cursor: "pointer",
                       }}
-                    />
-                  )}
-                  renderOption={(props, option) => (
-                    <Box component="li" {...props}>
-                      <Box>
-                        <Typography variant="body1">
-                          {option.commonName}
-                        </Typography>
-                        <Typography
-                          variant="caption"
-                          sx={{ color: "text.secondary", fontStyle: "italic" }}
-                        >
-                          {option.scientificName}
-                        </Typography>
-                      </Box>
+                    >
+                      <CloudUploadIcon
+                        sx={{ fontSize: 48, color: "primary.main", mb: 1 }}
+                      />
+                      <Typography variant="subtitle1" sx={{ mb: 1 }}>
+                        Clique para adicionar uma foto
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        ou arraste e solte aqui
+                      </Typography>
                     </Box>
                   )}
-                  isOptionEqualToValue={(option, value) =>
-                    option.id === value.id
-                  }
-                  noOptionsText="Nenhuma planta encontrada"
-                  loadingText="Carregando..."
-                />
+                </label>
+                {imageUpload.error && (
+                  <Typography color="error" variant="body2" sx={{ mt: 2 }}>
+                    {imageUpload.error}
+                  </Typography>
+                )}
               </Box>
-
-              {/* Description */}
-              <Box sx={{ mb: 3 }}>
-                <TextField
-                  fullWidth
-                  multiline
-                  rows={3}
-                  label="Descrição"
-                  placeholder="Adicione detalhes sobre a localização ou condição da planta"
-                  value={newLocation.description}
-                  onChange={(e) =>
-                    setNewLocation((prev) => ({
-                      ...prev,
-                      description: e.target.value,
-                    }))
-                  }
-                  sx={{
-                    "& .MuiOutlinedInput-root": {
-                      "& fieldset": {
-                        borderColor: "rgba(76, 175, 80, 0.2)",
-                      },
-                      "&:hover fieldset": {
-                        borderColor: "rgba(76, 175, 80, 0.3)",
-                      },
-                    },
-                  }}
-                />
-              </Box>
-
-              {/* Measurements */}
-              <Box>
-                <Typography
-                  variant="subtitle1"
-                  sx={{ mb: 2, color: "primary.main", fontWeight: 500 }}
-                >
-                  Medidas da Planta
-                </Typography>
-                <Grid container spacing={2}>
-                  <Grid item xs={6}>
-                    <TextField
-                      fullWidth
-                      label="Altura (metros)"
-                      type="number"
-                      value={newLocation.height}
-                      onChange={(e) =>
-                        setNewLocation((prev) => ({
-                          ...prev,
-                          height: e.target.value,
-                        }))
-                      }
-                      inputProps={{ step: "0.01", min: "0" }}
-                      sx={{
-                        "& .MuiOutlinedInput-root": {
-                          "& fieldset": {
-                            borderColor: "rgba(76, 175, 80, 0.2)",
-                          },
-                          "&:hover fieldset": {
-                            borderColor: "rgba(76, 175, 80, 0.3)",
-                          },
-                        },
-                      }}
-                    />
-                  </Grid>
-                  <Grid item xs={6}>
-                    <TextField
-                      fullWidth
-                      label="Diâmetro (metros)"
-                      type="number"
-                      value={newLocation.width}
-                      onChange={(e) =>
-                        setNewLocation((prev) => ({
-                          ...prev,
-                          width: e.target.value,
-                        }))
-                      }
-                      inputProps={{ step: "0.01", min: "0" }}
-                      sx={{
-                        "& .MuiOutlinedInput-root": {
-                          "& fieldset": {
-                            borderColor: "rgba(76, 175, 80, 0.2)",
-                          },
-                          "&:hover fieldset": {
-                            borderColor: "rgba(76, 175, 80, 0.3)",
-                          },
-                        },
-                      }}
-                    />
-                  </Grid>
-                </Grid>
-              </Box>
-            </Grid>
-
-            {/* Right Column */}
-            <Grid item xs={12} md={6}>
-              {/* Notes */}
-              <Box sx={{ mb: 3 }}>
-                <Typography
-                  variant="subtitle1"
-                  sx={{ mb: 2, color: "primary.main", fontWeight: 500 }}
-                >
-                  Observações
-                </Typography>
-                <TextField
-                  fullWidth
-                  multiline
-                  rows={4}
-                  label="Observações Iniciais"
-                  placeholder="Adicione notas sobre o estado inicial da planta"
-                  value={newLocation.notes}
-                  onChange={(e) =>
-                    setNewLocation((prev) => ({
-                      ...prev,
-                      notes: e.target.value,
-                    }))
-                  }
-                  sx={{
-                    "& .MuiOutlinedInput-root": {
-                      "& fieldset": {
-                        borderColor: "rgba(76, 175, 80, 0.2)",
-                      },
-                      "&:hover fieldset": {
-                        borderColor: "rgba(76, 175, 80, 0.3)",
-                      },
-                    },
-                  }}
-                />
-              </Box>
-
-              {/* Image Upload */}
-              <Box>
-                <Typography
-                  variant="subtitle1"
-                  sx={{ mb: 2, color: "primary.main", fontWeight: 500 }}
-                >
-                  Foto da Planta
-                </Typography>
-                <Box
-                  sx={{
-                    border: "2px dashed rgba(76, 175, 80, 0.2)",
-                    borderRadius: 2,
-                    p: 3,
-                    textAlign: "center",
-                    transition: "all 0.2s ease",
-                    "&:hover": {
-                      borderColor: "primary.main",
-                      bgcolor: "rgba(76, 175, 80, 0.04)",
-                    },
-                  }}
-                >
-                  <input
-                    type="file"
-                    hidden
-                    accept="image/*"
-                    onChange={handleImageSelect}
-                    id="plant-image-upload"
-                  />
-                  <label htmlFor="plant-image-upload">
-                    {imageUpload.uploading ? (
-                      <CircularProgress size={40} />
-                    ) : imageUpload.preview ? (
-                      <Box sx={{ position: "relative" }}>
-                        <Box
-                          component="img"
-                          src={imageUpload.preview}
-                          alt="Preview"
-                          sx={{
-                            maxWidth: "100%",
-                            maxHeight: 200,
-                            borderRadius: 1,
-                            mb: 2,
-                          }}
-                        />
-                        <Button
-                          variant="contained"
-                          size="small"
-                          sx={{ mt: 1 }}
-                          onClick={() =>
-                            setImageUpload({
-                              file: null,
-                              preview: null,
-                              uploading: false,
-                              error: null,
-                            })
-                          }
-                        >
-                          Trocar Imagem
-                        </Button>
-                      </Box>
-                    ) : (
-                      <Box
-                        sx={{
-                          display: "flex",
-                          flexDirection: "column",
-                          alignItems: "center",
-                          cursor: "pointer",
-                        }}
-                      >
-                        <CloudUploadIcon
-                          sx={{ fontSize: 48, color: "primary.main", mb: 1 }}
-                        />
-                        <Typography variant="subtitle1" sx={{ mb: 1 }}>
-                          Clique para adicionar uma foto
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          ou arraste e solte aqui
-                        </Typography>
-                      </Box>
-                    )}
-                  </label>
-                  {imageUpload.error && (
-                    <Typography color="error" variant="body2" sx={{ mt: 2 }}>
-                      {imageUpload.error}
-                    </Typography>
-                  )}
-                </Box>
-              </Box>
-            </Grid>
+            </Box>
           </Grid>
-        </DialogContent>
+        </Grid>
+      </DialogContent>
 
-        {/* Actions */}
-        <DialogActions
+      {/* Actions */}
+      <DialogActions
+        sx={{
+          p: 3,
+          gap: 2,
+          borderTop: "1px solid rgba(0, 0, 0, 0.08)",
+          bgcolor: "background.paper",
+        }}
+      >
+        <Button
+          onClick={() => {
+            setIsAddingLocation(false);
+            setNewLocation({
+              latitude: null,
+              longitude: null,
+              plantId: null,
+              projectId: null,
+              description: "",
+              height: "",
+              width: "",
+              notes: "",
+            });
+          }}
+          variant="outlined"
+          color="primary"
           sx={{
-            p: 3,
-            gap: 2,
-            borderTop: "1px solid rgba(0, 0, 0, 0.08)",
-            bgcolor: "background.paper",
+            borderColor: "rgba(76, 175, 80, 0.5)",
+            "&:hover": {
+              borderColor: "primary.main",
+              bgcolor: "rgba(76, 175, 80, 0.04)",
+            },
           }}
         >
-          <Button
-            onClick={() => setIsAddingLocation(false)}
-            variant="outlined"
-            color="primary"
-            sx={{
-              borderColor: "rgba(76, 175, 80, 0.5)",
-              "&:hover": {
-                borderColor: "primary.main",
-                bgcolor: "rgba(76, 175, 80, 0.04)",
-              },
-            }}
-          >
-            Cancelar
-          </Button>
-          <Button
-            onClick={handleAddLocation}
-            variant="contained"
-            disabled={imageUpload.uploading}
-            sx={{
-              bgcolor: "primary.main",
-              color: "white",
-              "&:hover": {
-                bgcolor: "primary.dark",
-              },
-            }}
-          >
-            {imageUpload.uploading ? (
-              <CircularProgress size={24} sx={{ color: "white" }} />
-            ) : (
-              "Adicionar Planta"
-            )}
-          </Button>
-        </DialogActions>
-      </Box>
+          Cancelar
+        </Button>
+        <Button
+          onClick={handleAddLocation}
+          variant="contained"
+          disabled={imageUpload.uploading}
+          sx={{
+            bgcolor: "primary.main",
+            color: "white",
+            "&:hover": {
+              bgcolor: "primary.dark",
+            },
+          }}
+        >
+          {imageUpload.uploading ? (
+            <CircularProgress size={24} sx={{ color: "white" }} />
+          ) : (
+            "Adicionar Planta"
+          )}
+        </Button>
+      </DialogActions>
     </Dialog>
   );
 
@@ -2257,6 +2261,7 @@ const LocationMap = () => {
                           latitude: null,
                           longitude: null,
                           plantId: null,
+                          projectId: null,
                           description: "",
                           height: "",
                           width: "",
@@ -2336,14 +2341,14 @@ const LocationMap = () => {
                     }}
                   >
                     <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-                      {location.plant?.commonName || "Planta Desconhecida"}
+                      {location.species?.commonName || "Planta Desconhecida"}
                     </Typography>
                     <Typography
                       variant="caption"
                       color="text.secondary"
                       sx={{ display: "block" }}
                     >
-                      {location.plant?.scientificName}
+                      {location.species?.scientificName}
                     </Typography>
                     <Typography variant="body2" sx={{ mt: 1 }}>
                       {location.description}
@@ -2352,7 +2357,7 @@ const LocationMap = () => {
                       variant="caption"
                       sx={{ display: "block", mt: 1, color: "text.secondary" }}
                     >
-                      Adicionado por: {location.addedBy.name}
+                      Projeto: {location.project?.name || "Não especificado"}
                     </Typography>
                     {location.company && (
                       <Typography
@@ -2437,14 +2442,14 @@ const LocationMap = () => {
             component="div"
             sx={{ fontWeight: 600, color: "primary.main" }}
           >
-            {selectedPlant?.plant?.commonName}
+            {selectedPlant?.species?.commonName}
           </Typography>
           <Typography
             variant="subtitle1"
             color="text.secondary"
             sx={{ mt: 0.5 }}
           >
-            {selectedPlant?.plant?.scientificName}
+            {selectedPlant?.species?.scientificName}
           </Typography>
         </DialogTitle>
         <DialogContent>
@@ -2989,7 +2994,7 @@ const LocationMap = () => {
         <DialogActions>
           {(user?.role === "ADMIN" ||
             (user?.role === "FARMER" &&
-              selectedPlant?.addedBy?.id === user?.userId)) && (
+              selectedPlant?.project?.farmerId === user.userId)) && (
             <>
               <Button
                 onClick={() => handleDeletePlant(selectedPlant.id)}
@@ -3004,7 +3009,7 @@ const LocationMap = () => {
                     setUpdateDialogState({
                       open: true,
                       plantId: selectedPlant.id,
-                      plantName: selectedPlant.plant?.commonName,
+                      plantName: selectedPlant.species?.commonName,
                     });
                     setIsDetailModalOpen(false);
                   }}

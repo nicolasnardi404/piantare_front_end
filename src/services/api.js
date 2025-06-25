@@ -65,13 +65,14 @@ export const plantLocations = {
   // Create new planted plant
   create: (data) =>
     api.post("/planted-plants", {
-      ...data,
-      speciesId: parseInt(data.speciesId),
-      projectId: parseInt(data.projectId),
-      height: parseFloat(data.height),
-      diameter: parseFloat(data.diameter), // Changed from width to diameter
       latitude: parseFloat(data.latitude),
       longitude: parseFloat(data.longitude),
+      speciesId: parseInt(data.plantId), // Changed from speciesId to match frontend
+      description: data.description,
+      projectId: parseInt(data.projectId),
+      imageUrl: data.imageUrl,
+      height: parseFloat(data.height),
+      diameter: parseFloat(data.width), // Using width as diameter
     }),
 
   // Delete planted plant
