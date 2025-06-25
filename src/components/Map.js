@@ -647,7 +647,7 @@ const LocationMap = () => {
 
       // Calculate plants by category
       const plantsByCategory = companyPlants.reduce((acc, location) => {
-        const category = location.plant?.category || "OUTROS";
+        const category = location.species?.category || "OUTROS";
         if (!acc[category]) {
           acc[category] = [];
         }
@@ -1333,7 +1333,7 @@ const LocationMap = () => {
                                 variant="subtitle1"
                                 sx={{ fontWeight: 600 }}
                               >
-                                {plant.plant?.commonName}
+                                {plant.species?.commonName}
                               </Typography>
                               {plant.updates && plant.updates.length > 0 && (
                                 <Box
@@ -1361,7 +1361,13 @@ const LocationMap = () => {
                                 mb: 1,
                               }}
                             >
-                              {plant.plant?.scientificName}
+                              {plant.species?.scientificName}
+                            </Typography>
+                            <Typography
+                              variant="body2"
+                              sx={{ color: "text.secondary" }}
+                            >
+                              Projeto: {plant.project?.name}
                             </Typography>
                           </Box>
                         </Box>
@@ -2198,9 +2204,11 @@ const LocationMap = () => {
       .slice()
       .reverse()
       .map((update) => ({
-        date: new Date(update.updateDate).toLocaleDateString(),
+        date: new Date(
+          update.updateDate || update.createdAt
+        ).toLocaleDateString(),
         height: parseFloat(update.height),
-        width: parseFloat(update.width),
+        diameter: parseFloat(update.diameter),
       }));
 
     return (
@@ -2232,8 +2240,8 @@ const LocationMap = () => {
             />
             <Line
               type="monotone"
-              dataKey="width"
-              name="Largura (m)"
+              dataKey="diameter"
+              name="Diâmetro (m)"
               stroke="#81c784"
               strokeWidth={2}
               dot={{ fill: "#81c784" }}
@@ -2822,6 +2830,22 @@ const LocationMap = () => {
                 </Grid>
               </Grid>
             </Box>
+
+            {/* Growth Chart Section */}
+            {selectedPlant?.updates && selectedPlant.updates.length > 0 && (
+              <Box
+                sx={{
+                  background: "white",
+                  borderRadius: "16px",
+                  boxShadow: "0 4px 20px rgba(0, 0, 0, 0.08)",
+                  border: "1px solid rgba(76, 175, 80, 0.1)",
+                  p: 3,
+                  mb: 3,
+                }}
+              >
+                <GrowthChart updates={selectedPlant.updates} />
+              </Box>
+            )}
 
             {/* Updates Timeline */}
             <Box sx={{ mt: 4 }}>
