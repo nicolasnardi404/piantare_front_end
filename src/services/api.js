@@ -62,6 +62,10 @@ export const plantLocations = {
   // Get company's plants with relevant data
   getCompanyPlants: () => api.get("/planted-plants/company/plants"),
 
+  // Get company's plants with detailed information including updates, species, and project data
+  getCompanyPlantsDetailed: () =>
+    api.get("/planted-plants/company/plants-detailed"),
+
   // Get detailed plant information
   getPlantDetails: (id) => api.get(`/planted-plants/details/${id}`),
 

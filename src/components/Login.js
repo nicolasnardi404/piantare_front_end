@@ -23,7 +23,16 @@ const Login = () => {
     try {
       const response = await auth.login({ email, password });
       login(response.data.token);
-      navigate("/map");
+
+      // Redirect based on user role
+      const role = response.data.user.role;
+      if (role === "FARMER") {
+        navigate("/dashboard");
+      } else if (role === "COMPANY") {
+        navigate("/map");
+      } else if (role === "ADMIN") {
+        navigate("/map/general");
+      }
     } catch (err) {
       setError(err.response?.data?.error || "Failed to login");
     }

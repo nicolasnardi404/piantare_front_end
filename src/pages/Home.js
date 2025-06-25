@@ -320,7 +320,7 @@ const Home = () => {
 
   const fetchPlants = async () => {
     try {
-      const response = await api.get("/plant-locations/map");
+      const response = await api.get("/planted-plants/map-markers");
       setPlants(response.data);
       setLoading(false);
     } catch (error) {
@@ -436,16 +436,30 @@ const Home = () => {
                   <Popup>
                     <Box sx={{ p: 1 }}>
                       <Typography variant="h6" gutterBottom>
-                        {plant.species}
+                        {plant.species?.commonName ||
+                          "Espécie não especificada"}
                       </Typography>
                       <Typography variant="body2" color="text.secondary">
-                        Plantada por: {plant.addedBy.name}
+                        {plant.species?.scientificName &&
+                          `(${plant.species.scientificName})`}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Projeto: {plant.project?.name || "Não especificado"}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Agricultor:{" "}
+                        {plant.project?.farmer?.user?.name ||
+                          "Não especificado"}
                       </Typography>
                       <Typography variant="body2" color="text.secondary">
                         Data:{" "}
-                        {format(new Date(plant.createdAt), "dd/MM/yyyy", {
-                          locale: ptBR,
-                        })}
+                        {format(
+                          new Date(plant.createdAt || new Date()),
+                          "dd/MM/yyyy",
+                          {
+                            locale: ptBR,
+                          }
+                        )}
                       </Typography>
                     </Box>
                   </Popup>

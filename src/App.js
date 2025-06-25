@@ -1,3 +1,4 @@
+import React from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -18,6 +19,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Profile from "./components/Profile";
 import CompanyProfile from "./components/CompanyProfile";
 import AdminPlants from "./components/AdminPlants";
+import CompanyMap from "./components/maps/CompanyMap";
 import "./App.css";
 
 // Create a theme instance with translations for user-visible text
@@ -107,16 +109,29 @@ function App() {
                 </ProtectedRoute>
               }
             />
+
+            {/* Map routes based on role */}
             <Route
               path="/map"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute roles={["COMPANY"]}>
+                  <Layout>
+                    <CompanyMap />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/map/general"
+              element={
+                <ProtectedRoute roles={["ADMIN", "FARMER"]}>
                   <Layout>
                     <LocationMap />
                   </Layout>
                 </ProtectedRoute>
               }
             />
+
             <Route
               path="/users"
               element={

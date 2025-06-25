@@ -135,6 +135,11 @@ const Layout = ({ children }) => {
             path: "/dashboard",
           },
           {
+            text: "Mapa",
+            icon: <MapIcon />,
+            path: "/map/general",
+          },
+          {
             text: "Perfil",
             icon: <PersonIcon />,
             path: "/profile",
@@ -144,19 +149,24 @@ const Layout = ({ children }) => {
     ...(user?.role === "COMPANY"
       ? [
           {
+            text: "Mapa",
+            icon: <MapIcon />,
+            path: "/map",
+          },
+          {
             text: "Perfil da Empresa",
             icon: <PersonIcon />,
             path: "/company-profile",
           },
         ]
       : []),
-    {
-      text: "Mapa",
-      icon: <MapIcon />,
-      path: "/map",
-    },
     ...(user?.role === "ADMIN"
       ? [
+          {
+            text: "Mapa",
+            icon: <MapIcon />,
+            path: "/map/general",
+          },
           {
             text: "Usuários",
             icon: <PeopleIcon />,

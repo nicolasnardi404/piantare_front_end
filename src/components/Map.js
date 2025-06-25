@@ -7,13 +7,13 @@ import {
   useMapEvents,
   useMap,
   LayersControl,
+  Polygon,
 } from "react-leaflet";
 import MarkerClusterGroup from "react-leaflet-markercluster";
 import L from "leaflet";
 import { useAuth } from "../context/AuthContext";
 import {
   plantLocations,
-  companies,
   plants,
   plantUpdates,
   geoGpt,
@@ -47,7 +47,18 @@ import {
   Tooltip,
   CircularProgress,
   Fade,
+  Autocomplete,
 } from "@mui/material";
+import {
+  ResponsiveContainer,
+  LineChart,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Tooltip as RechartsTooltip,
+  Legend,
+  Line,
+} from "recharts";
 import { styled } from "@mui/material/styles";
 import "leaflet/dist/leaflet.css";
 import "leaflet.markercluster/dist/MarkerCluster.css";
@@ -63,26 +74,8 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import UpdateIcon from "@mui/icons-material/Update";
 import HealthAndSafetyIcon from "@mui/icons-material/HealthAndSafety";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
-import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
-import { PDFDownloadLink } from "@react-pdf/renderer";
-import CompanyReport from "./CompanyReport";
-import PersonIcon from "@mui/icons-material/Person";
-import BusinessIcon from "@mui/icons-material/Business";
-import LocationOnIcon from "@mui/icons-material/LocationOn";
-import DescriptionIcon from "@mui/icons-material/Description";
-import Autocomplete from "@mui/material/Autocomplete";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip as RechartsTooltip,
-  Legend,
-  ResponsiveContainer,
-} from "recharts";
-import { Polygon } from "react-leaflet";
 import LegendToggleIcon from "@mui/icons-material/LegendToggle";
+import PlantDetailsModal from "./maps/PlantDetailsModal";
 
 // Import marker cluster CSS
 import "leaflet.markercluster/dist/MarkerCluster.css";
@@ -485,39 +478,22 @@ const LocationButton = styled(IconButton)(({ theme }) => ({
   },
 }));
 
-// In the MapContainer component:
-<MapContainer
-  center={defaultPosition}
-  zoom={13}
-  style={{ height: "100%", width: "100%" }}
->
-  <LayersControl position="bottomright">
-    <LayersControl.BaseLayer checked name="Street Map">
-      <TileLayer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-      />
-    </LayersControl.BaseLayer>
-    <LayersControl.BaseLayer name="Satellite">
-      <TileLayer
-        url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-        attribution="Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community"
-        maxZoom={19}
-        minZoom={0}
-        tileSize={256}
-      />
-    </LayersControl.BaseLayer>
-  </LayersControl>
-
-  {/* ... rest of your existing MapContainer content ... */}
-</MapContainer>;
-
 const LocationMap = () => {
   const { user, token } = useAuth();
   const [locations, setLocations] = useState([]);
-  const [companies, setCompanies] = useState([]);
   const [isAddMode, setIsAddMode] = useState(false);
   const [isAddingLocation, setIsAddingLocation] = useState(false);
+  const [selectedCompanyId, setSelectedCompanyId] = useState("");
+  const [companyStats, setCompanyStats] = useState({
+    totalPlants: 0,
+    plantsByCategory: {},
+    recentPlants: [],
+  });
+  const [geoAnalysis, setGeoAnalysis] = useState({
+    loading: false,
+    data: null,
+    error: null,
+  });
   const [newLocation, setNewLocation] = useState({
     latitude: null,
     longitude: null,
@@ -532,17 +508,11 @@ const LocationMap = () => {
   const [error, setError] = useState("");
   const [selectedPlant, setSelectedPlant] = useState(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
-  const [selectedCompanyId, setSelectedCompanyId] = useState("");
   const [imageUpload, setImageUpload] = useState({
     file: null,
     preview: null,
     uploading: false,
     error: null,
-  });
-  const [companyStats, setCompanyStats] = useState({
-    totalPlants: 0,
-    plantsByCategory: {},
-    recentPlants: [],
   });
   const [farmerStats, setFarmerStats] = useState({
     totalPlants: 0,
@@ -553,11 +523,6 @@ const LocationMap = () => {
     open: false,
     plantId: null,
     plantName: "",
-  });
-  const [geoAnalysis, setGeoAnalysis] = useState({
-    loading: false,
-    data: null,
-    error: null,
   });
   const [locationDetails, setLocationDetails] = useState({});
   const [locationAddress, setLocationAddress] = useState(null);
@@ -726,9 +691,7 @@ const LocationMap = () => {
 
     try {
       let response;
-      if (user?.role === "COMPANY") {
-        response = await plantLocations.getCompanyPlants();
-      } else if (user?.role === "FARMER") {
+      if (user?.role === "FARMER") {
         console.log("Loading farmer plants...");
         response = await plantLocations.getFarmerPlants();
         console.log("Farmer plants API response:", response);
@@ -736,7 +699,7 @@ const LocationMap = () => {
         response = await plantLocations.getMapMarkers();
       }
 
-      console.log("Loaded locations:", response.data); // Debug log
+      console.log("Loaded locations:", response.data);
       setLocations(response.data);
     } catch (err) {
       console.error("Error loading locations:", err);
@@ -801,11 +764,14 @@ const LocationMap = () => {
       );
       setLocationAddress(addressData);
 
-      // Make sure we set the selected plant before opening the modal
-      await setSelectedPlant(detailedLocation);
-      console.log("Setting selected plant:", detailedLocation);
-
-      // Only open modal after setting the data
+      // Set the selected plant and open the modal
+      setSelectedPlant({
+        ...detailedLocation,
+        project: {
+          ...detailedLocation.project,
+          farmer: detailedLocation.project?.farmer || null,
+        },
+      });
       setIsDetailModalOpen(true);
     } catch (error) {
       console.error("Error fetching plant details:", error);
@@ -1025,362 +991,6 @@ const LocationMap = () => {
       console.error("Error adding update:", error);
       setError("Failed to add plant update");
     }
-  };
-
-  const renderCompanyReport = () => {
-    if (user?.role !== "COMPANY") return null;
-
-    return (
-      <Box sx={{ mt: { xs: 2, md: 4 }, mb: { xs: 1, md: 2 } }}>
-        {/* Environmental Impact Analysis Section */}
-        <Box
-          sx={{
-            mb: 4,
-            background:
-              "linear-gradient(145deg, rgba(255,255,255,0.9), rgba(255,255,255,0.95))",
-            backdropFilter: "blur(10px)",
-            borderRadius: "16px",
-            boxShadow: "0 4px 24px -1px rgba(0, 0, 0, 0.1)",
-            overflow: "hidden",
-            border: "1px solid rgba(76, 175, 80, 0.1)",
-          }}
-        >
-          <Box
-            sx={{
-              p: 2,
-              borderBottom: "1px solid rgba(76, 175, 80, 0.1)",
-              background: "rgba(76, 175, 80, 0.05)",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <Typography
-              variant="h6"
-              sx={{
-                fontWeight: 600,
-                color: "primary.main",
-              }}
-            >
-              Análise de Impacto Ambiental
-            </Typography>
-            <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-              {geoAnalysis.loading && (
-                <CircularProgress size={24} color="primary" />
-              )}
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => {
-                  if (companyStats.recentPlants.length > 0) {
-                    analyzeEnvironmentalImpact(companyStats.recentPlants);
-                  }
-                }}
-                disabled={
-                  geoAnalysis.loading || companyStats.recentPlants.length === 0
-                }
-                startIcon={<AutorenewIcon />}
-              >
-                Gerar Análise
-              </Button>
-              {geoAnalysis.data && (
-                <PDFDownloadLink
-                  document={
-                    <CompanyReport
-                      companyStats={companyStats}
-                      geoAnalysis={geoAnalysis}
-                      locations={locations}
-                    />
-                  }
-                  fileName={`relatorio-impacto-ambiental-${format(
-                    new Date(),
-                    "dd-MM-yyyy"
-                  )}.pdf`}
-                >
-                  {({ blob, url, loading, error }) => (
-                    <Button
-                      variant="contained"
-                      color="secondary"
-                      disabled={loading}
-                      startIcon={<PictureAsPdfIcon />}
-                      sx={{
-                        bgcolor: "secondary.main",
-                        "&:hover": {
-                          bgcolor: "secondary.dark",
-                        },
-                      }}
-                    >
-                      {loading ? "Gerando PDF..." : "Baixar Relatório"}
-                    </Button>
-                  )}
-                </PDFDownloadLink>
-              )}
-            </Box>
-          </Box>
-          <Box sx={{ p: 3 }}>
-            {geoAnalysis.error ? (
-              <Alert severity="error">{geoAnalysis.error}</Alert>
-            ) : geoAnalysis.data ? (
-              <Box
-                sx={{
-                  p: 3,
-                  background: "rgba(76, 175, 80, 0.05)",
-                  borderRadius: "12px",
-                }}
-              >
-                {geoAnalysis.data.analysis
-                  .split(/\[(COMPOSIÇÃO|DISTRIBUIÇÃO|CONTEXTO)\]/)
-                  .map((text, index) => {
-                    if (text === "COMPOSIÇÃO") {
-                      return (
-                        <Typography
-                          key={index}
-                          variant="h6"
-                          sx={{
-                            color: "primary.main",
-                            fontWeight: 600,
-                            mt: index === 0 ? 0 : 3,
-                            mb: 2,
-                          }}
-                        >
-                          Composição e Diversidade
-                        </Typography>
-                      );
-                    }
-                    if (text === "DISTRIBUIÇÃO") {
-                      return (
-                        <Typography
-                          key={index}
-                          variant="h6"
-                          sx={{
-                            color: "primary.main",
-                            fontWeight: 600,
-                            mt: 3,
-                            mb: 2,
-                          }}
-                        >
-                          Distribuição Espacial
-                        </Typography>
-                      );
-                    }
-                    if (text === "CONTEXTO") {
-                      return (
-                        <Typography
-                          key={index}
-                          variant="h6"
-                          sx={{
-                            color: "primary.main",
-                            fontWeight: 600,
-                            mt: 3,
-                            mb: 2,
-                          }}
-                        >
-                          Contextualização Regional
-                        </Typography>
-                      );
-                    }
-                    return (
-                      <Typography
-                        key={index}
-                        sx={{
-                          lineHeight: 1.8,
-                          mb: 2,
-                          "& > p": { mb: 2 },
-                          "& > ul": {
-                            pl: 2,
-                            mb: 2,
-                            "& > li": { mb: 1 },
-                          },
-                        }}
-                      >
-                        {text}
-                      </Typography>
-                    );
-                  })}
-              </Box>
-            ) : (
-              <Typography
-                sx={{
-                  textAlign: "center",
-                  color: "text.secondary",
-                  fontStyle: "italic",
-                }}
-              >
-                Carregando análise ambiental...
-              </Typography>
-            )}
-          </Box>
-        </Box>
-
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            mb: 3,
-          }}
-        >
-          <Box>
-            <Typography
-              variant="h5"
-              sx={{
-                fontSize: { xs: "1.5rem", md: "1.75rem" },
-                fontWeight: 700,
-                background: "linear-gradient(135deg, #2e7d32, #81c784)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                mb: 1,
-              }}
-            >
-              Relatório de Plantas
-            </Typography>
-            <Typography
-              variant="subtitle1"
-              sx={{ color: "text.secondary", fontWeight: 500 }}
-            >
-              Total de plantas cadastradas: {companyStats.totalPlants}
-            </Typography>
-          </Box>
-        </Box>
-
-        <Grid container spacing={3}>
-          {Object.entries(companyStats.plantsByCategory || {}).map(
-            ([category, plants]) => (
-              <Grid item xs={12} md={6} key={category}>
-                <Box
-                  sx={{
-                    background:
-                      "linear-gradient(145deg, rgba(255,255,255,0.9), rgba(255,255,255,0.95))",
-                    backdropFilter: "blur(10px)",
-                    borderRadius: "16px",
-                    boxShadow: "0 4px 24px -1px rgba(0, 0, 0, 0.1)",
-                    overflow: "hidden",
-                    border: "1px solid rgba(76, 175, 80, 0.1)",
-                    height: "100%",
-                  }}
-                >
-                  <Box
-                    sx={{
-                      p: 2,
-                      borderBottom: "1px solid rgba(76, 175, 80, 0.1)",
-                      background: "rgba(76, 175, 80, 0.05)",
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                    }}
-                  >
-                    <Typography
-                      variant="h6"
-                      sx={{
-                        fontWeight: 600,
-                        color: "primary.main",
-                      }}
-                    >
-                      {formatPlantCategory(category)}
-                    </Typography>
-                    <Typography
-                      sx={{
-                        backgroundColor: "rgba(76, 175, 80, 0.12)",
-                        color: "primary.main",
-                        px: 2,
-                        py: 0.5,
-                        borderRadius: "12px",
-                        fontSize: "0.875rem",
-                        fontWeight: 600,
-                      }}
-                    >
-                      {plants.length} plantas
-                    </Typography>
-                  </Box>
-                  <Box sx={{ p: 2 }}>
-                    {plants.map((plant) => (
-                      <Box
-                        key={plant.id}
-                        sx={{
-                          mb: 2,
-                          p: 2,
-                          background: "rgba(76, 175, 80, 0.03)",
-                          borderRadius: "12px",
-                          transition: "all 0.2s ease-in-out",
-                          cursor: "pointer",
-                          "&:hover": {
-                            transform: "translateX(8px)",
-                            background: "rgba(76, 175, 80, 0.06)",
-                          },
-                          "&:last-child": {
-                            mb: 0,
-                          },
-                        }}
-                        onClick={() => handleMarkerClick(plant)}
-                      >
-                        <Box
-                          sx={{
-                            display: "flex",
-                            alignItems: "flex-start",
-                            justifyContent: "space-between",
-                          }}
-                        >
-                          <Box sx={{ flex: 1 }}>
-                            <Box
-                              sx={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: 1,
-                                mb: 0.5,
-                              }}
-                            >
-                              <Typography
-                                variant="subtitle1"
-                                sx={{ fontWeight: 600 }}
-                              >
-                                {plant.species?.commonName}
-                              </Typography>
-                              {plant.updates && plant.updates.length > 0 && (
-                                <Box
-                                  sx={{
-                                    width: 12,
-                                    height: 12,
-                                    borderRadius: "50%",
-                                    bgcolor:
-                                      plant.updates[0].healthStatus ===
-                                      "HEALTHY"
-                                        ? "#4caf50"
-                                        : plant.updates[0].healthStatus ===
-                                          "NEEDS_ATTENTION"
-                                        ? "#ff9800"
-                                        : "#f44336",
-                                  }}
-                                />
-                              )}
-                            </Box>
-                            <Typography
-                              variant="body2"
-                              sx={{
-                                color: "text.secondary",
-                                fontStyle: "italic",
-                                mb: 1,
-                              }}
-                            >
-                              {plant.species?.scientificName}
-                            </Typography>
-                            <Typography
-                              variant="body2"
-                              sx={{ color: "text.secondary" }}
-                            >
-                              Projeto: {plant.project?.name}
-                            </Typography>
-                          </Box>
-                        </Box>
-                      </Box>
-                    ))}
-                  </Box>
-                </Box>
-              </Grid>
-            )
-          )}
-        </Grid>
-      </Box>
-    );
   };
 
   const renderFarmerReport = () => {
@@ -2266,9 +1876,8 @@ const LocationMap = () => {
           height: { xs: "calc(100vh - 150px)", md: "calc(100vh - 200px)" },
           mb: { xs: 2, md: 4 },
           position: "relative",
-          width: "100%", // Add explicit width
+          width: "100%",
           "& .leaflet-container": {
-            // Add specific Leaflet container styles
             height: "100%",
             width: "100%",
             zIndex: 1,
@@ -2366,27 +1975,6 @@ const LocationMap = () => {
             showCoverageOnHover={true}
             zoomToBoundsOnClick={true}
             maxClusterRadius={50}
-            iconCreateFunction={(cluster) => {
-              const count = cluster.getChildCount();
-              let size = 40;
-              let className = "marker-cluster-";
-
-              if (count < 10) {
-                className += "small";
-              } else if (count < 100) {
-                className += "medium";
-                size = 50;
-              } else {
-                className += "large";
-                size = 60;
-              }
-
-              return L.divIcon({
-                html: `<div><span>${count}</span></div>`,
-                className: `marker-cluster ${className}`,
-                iconSize: L.point(size, size),
-              });
-            }}
           >
             {locations.map((location) => (
               <Marker
@@ -2394,145 +1982,41 @@ const LocationMap = () => {
                 position={[location.latitude, location.longitude]}
                 eventHandlers={{
                   click: () => handleMarkerClick(location),
-                  mouseover: (e) => {
-                    e.target.openPopup();
-                  },
-                  mouseout: (e) => {
-                    e.target.closePopup();
-                  },
                 }}
               >
                 <Popup>
-                  <Box
-                    sx={{
-                      p: 1,
-                      minWidth: 200,
-                      backgroundColor: "rgba(255, 255, 255, 0.95)",
-                      borderRadius: 1,
-                    }}
-                  >
+                  <Box sx={{ minWidth: 200 }}>
                     <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-                      {location.species?.commonName || "Planta Desconhecida"}
+                      {location.species?.commonName}
                     </Typography>
                     <Typography
                       variant="caption"
-                      sx={{
-                        display: "block",
-                        fontStyle: "italic",
-                        color: "text.secondary",
-                      }}
+                      sx={{ display: "block", color: "text.secondary" }}
                     >
                       {location.species?.scientificName}
                     </Typography>
-
-                    <Box sx={{ mt: 1 }}>
-                      <Typography variant="body2" sx={{ mb: 0.5 }}>
-                        {location.description}
-                      </Typography>
-
+                    <Typography variant="body2" sx={{ mt: 1 }}>
+                      {location.description}
+                    </Typography>
+                    {location.project && (
                       <Typography
                         variant="caption"
-                        sx={{ display: "block", color: "text.secondary" }}
+                        sx={{
+                          display: "block",
+                          color: "text.secondary",
+                          mt: 1,
+                        }}
                       >
-                        Projeto: {location.project?.name}
+                        Projeto: {location.project.name}
                       </Typography>
-
-                      {location.updates && location.updates.length > 0 && (
-                        <Box
-                          sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 1,
-                            mt: 0.5,
-                          }}
-                        >
-                          <Box
-                            sx={{
-                              width: 8,
-                              height: 8,
-                              borderRadius: "50%",
-                              bgcolor:
-                                location.updates[0].healthStatus === "HEALTHY"
-                                  ? "#4caf50"
-                                  : location.updates[0].healthStatus ===
-                                    "NEEDS_ATTENTION"
-                                  ? "#ff9800"
-                                  : "#f44336",
-                            }}
-                          />
-                          <Typography
-                            variant="caption"
-                            sx={{ color: "text.secondary" }}
-                          >
-                            Última atualização:{" "}
-                            {new Date(
-                              location.updates[0].createdAt
-                            ).toLocaleDateString()}
-                          </Typography>
-                        </Box>
-                      )}
-
-                      {location.company && (
-                        <Typography
-                          variant="caption"
-                          sx={{ display: "block", color: "text.secondary" }}
-                        >
-                          Empresa: {location.company.name}
-                        </Typography>
-                      )}
-                    </Box>
-
-                    <Typography
-                      variant="caption"
-                      sx={{
-                        display: "block",
-                        mt: 1,
-                        color: "primary.main",
-                        fontStyle: "italic",
-                      }}
-                    >
-                      Clique para mais detalhes
-                    </Typography>
+                    )}
                   </Box>
                 </Popup>
               </Marker>
             ))}
           </MarkerClusterGroup>
 
-          {/* Show temporary marker for selected location */}
-          {newLocation.latitude &&
-            newLocation.longitude &&
-            !isAddingLocation && (
-              <Marker
-                position={[newLocation.latitude, newLocation.longitude]}
-                icon={redIcon}
-              >
-                <Popup>
-                  <Box sx={{ p: 1, minWidth: 200 }}>
-                    <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-                      Selected Location
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      sx={{ mt: 1, color: "text.secondary" }}
-                    >
-                      Click the button below to add plant details
-                    </Typography>
-                    <Button
-                      variant="contained"
-                      size="small"
-                      color="primary"
-                      sx={{ mt: 2 }}
-                      onClick={() => setIsAddingLocation(true)}
-                    >
-                      Add Plant Details
-                    </Button>
-                  </Box>
-                </Popup>
-              </Marker>
-            )}
-
-          {/* Add Project Polygons */}
+          {/* Project Polygons */}
           {projectPolygons.map((project) =>
             project.areaCoordinates && project.areaCoordinates.length > 0 ? (
               <Polygon
@@ -2563,16 +2047,6 @@ const LocationMap = () => {
                   weight: 2,
                 }}
                 eventHandlers={{
-                  click: (e) => {
-                    if (isAddMode) {
-                      // If in add mode, allow plant placement
-                      e.originalEvent.stopPropagation();
-                      handleMapClick({
-                        latitude: e.latlng.lat,
-                        longitude: e.latlng.lng,
-                      });
-                    }
-                  },
                   mouseover: (e) => {
                     const statusText =
                       project.status === "IN_PROGRESS"
@@ -2585,45 +2059,12 @@ const LocationMap = () => {
                         ? "Em Espera"
                         : "Cancelado";
 
-                    const statusColor =
-                      project.status === "IN_PROGRESS"
-                        ? "#4caf50"
-                        : project.status === "COMPLETED"
-                        ? "#2196f3"
-                        : project.status === "PLANNING"
-                        ? "#ff9800"
-                        : project.status === "ON_HOLD"
-                        ? "#fdd835"
-                        : "#f44336";
-
-                    const popup = L.popup({
-                      closeButton: false,
-                      offset: [0, -10],
-                    })
+                    const popup = L.popup()
                       .setLatLng(e.latlng)
                       .setContent(
-                        `<div style="padding: 12px; min-width: 220px; font-family: Arial, sans-serif;">
-                          <h4 style="margin: 0 0 12px 0; color: #1b5e20; font-size: 16px;">${
-                            project.name
-                          }</h4>
-                          <div style="display: flex; align-items: center; margin: 8px 0;">
-                            <span style="
-                              width: 10px;
-                              height: 10px;
-                              border-radius: 50%;
-                              background-color: ${statusColor};
-                              display: inline-block;
-                              margin-right: 8px;">
-                            </span>
-                            <span style="color: #666; font-size: 14px;">Status: ${statusText}</span>
-                          </div>
-                          ${
-                            project.description
-                              ? `<p style="margin: 8px 0 0 0; color: #555; font-size: 13px; line-height: 1.4;">
-                                 ${project.description}
-                               </p>`
-                              : ""
-                          }
+                        `<div style="min-width: 200px;">
+                          <h4 style="margin: 0 0 8px 0;">${project.name}</h4>
+                          <p style="margin: 0;">Status: ${statusText}</p>
                         </div>`
                       )
                       .openOn(e.target._map);
@@ -2633,535 +2074,32 @@ const LocationMap = () => {
                     });
                   },
                 }}
-              ></Polygon>
+              />
             ) : null
           )}
         </MapContainer>
       </Box>
 
       {renderFarmerReport()}
-      {renderCompanyReport()}
 
-      {/* Plant Details Dialog */}
-      <Dialog
+      {/* Plant Details Modal */}
+      <PlantDetailsModal
         open={isDetailModalOpen}
         onClose={() => setIsDetailModalOpen(false)}
-        maxWidth={false}
-        PaperProps={{
-          sx: {
-            width: "90vw",
-            maxWidth: "1000px",
-            minHeight: "80vh",
-            borderRadius: "20px",
-          },
-        }}
-      >
-        <DialogTitle>
-          <Typography
-            variant="h5"
-            component="div"
-            sx={{ fontWeight: 600, color: "primary.main" }}
-          >
-            {selectedPlant?.species?.commonName}
-          </Typography>
-          <Typography
-            variant="subtitle1"
-            color="text.secondary"
-            sx={{ mt: 0.5 }}
-          >
-            {selectedPlant?.species?.scientificName}
-          </Typography>
-        </DialogTitle>
-        <DialogContent>
-          <Box sx={{ mb: 3 }}>
-            {selectedPlant?.updates && selectedPlant.updates.length > 0 && (
-              <Box
-                component="img"
-                src={selectedPlant.updates[0].imageUrl}
-                alt="Plant"
-                sx={{
-                  width: "100%",
-                  height: "300px",
-                  objectFit: "cover",
-                  borderRadius: "16px",
-                  mb: 3,
-                  boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
-                }}
-              />
-            )}
-
-            {/* Project Information */}
-            <Box
-              sx={{
-                background: "white",
-                borderRadius: "16px",
-                boxShadow: "0 4px 20px rgba(0, 0, 0, 0.08)",
-                border: "1px solid rgba(76, 175, 80, 0.1)",
-                p: 3,
-                mb: 3,
-              }}
-            >
-              <Typography
-                variant="h6"
-                sx={{ mb: 3, color: "primary.main", fontWeight: 600 }}
-              >
-                Informações do Projeto
-              </Typography>
-              <Grid container spacing={3}>
-                <Grid item xs={12} sm={6}>
-                  <Box>
-                    <Typography variant="body2" color="text.secondary">
-                      Nome do Projeto
-                    </Typography>
-                    <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                      {selectedPlant?.project?.name}
-                    </Typography>
-                  </Box>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Box>
-                    <Typography variant="body2" color="text.secondary">
-                      Status do Projeto
-                    </Typography>
-                    <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                      {selectedPlant?.project?.status === "IN_PROGRESS"
-                        ? "Em Andamento"
-                        : selectedPlant?.project?.status === "COMPLETED"
-                        ? "Concluído"
-                        : selectedPlant?.project?.status === "PLANNING"
-                        ? "Em Planejamento"
-                        : selectedPlant?.project?.status === "ON_HOLD"
-                        ? "Em Espera"
-                        : "Cancelado"}
-                    </Typography>
-                  </Box>
-                </Grid>
-                {selectedPlant?.project?.description && (
-                  <Grid item xs={12}>
-                    <Box>
-                      <Typography variant="body2" color="text.secondary">
-                        Descrição do Projeto
-                      </Typography>
-                      <Typography variant="body1">
-                        {selectedPlant?.project?.description}
-                      </Typography>
-                    </Box>
-                  </Grid>
-                )}
-              </Grid>
-            </Box>
-
-            {/* Current Status Section */}
-            <Box
-              sx={{
-                background: "white",
-                borderRadius: "16px",
-                boxShadow: "0 4px 20px rgba(0, 0, 0, 0.08)",
-                border: "1px solid rgba(76, 175, 80, 0.1)",
-                p: 3,
-                mb: 3,
-              }}
-            >
-              <Typography
-                variant="h6"
-                sx={{ mb: 3, color: "primary.main", fontWeight: 600 }}
-              >
-                Status Atual
-              </Typography>
-              <Grid container spacing={3}>
-                <Grid item xs={12} sm={4}>
-                  <Box>
-                    <Typography variant="body2" color="text.secondary">
-                      Estado de Saúde
-                    </Typography>
-                    <Typography
-                      variant="h6"
-                      sx={{
-                        color:
-                          selectedPlant?.updates &&
-                          selectedPlant.updates.length > 0
-                            ? selectedPlant.updates[0].healthStatus ===
-                              "HEALTHY"
-                              ? "#4caf50"
-                              : selectedPlant.updates[0].healthStatus ===
-                                "NEEDS_ATTENTION"
-                              ? "#ff9800"
-                              : "#f44336"
-                            : "#4caf50",
-                        fontWeight: 600,
-                      }}
-                    >
-                      {selectedPlant?.updates &&
-                      selectedPlant.updates.length > 0
-                        ? selectedPlant.updates[0].healthStatus === "HEALTHY"
-                          ? "Saudável"
-                          : selectedPlant.updates[0].healthStatus ===
-                            "NEEDS_ATTENTION"
-                          ? "Precisa de Atenção"
-                          : "Doente"
-                        : "Saudável"}
-                    </Typography>
-                  </Box>
-                </Grid>
-                <Grid item xs={12} sm={4}>
-                  <Box>
-                    <Typography variant="body2" color="text.secondary">
-                      Dimensões Atuais
-                    </Typography>
-                    <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                      {selectedPlant?.updates &&
-                      selectedPlant.updates.length > 0
-                        ? `${selectedPlant.updates[0].height}m x ${selectedPlant.updates[0].diameter}m`
-                        : "Não informado"}
-                    </Typography>
-                  </Box>
-                </Grid>
-                <Grid item xs={12} sm={4}>
-                  <Box>
-                    <Typography variant="body2" color="text.secondary">
-                      Data do Plantio
-                    </Typography>
-                    <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                      {selectedPlant?.plantedAt
-                        ? new Date(selectedPlant.plantedAt).toLocaleDateString()
-                        : "Não informado"}
-                    </Typography>
-                  </Box>
-                </Grid>
-              </Grid>
-            </Box>
-
-            {/* Growth Chart Section */}
-            {selectedPlant?.updates && selectedPlant.updates.length > 0 && (
-              <Box
-                sx={{
-                  background: "white",
-                  borderRadius: "16px",
-                  boxShadow: "0 4px 20px rgba(0, 0, 0, 0.08)",
-                  border: "1px solid rgba(76, 175, 80, 0.1)",
-                  p: 3,
-                  mb: 3,
-                }}
-              >
-                <GrowthChart updates={selectedPlant.updates} />
-              </Box>
-            )}
-
-            {/* Updates Timeline */}
-            <Box sx={{ mt: 4 }}>
-              <Typography
-                variant="h6"
-                sx={{ mb: 3, color: "primary.main", fontWeight: 600 }}
-              >
-                Histórico de Atualizações
-              </Typography>
-              {selectedPlant?.updates && selectedPlant.updates.length > 0 ? (
-                <Box sx={{ position: "relative" }}>
-                  {/* Timeline line */}
-                  <Box
-                    sx={{
-                      position: "absolute",
-                      left: "16px",
-                      top: 0,
-                      bottom: 0,
-                      width: "2px",
-                      background: "rgba(76, 175, 80, 0.2)",
-                      zIndex: 0,
-                    }}
-                  />
-                  {selectedPlant.updates.map((update, index) => (
-                    <Box
-                      key={update.id}
-                      sx={{
-                        position: "relative",
-                        mb: index !== selectedPlant.updates.length - 1 ? 4 : 0,
-                        ml: 5,
-                        "&::before": {
-                          content: '""',
-                          position: "absolute",
-                          left: "-24px",
-                          top: "24px",
-                          width: "16px",
-                          height: "16px",
-                          borderRadius: "50%",
-                          backgroundColor:
-                            update.healthStatus === "HEALTHY"
-                              ? "#4caf50"
-                              : update.healthStatus === "NEEDS_ATTENTION"
-                              ? "#ff9800"
-                              : "#f44336",
-                          border: "3px solid white",
-                          boxShadow: "0 0 0 2px rgba(76, 175, 80, 0.2)",
-                          zIndex: 1,
-                        },
-                      }}
-                    >
-                      <Box
-                        sx={{
-                          background: "white",
-                          borderRadius: "16px",
-                          overflow: "hidden",
-                          boxShadow: "0 4px 20px rgba(0, 0, 0, 0.08)",
-                          border: "1px solid rgba(76, 175, 80, 0.1)",
-                        }}
-                      >
-                        <Box sx={{ p: 3 }}>
-                          <Box
-                            sx={{
-                              display: "flex",
-                              justifyContent: "space-between",
-                              alignItems: "flex-start",
-                              mb: 2,
-                            }}
-                          >
-                            <Box>
-                              <Typography
-                                variant="h6"
-                                sx={{
-                                  fontWeight: 600,
-                                  color: "primary.main",
-                                  mb: 0.5,
-                                }}
-                              >
-                                {update.healthStatus === "HEALTHY"
-                                  ? "Saudável"
-                                  : update.healthStatus === "NEEDS_ATTENTION"
-                                  ? "Precisa de Atenção"
-                                  : "Doente"}
-                              </Typography>
-                              <Typography
-                                variant="body2"
-                                color="text.secondary"
-                              >
-                                {new Date(
-                                  update.createdAt
-                                ).toLocaleDateString()}
-                              </Typography>
-                            </Box>
-                          </Box>
-
-                          {/* Measurements Section */}
-                          <Box
-                            sx={{
-                              mb: 2,
-                              display: "flex",
-                              gap: 4,
-                              backgroundColor: "rgba(76, 175, 80, 0.05)",
-                              p: 2,
-                              borderRadius: "12px",
-                            }}
-                          >
-                            <Box>
-                              <Typography
-                                variant="body2"
-                                color="text.secondary"
-                              >
-                                Altura
-                              </Typography>
-                              <Typography variant="subtitle2" fontWeight="600">
-                                {update.height}m
-                              </Typography>
-                            </Box>
-                            <Box>
-                              <Typography
-                                variant="body2"
-                                color="text.secondary"
-                              >
-                                Diâmetro
-                              </Typography>
-                              <Typography variant="subtitle2" fontWeight="600">
-                                {update.diameter}m
-                              </Typography>
-                            </Box>
-                          </Box>
-
-                          {update.notes && (
-                            <Typography
-                              sx={{
-                                color: "text.secondary",
-                                fontStyle: "italic",
-                                mb: 2,
-                              }}
-                            >
-                              "{update.notes}"
-                            </Typography>
-                          )}
-
-                          {update.imageUrl && (
-                            <Box
-                              sx={{
-                                borderRadius: "12px",
-                                overflow: "hidden",
-                                maxWidth: "600px",
-                                margin: "0 auto",
-                              }}
-                            >
-                              <Box
-                                component="img"
-                                src={update.imageUrl}
-                                alt={`Update on ${new Date(
-                                  update.createdAt
-                                ).toLocaleDateString()}`}
-                                sx={{
-                                  width: "100%",
-                                  height: "300px",
-                                  objectFit: "cover",
-                                }}
-                              />
-                            </Box>
-                          )}
-                        </Box>
-                      </Box>
-                    </Box>
-                  ))}
-                </Box>
-              ) : (
-                <Typography
-                  sx={{
-                    textAlign: "center",
-                    color: "text.secondary",
-                    py: 3,
-                  }}
-                >
-                  Nenhuma atualização registrada
-                </Typography>
-              )}
-            </Box>
-            {/* Species Information */}
-            <Box
-              sx={{
-                background: "white",
-                borderRadius: "16px",
-                boxShadow: "0 4px 20px rgba(0, 0, 0, 0.08)",
-                border: "1px solid rgba(76, 175, 80, 0.1)",
-                p: 3,
-                mb: 3,
-              }}
-            >
-              <Typography
-                variant="h6"
-                sx={{ mb: 3, color: "primary.main", fontWeight: 600 }}
-              >
-                Informações da Espécie
-              </Typography>
-              <Grid container spacing={3}>
-                <Grid item xs={12} sm={6}>
-                  <Box>
-                    <Typography variant="body2" color="text.secondary">
-                      Nome Popular
-                    </Typography>
-                    <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                      {selectedPlant?.species?.commonName}
-                    </Typography>
-                  </Box>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Box>
-                    <Typography variant="body2" color="text.secondary">
-                      Nome Científico
-                    </Typography>
-                    <Typography
-                      variant="h6"
-                      sx={{ fontWeight: 600, fontStyle: "italic" }}
-                    >
-                      {selectedPlant?.species?.scientificName}
-                    </Typography>
-                  </Box>
-                </Grid>
-                {selectedPlant?.species?.origin && (
-                  <Grid item xs={12} sm={6}>
-                    <Box>
-                      <Typography variant="body2" color="text.secondary">
-                        Origem
-                      </Typography>
-                      <Typography variant="body1">
-                        {selectedPlant?.species?.origin}
-                      </Typography>
-                    </Box>
-                  </Grid>
-                )}
-                {selectedPlant?.species?.height && (
-                  <Grid item xs={12} sm={6}>
-                    <Box>
-                      <Typography variant="body2" color="text.secondary">
-                        Altura Esperada
-                      </Typography>
-                      <Typography variant="body1">
-                        {selectedPlant?.species?.height}
-                      </Typography>
-                    </Box>
-                  </Grid>
-                )}
-                {selectedPlant?.species?.specification && (
-                  <Grid item xs={12}>
-                    <Box>
-                      <Typography variant="body2" color="text.secondary">
-                        Especificação
-                      </Typography>
-                      <Typography variant="body1">
-                        {selectedPlant?.species?.specification}
-                      </Typography>
-                    </Box>
-                  </Grid>
-                )}
-              </Grid>
-            </Box>
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          {console.log("=== DEBUG INFO ===")}
-          {console.log("User full data:", user)}
-          {console.log("Selected plant full data:", selectedPlant)}
-          {console.log("Project full data:", selectedPlant?.project)}
-          {console.log("Project farmer:", selectedPlant?.project?.farmer)}
-          {console.log(
-            "Project farmer user:",
-            selectedPlant?.project?.farmer?.user
-          )}
-          {console.log(
-            "Project farmer user id:",
-            selectedPlant?.project?.farmer?.user?.id
-          )}
-          {console.log("User ID:", user?.userId)}
-          {console.log(
-            "Comparison result:",
-            selectedPlant?.project?.farmer?.user?.id === user?.userId
-          )}
-          {(user?.role === "ADMIN" ||
-            (user?.role === "FARMER" &&
-              selectedPlant?.project?.farmer?.user?.id === user?.userId)) && (
-            <>
-              <Button
-                onClick={() => handleDeletePlant(selectedPlant.id)}
-                color="error"
-                startIcon={<DeleteIcon />}
-              >
-                Excluir
-              </Button>
-              {user?.role === "FARMER" && (
-                <Button
-                  onClick={() => {
-                    console.log("Update button clicked");
-                    setUpdateDialogState({
-                      open: true,
-                      plantId: selectedPlant.id,
-                      plantName: selectedPlant.species?.commonName,
-                    });
-                    setIsDetailModalOpen(false);
-                  }}
-                  color="primary"
-                  startIcon={<UpdateIcon />}
-                >
-                  Atualizar
-                </Button>
-              )}
-            </>
-          )}
-          <Button onClick={() => setIsDetailModalOpen(false)}>Fechar</Button>
-        </DialogActions>
-      </Dialog>
+        selectedPlant={selectedPlant}
+        user={user}
+        onDelete={handleDeletePlant}
+        onUpdate={(plant) =>
+          setUpdateDialogState({
+            open: true,
+            plantId: plant.id,
+            plantName: plant.species?.commonName,
+          })
+        }
+      />
 
       {renderAddLocationDialog()}
+      {PlantUpdateDialog()}
 
       {/* Legend Toggle Button */}
       {user?.role === "FARMER" && projectPolygons.length > 0 && (
@@ -3247,59 +2185,5 @@ const LocationMap = () => {
     </Box>
   );
 };
-
-// Add these styles at the end of the file, before the export
-const styles = `
-  .marker-cluster {
-    background-clip: padding-box;
-    border-radius: 20px;
-    background-color: rgba(76, 175, 80, 0.6);
-  }
-  
-  .marker-cluster div {
-    width: 30px;
-    height: 30px;
-    margin-left: 5px;
-    margin-top: 5px;
-    text-align: center;
-    border-radius: 15px;
-    font-size: 12px;
-    color: white;
-    font-weight: bold;
-    background-color: rgba(76, 175, 80, 0.8);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .marker-cluster-small {
-    background-color: rgba(76, 175, 80, 0.6);
-  }
-  
-  .marker-cluster-small div {
-    background-color: rgba(76, 175, 80, 0.8);
-  }
-  
-  .marker-cluster-medium {
-    background-color: rgba(241, 211, 87, 0.6);
-  }
-  
-  .marker-cluster-medium div {
-    background-color: rgba(240, 194, 12, 0.8);
-  }
-  
-  .marker-cluster-large {
-    background-color: rgba(253, 156, 115, 0.6);
-  }
-  
-  .marker-cluster-large div {
-    background-color: rgba(241, 128, 23, 0.8);
-  }
-`;
-
-// Add style tag to document
-const styleSheet = document.createElement("style");
-styleSheet.innerText = styles;
-document.head.appendChild(styleSheet);
 
 export default LocationMap;
