@@ -26,6 +26,7 @@ import {
   DialogActions,
   Fab,
   CircularProgress,
+  Tooltip,
 } from "@mui/material";
 import {
   Person,
@@ -36,6 +37,7 @@ import {
   Add,
   Map as MapIcon,
   Delete,
+  KeyboardArrowDown,
 } from "@mui/icons-material";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -87,25 +89,23 @@ const StatCard = ({ icon, title, value, color }) => (
 
 const FarmerDashboard = () => {
   const { user } = useAuth();
-  const [dashboardData, setDashboardData] = useState({ stats: {}, plants: [] });
-  const [projectsList, setProjectsList] = useState([]);
+  const [dashboardData, setDashboardData] = useState({
+    stats: {},
+    projects: [],
+  });
   const [selectedPlant, setSelectedPlant] = useState(null);
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [expandedProject, setExpandedProject] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
   const [showProjectModal, setShowProjectModal] = useState(false);
-  const [plantsTableData, setPlantsTableData] = useState([]);
 
   useEffect(() => {
     loadDashboardData();
-    loadProjects();
-    loadPlantsTable();
   }, []);
 
   const loadDashboardData = async () => {
     try {
-      const response = await farmer.getDashboardData();
+      const response = await farmer.getDashboardComplete();
       setDashboardData(response.data);
       setLoading(false);
     } catch (error) {
@@ -114,29 +114,11 @@ const FarmerDashboard = () => {
     }
   };
 
-  const loadProjects = async () => {
-    try {
-      const response = await projects.getList();
-      setProjectsList(response.data);
-    } catch (error) {
-      console.error("Error loading projects:", error);
-    }
-  };
-
-  const loadPlantsTable = async () => {
-    try {
-      const response = await farmer.getPlantsTable();
-      setPlantsTableData(response.data);
-    } catch (error) {
-      console.error("Error loading plants table:", error);
-    }
-  };
-
   const handleDeleteProject = async (projectId) => {
     if (window.confirm("Tem certeza que deseja excluir este projeto?")) {
       try {
         await projects.delete(projectId);
-        loadProjects();
+        loadDashboardData(); // Reload all data after deletion
       } catch (error) {
         console.error("Error deleting project:", error);
       }
@@ -167,35 +149,37 @@ const FarmerDashboard = () => {
 
   const calculateStats = () => {
     const stats = {
-      totalPlants: plantsTableData.length,
+      totalPlants: dashboardData.projects.length,
       healthyPlants: 0,
       needsAttention: 0,
       sickPlants: 0,
     };
 
-    plantsTableData.forEach((plant) => {
-      // Get the latest update if it exists
-      const lastUpdate = plant.updates?.[0];
+    dashboardData.projects.forEach((project) => {
+      project.plantedPlants.forEach((plant) => {
+        // Get the latest update if it exists
+        const lastUpdate = plant.updates?.[0];
 
-      if (!lastUpdate) {
-        // Plants without updates are considered healthy
-        stats.healthyPlants++;
-      } else {
-        switch (lastUpdate.healthStatus) {
-          case "HEALTHY":
-            stats.healthyPlants++;
-            break;
-          case "NEEDS_ATTENTION":
-            stats.needsAttention++;
-            break;
-          case "SICK":
-            stats.sickPlants++;
-            break;
-          default:
-            // Unknown status plants are considered healthy
-            stats.healthyPlants++;
+        if (!lastUpdate) {
+          // Plants without updates are considered healthy
+          stats.healthyPlants++;
+        } else {
+          switch (lastUpdate.healthStatus) {
+            case "HEALTHY":
+              stats.healthyPlants++;
+              break;
+            case "NEEDS_ATTENTION":
+              stats.needsAttention++;
+              break;
+            case "SICK":
+              stats.sickPlants++;
+              break;
+            default:
+              // Unknown status plants are considered healthy
+              stats.healthyPlants++;
+          }
         }
-      }
+      });
     });
 
     return stats;
@@ -217,15 +201,6 @@ const FarmerDashboard = () => {
       SICK: "DOENTE",
     };
     return labels[status] || "SAUDÁVEL"; // Default to "SAUDÁVEL" if no status
-  };
-
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
   };
 
   if (loading) {
@@ -343,7 +318,7 @@ const FarmerDashboard = () => {
         <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
           <CircularProgress />
         </Box>
-      ) : projectsList.length === 0 ? (
+      ) : dashboardData.projects.length === 0 ? (
         <Box
           sx={{
             textAlign: "center",
@@ -390,7 +365,7 @@ const FarmerDashboard = () => {
             },
           }}
         >
-          {projectsList.map((project) => (
+          {dashboardData.projects.map((project) => (
             <Grid
               item
               xs={12}
@@ -405,6 +380,7 @@ const FarmerDashboard = () => {
               <Card
                 sx={{
                   display: "flex",
+                  flexDirection: "column",
                   position: "relative",
                   transition: "transform 0.2s, box-shadow 0.2s",
                   "&:hover": {
@@ -413,144 +389,144 @@ const FarmerDashboard = () => {
                   },
                   borderRadius: 2,
                   overflow: "hidden",
-                  height: 280,
-                  width: "100%",
+                  mb: 2,
                 }}
               >
-                {project.areaCoordinates && (
-                  <Box
-                    sx={{
-                      width: "30%",
-                      position: "relative",
-                      "&:after": {
-                        content: '""',
-                        position: "absolute",
-                        right: 0,
-                        top: 0,
-                        bottom: 0,
-                        width: "40px",
-                        background:
-                          "linear-gradient(to left, rgba(255,255,255,1), rgba(255,255,255,0))",
-                      },
-                    }}
-                  >
-                    <MapContainer
-                      center={getProjectMapCenter(project)}
-                      zoom={13}
-                      style={{ height: "100%", width: "100%" }}
-                      zoomControl={false}
-                      dragging={false}
-                      scrollWheelZoom={false}
-                    >
-                      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                      {project.areaCoordinates && (
-                        <Polygon
-                          positions={
-                            typeof project.areaCoordinates === "string"
-                              ? JSON.parse(project.areaCoordinates)
-                              : project.areaCoordinates
-                          }
-                          pathOptions={{
-                            color: "#4CAF50",
-                            fillColor: "#4CAF50",
-                            fillOpacity: 0.2,
-                          }}
-                        />
-                      )}
-                    </MapContainer>
-                    <IconButton
-                      sx={{
-                        position: "absolute",
-                        bottom: 8,
-                        right: 8,
-                        bgcolor: "background.paper",
-                        boxShadow: 2,
-                        "&:hover": {
-                          bgcolor: "background.paper",
-                          transform: "scale(1.1)",
-                        },
-                        transition: "transform 0.2s",
-                      }}
-                      onClick={() => {
-                        setSelectedProjectId(project.id);
-                        setShowProjectModal(true);
-                      }}
-                    >
-                      <MapIcon />
-                    </IconButton>
-                  </Box>
-                )}
                 <Box
+                  onClick={() =>
+                    setExpandedProject(
+                      expandedProject === project.id ? null : project.id
+                    )
+                  }
                   sx={{
                     display: "flex",
-                    flexDirection: "column",
-                    width: project.areaCoordinates ? "70%" : "100%",
-                    position: "relative",
+                    cursor: "pointer",
+                    height: 280,
+                    "&:hover": {
+                      bgcolor: "action.hover",
+                    },
                   }}
                 >
-                  <CardContent sx={{ flexGrow: 1, p: 3 }}>
+                  {project.areaCoordinates && (
                     <Box
                       sx={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "flex-start",
-                        mb: 2,
+                        width: "30%",
+                        position: "relative",
+                        "&:after": {
+                          content: '""',
+                          position: "absolute",
+                          right: 0,
+                          top: 0,
+                          bottom: 0,
+                          width: "40px",
+                          background:
+                            "linear-gradient(to left, rgba(255,255,255,1), rgba(255,255,255,0))",
+                        },
                       }}
                     >
-                      <Box>
-                        <Typography
-                          variant="h5"
-                          component="h2"
-                          gutterBottom
-                          sx={{
-                            fontWeight: 600,
-                            color: "text.primary",
-                          }}
-                        >
-                          {project.name}
-                        </Typography>
-                        <Typography
-                          variant="body1"
-                          color="text.secondary"
-                          sx={{
-                            mb: 3,
-                            lineHeight: 1.6,
-                            maxWidth: "80%",
-                          }}
-                        >
-                          {project.description}
-                        </Typography>
-                      </Box>
-                      <Chip
-                        label={getStatusLabel(project.status)}
-                        color={getStatusColor(project.status)}
+                      <MapContainer
+                        center={getProjectMapCenter(project)}
+                        zoom={13}
+                        style={{ height: "100%", width: "100%" }}
+                        zoomControl={false}
+                        dragging={false}
+                        scrollWheelZoom={false}
+                      >
+                        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                        {project.areaCoordinates && (
+                          <Polygon
+                            positions={
+                              typeof project.areaCoordinates === "string"
+                                ? JSON.parse(project.areaCoordinates)
+                                : project.areaCoordinates
+                            }
+                            pathOptions={{
+                              color: "#4CAF50",
+                              fillColor: "#4CAF50",
+                              fillOpacity: 0.2,
+                            }}
+                          />
+                        )}
+                      </MapContainer>
+                      <IconButton
                         sx={{
-                          fontWeight: 500,
-                          boxShadow: 1,
-                          px: 2,
+                          position: "absolute",
+                          bottom: 8,
+                          right: 8,
+                          bgcolor: "background.paper",
+                          boxShadow: 2,
+                          "&:hover": {
+                            bgcolor: "background.paper",
+                            transform: "scale(1.1)",
+                          },
+                          transition: "transform 0.2s",
+                          zIndex: 1,
                         }}
-                      />
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedProjectId(project.id);
+                          setShowProjectModal(true);
+                        }}
+                      >
+                        <MapIcon />
+                      </IconButton>
                     </Box>
-
-                    <Grid container spacing={4} sx={{ mt: 1 }}>
-                      <Grid item xs={12} md={6}>
-                        <Stack spacing={2}>
+                  )}
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      width: project.areaCoordinates ? "70%" : "100%",
+                      position: "relative",
+                    }}
+                  >
+                    <CardContent sx={{ flexGrow: 1, p: 3 }}>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "flex-start",
+                          mb: 2,
+                        }}
+                      >
+                        <Box>
                           <Typography
-                            variant="body2"
-                            color="text.secondary"
+                            variant="h5"
+                            component="h2"
+                            gutterBottom
                             sx={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 1,
+                              fontWeight: 600,
+                              color: "text.primary",
                             }}
                           >
-                            <Timeline fontSize="small" color="primary" />
-                            Início:{" "}
-                            {format(new Date(project.startDate), "dd/MM/yyyy", {
-                              locale: ptBR,
-                            })}
+                            {project.name}
                           </Typography>
-                          {project.endDate && (
+                          <Typography
+                            variant="body1"
+                            color="text.secondary"
+                            sx={{
+                              mb: 3,
+                              lineHeight: 1.6,
+                              maxWidth: "80%",
+                            }}
+                          >
+                            {project.description}
+                          </Typography>
+                        </Box>
+                        <Chip
+                          label={getStatusLabel(project.status)}
+                          color={getStatusColor(project.status)}
+                          sx={{
+                            fontWeight: 500,
+                            boxShadow: 1,
+                            px: 2,
+                          }}
+                        />
+                      </Box>
+
+                      <Grid container spacing={4} sx={{ mt: 1 }}>
+                        <Grid item xs={12} md={6}>
+                          <Stack spacing={2}>
                             <Typography
                               variant="body2"
                               color="text.secondary"
@@ -561,175 +537,280 @@ const FarmerDashboard = () => {
                               }}
                             >
                               <Timeline fontSize="small" color="primary" />
-                              Término:{" "}
-                              {format(new Date(project.endDate), "dd/MM/yyyy", {
-                                locale: ptBR,
-                              })}
+                              Início:{" "}
+                              {format(
+                                new Date(project.startDate),
+                                "dd/MM/yyyy",
+                                {
+                                  locale: ptBR,
+                                }
+                              )}
                             </Typography>
-                          )}
-                        </Stack>
+                            {project.endDate && (
+                              <Typography
+                                variant="body2"
+                                color="text.secondary"
+                                sx={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 1,
+                                }}
+                              >
+                                <Timeline fontSize="small" color="primary" />
+                                Término:{" "}
+                                {format(
+                                  new Date(project.endDate),
+                                  "dd/MM/yyyy",
+                                  {
+                                    locale: ptBR,
+                                  }
+                                )}
+                              </Typography>
+                            )}
+                          </Stack>
+                        </Grid>
+                        <Grid item xs={12} md={6}>
+                          <Stack spacing={2}>
+                            <Typography
+                              variant="body2"
+                              color="text.secondary"
+                              sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 1,
+                              }}
+                            >
+                              <LocalFlorist fontSize="small" color="primary" />
+                              Total de Plantas:{" "}
+                              {project._count?.plantedPlants || 0}
+                            </Typography>
+                            <Typography
+                              variant="body2"
+                              color="text.secondary"
+                              sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 1,
+                              }}
+                            >
+                              <LocationOn fontSize="small" color="primary" />
+                              Área do Projeto
+                            </Typography>
+                          </Stack>
+                        </Grid>
                       </Grid>
-                      <Grid item xs={12} md={6}>
-                        <Stack spacing={2}>
-                          <Typography
-                            variant="body2"
-                            color="text.secondary"
-                            sx={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 1,
-                            }}
-                          >
-                            <LocalFlorist fontSize="small" color="primary" />
-                            Total de Plantas:{" "}
-                            {project._count?.plantedPlants || 0}
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            color="text.secondary"
-                            sx={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 1,
-                            }}
-                          >
-                            <LocationOn fontSize="small" color="primary" />
-                            Área do Projeto
-                          </Typography>
-                        </Stack>
-                      </Grid>
-                    </Grid>
-                  </CardContent>
-                  <CardActions
-                    sx={{
-                      justifyContent: "flex-end",
-                      p: 2,
-                      bgcolor: "grey.50",
-                      borderTop: 1,
-                      borderColor: "grey.200",
-                    }}
-                  >
-                    <Button
-                      startIcon={<Edit />}
-                      variant="outlined"
-                      size="small"
-                      onClick={() => {
-                        setSelectedProjectId(project.id);
-                        setShowProjectModal(true);
-                      }}
+                    </CardContent>
+                    <CardActions
                       sx={{
-                        mr: 1,
-                        "&:hover": {
-                          transform: "translateY(-2px)",
-                        },
-                        transition: "transform 0.2s",
+                        justifyContent: "space-between",
+                        p: 2,
+                        bgcolor: "grey.50",
+                        borderTop: 1,
+                        borderColor: "grey.200",
                       }}
                     >
-                      Editar
-                    </Button>
-                    <Button
-                      startIcon={<Delete />}
-                      variant="outlined"
-                      color="error"
-                      size="small"
-                      onClick={() => handleDeleteProject(project.id)}
-                      sx={{
-                        "&:hover": {
-                          transform: "translateY(-2px)",
-                        },
-                        transition: "transform 0.2s",
-                      }}
-                    >
-                      Excluir
-                    </Button>
-                  </CardActions>
+                      <Box
+                        sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                      >
+                        <IconButton
+                          size="small"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setExpandedProject(
+                              expandedProject === project.id ? null : project.id
+                            );
+                          }}
+                          sx={{
+                            transform:
+                              expandedProject === project.id
+                                ? "rotate(180deg)"
+                                : "rotate(0deg)",
+                            transition: "transform 0.2s",
+                          }}
+                        >
+                          <KeyboardArrowDown />
+                        </IconButton>
+                        <Typography variant="body2" color="text.secondary">
+                          {expandedProject === project.id
+                            ? "Recolher plantas"
+                            : `Ver ${project._count.plantedPlants} plantas`}
+                        </Typography>
+                      </Box>
+                      <Box>
+                        <Button
+                          startIcon={<Edit />}
+                          variant="outlined"
+                          size="small"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedProjectId(project.id);
+                            setShowProjectModal(true);
+                          }}
+                          sx={{
+                            mr: 1,
+                            "&:hover": {
+                              transform: "translateY(-2px)",
+                            },
+                            transition: "transform 0.2s",
+                          }}
+                        >
+                          Editar
+                        </Button>
+                        <Button
+                          startIcon={<Delete />}
+                          variant="outlined"
+                          color="error"
+                          size="small"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteProject(project.id);
+                          }}
+                          sx={{
+                            "&:hover": {
+                              transform: "translateY(-2px)",
+                            },
+                            transition: "transform 0.2s",
+                          }}
+                        >
+                          Excluir
+                        </Button>
+                      </Box>
+                    </CardActions>
+                  </Box>
                 </Box>
+                {expandedProject === project.id && (
+                  <Box sx={{ p: 2, bgcolor: "grey.50" }}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        mb: 2,
+                      }}
+                    >
+                      <Typography variant="h6" gutterBottom>
+                        Plantas do Projeto
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Total: {project.plantedPlants.length} plantas
+                      </Typography>
+                    </Box>
+                    <TableContainer
+                      component={Paper}
+                      sx={{ boxShadow: "none", bgcolor: "background.paper" }}
+                    >
+                      <Table>
+                        <TableHead>
+                          <TableRow>
+                            <TableCell>Espécie</TableCell>
+                            <TableCell>Localização</TableCell>
+                            <TableCell>Status</TableCell>
+                            <TableCell>Última Atualização</TableCell>
+                            <TableCell align="right">Ações</TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {project.plantedPlants.map((plant) => (
+                            <TableRow key={plant.id} hover>
+                              <TableCell>
+                                {plant.species.commonName} (
+                                {plant.species.scientificName})
+                              </TableCell>
+                              <TableCell>
+                                <Stack
+                                  direction="row"
+                                  spacing={1}
+                                  alignItems="center"
+                                >
+                                  <LocationOn color="action" fontSize="small" />
+                                  <Typography variant="body2">
+                                    {`${plant.latitude.toFixed(
+                                      6
+                                    )}, ${plant.longitude.toFixed(6)}`}
+                                  </Typography>
+                                </Stack>
+                              </TableCell>
+                              <TableCell>
+                                <Chip
+                                  label={getHealthStatusLabel(
+                                    plant.updates?.[0]?.healthStatus
+                                  )}
+                                  color={getHealthStatusColor(
+                                    plant.updates?.[0]?.healthStatus
+                                  )}
+                                  size="small"
+                                  sx={{ minWidth: 100 }}
+                                />
+                              </TableCell>
+                              <TableCell>
+                                {plant.updates?.[0]
+                                  ? format(
+                                      new Date(plant.updates[0].createdAt),
+                                      "dd/MM/yyyy HH:mm",
+                                      {
+                                        locale: ptBR,
+                                      }
+                                    )
+                                  : "Sem atualizações"}
+                              </TableCell>
+                              <TableCell align="right">
+                                <Stack
+                                  direction="row"
+                                  spacing={1}
+                                  justifyContent="flex-end"
+                                >
+                                  <Tooltip title="Ver histórico">
+                                    <IconButton
+                                      size="small"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setSelectedPlant(plant);
+                                      }}
+                                    >
+                                      <Timeline />
+                                    </IconButton>
+                                  </Tooltip>
+                                  <Tooltip title="Editar planta">
+                                    <IconButton
+                                      size="small"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        // Add edit plant handler here
+                                      }}
+                                    >
+                                      <Edit />
+                                    </IconButton>
+                                  </Tooltip>
+                                </Stack>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                          {project.plantedPlants.length === 0 && (
+                            <TableRow>
+                              <TableCell
+                                colSpan={5}
+                                align="center"
+                                sx={{ py: 3 }}
+                              >
+                                <Typography
+                                  variant="body2"
+                                  color="text.secondary"
+                                >
+                                  Nenhuma planta cadastrada neste projeto
+                                </Typography>
+                              </TableCell>
+                            </TableRow>
+                          )}
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+                  </Box>
+                )}
               </Card>
             </Grid>
           ))}
         </Grid>
       )}
-
-      {/* Plants Table */}
-      <Paper sx={{ width: "100%", mb: 3 }}>
-        <TableContainer>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Espécie</TableCell>
-                <TableCell>Localização</TableCell>
-                <TableCell>Status</TableCell>
-                <TableCell>Última Atualização</TableCell>
-                <TableCell>Ações</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {plantsTableData
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((plant) => (
-                  <TableRow key={plant.id}>
-                    <TableCell>
-                      {plant.species.commonName} ({plant.species.scientificName}
-                      )
-                    </TableCell>
-                    <TableCell>
-                      <Stack direction="row" spacing={1} alignItems="center">
-                        <LocationOn color="action" fontSize="small" />
-                        <Typography variant="body2">
-                          {`${plant.latitude.toFixed(
-                            6
-                          )}, ${plant.longitude.toFixed(6)}`}
-                        </Typography>
-                      </Stack>
-                    </TableCell>
-                    <TableCell>
-                      <Chip
-                        label={getHealthStatusLabel(
-                          plant.updates?.[0]?.healthStatus
-                        )}
-                        color={getHealthStatusColor(
-                          plant.updates?.[0]?.healthStatus
-                        )}
-                        size="small"
-                      />
-                    </TableCell>
-                    <TableCell>
-                      {plant.updates?.[0]
-                        ? format(
-                            new Date(plant.updates[0].createdAt),
-                            "dd/MM/yyyy HH:mm",
-                            { locale: ptBR }
-                          )
-                        : "Sem atualizações"}
-                    </TableCell>
-                    <TableCell>
-                      <Stack direction="row" spacing={1}>
-                        <IconButton
-                          size="small"
-                          onClick={() => setSelectedPlant(plant)}
-                        >
-                          <Timeline />
-                        </IconButton>
-                        <IconButton size="small">
-                          <Edit />
-                        </IconButton>
-                      </Stack>
-                    </TableCell>
-                  </TableRow>
-                ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <TablePagination
-          component="div"
-          count={plantsTableData.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-          labelRowsPerPage="Itens por página"
-        />
-      </Paper>
 
       {/* Plant Updates Dialog */}
       {selectedPlant && (
@@ -758,7 +839,7 @@ const FarmerDashboard = () => {
           setSelectedProjectId(null);
         }}
         projectId={selectedProjectId}
-        onUpdate={loadProjects}
+        onUpdate={loadDashboardData}
       />
     </Box>
   );

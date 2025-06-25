@@ -140,6 +140,10 @@ export const projects = {
 };
 
 export const farmer = {
+  // Get complete dashboard data including projects, plants and stats
+  getDashboardComplete: () =>
+    api.get("/planted-plants/farmer/dashboard-complete"),
+
   // Get dashboard data including plants and stats
   getDashboardData: () => api.get("/planted-plants/farmer/dashboard"),
 
