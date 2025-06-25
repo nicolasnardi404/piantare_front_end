@@ -676,20 +676,38 @@ const LocationMap = () => {
   // Calculate farmer statistics whenever locations change
   useEffect(() => {
     if (user?.role === "FARMER") {
+      console.log("Current user:", user);
+      console.log("All locations:", locations);
+
       // Filter plants added by this farmer
-      const farmerPlants = locations.filter(
-        (loc) => loc.project?.farmerId === user.userId
-      );
+      const farmerPlants = locations.filter((loc) => {
+        console.log("Checking location:", loc);
+        console.log("Project farmer user:", loc.project?.farmer?.user);
+        console.log("User ID comparison:", {
+          locationUserId: loc.project?.farmer?.user?.id,
+          currentUserId: user?.userId,
+          matches: loc.project?.farmer?.user?.id === parseInt(user?.userId),
+        });
+        return loc.project?.farmer?.user?.id === parseInt(user?.userId);
+      });
+
+      console.log("Filtered farmer plants:", farmerPlants);
 
       // Calculate species count
       const speciesCount = farmerPlants.reduce((acc, plant) => {
-        acc[plant.species] = (acc[plant.species] || 0) + 1;
+        const commonName = plant.species?.commonName || "Unknown";
+        acc[commonName] = (acc[commonName] || 0) + 1;
         return acc;
       }, {});
 
+      console.log("Species count:", speciesCount);
+
       // Sort plants by most recent first
       const sortedPlants = [...farmerPlants].sort((a, b) => {
-        return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+        return (
+          new Date(b.createdAt || b.plantedAt || 0) -
+          new Date(a.createdAt || a.plantedAt || 0)
+        );
       });
 
       setFarmerStats({
@@ -711,7 +729,9 @@ const LocationMap = () => {
       if (user?.role === "COMPANY") {
         response = await plantLocations.getCompanyPlants();
       } else if (user?.role === "FARMER") {
+        console.log("Loading farmer plants...");
         response = await plantLocations.getFarmerPlants();
+        console.log("Farmer plants API response:", response);
       } else {
         response = await plantLocations.getMapMarkers();
       }
@@ -1362,7 +1382,7 @@ const LocationMap = () => {
 
     // Group plants by category
     const plantsByCategory = farmerStats.recentPlants.reduce((acc, plant) => {
-      const category = plant.plant?.category || "OUTROS";
+      const category = plant.species?.category || "OUTROS";
       if (!acc[category]) {
         acc[category] = [];
       }
@@ -1492,7 +1512,7 @@ const LocationMap = () => {
                               variant="subtitle1"
                               sx={{ fontWeight: 600 }}
                             >
-                              {plant.plant?.commonName}
+                              {plant.species?.commonName}
                             </Typography>
                             {plant.updates && plant.updates.length > 0 && (
                               <Box
@@ -1519,7 +1539,13 @@ const LocationMap = () => {
                               mb: 1,
                             }}
                           >
-                            {plant.plant?.scientificName}
+                            {plant.species?.scientificName}
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            sx={{ color: "text.secondary" }}
+                          >
+                            Projeto: {plant.project?.name}
                           </Typography>
                         </Box>
                       </Box>
@@ -1530,7 +1556,6 @@ const LocationMap = () => {
             </Grid>
           ))}
         </Grid>
-        <PlantUpdateDialog />
       </Box>
     );
   };
