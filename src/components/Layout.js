@@ -127,6 +127,11 @@ const Layout = ({ children }) => {
   };
 
   const menuItems = [
+    {
+      text: "Mapa Geral",
+      icon: <MapIcon />,
+      path: "/root-map",
+    },
     ...(user?.role === "FARMER"
       ? [
           {

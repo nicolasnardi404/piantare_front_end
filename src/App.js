@@ -20,6 +20,7 @@ import Profile from "./components/Profile";
 import CompanyProfile from "./components/CompanyProfile";
 import AdminPlants from "./components/AdminPlants";
 import CompanyMap from "./components/maps/CompanyMap";
+import RootMap from "./components/maps/RootMap";
 import "./App.css";
 
 // Create a theme instance with translations for user-visible text
@@ -168,6 +169,16 @@ function App() {
                 <ProtectedRoute roles={["COMPANY"]}>
                   <Layout>
                     <CompanyProfile />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/root-map"
+              element={
+                <ProtectedRoute roles={["ADMIN", "COMPANY", "FARMER"]}>
+                  <Layout>
+                    <RootMap />
                   </Layout>
                 </ProtectedRoute>
               }
