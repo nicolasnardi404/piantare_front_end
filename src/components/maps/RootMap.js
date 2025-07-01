@@ -2,8 +2,19 @@ import React, { useRef, useState, useCallback, useEffect } from "react";
 import { MapContainer, TileLayer, LayersControl, Marker } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-import { Box, IconButton, Tooltip, Snackbar, Alert } from "@mui/material";
+import {
+  Box,
+  IconButton,
+  Tooltip,
+  Snackbar,
+  Alert,
+  TextField,
+  InputAdornment,
+  CircularProgress,
+} from "@mui/material";
 import MyLocationIcon from "@mui/icons-material/MyLocation";
+import SearchIcon from "@mui/icons-material/Search";
+import axios from "axios";
 
 // São Paulo coordinates as default center
 const defaultPosition = [-23.5505, -46.6333];
@@ -23,7 +34,10 @@ const redIcon = new L.Icon({
 
 const RootMap = ({ children }) => {
   const [userLocation, setUserLocation] = useState(null);
+  const [searchLocation, setSearchLocation] = useState(null);
   const [geoError, setGeoError] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchLoading, setSearchLoading] = useState(false);
   const mapRef = useRef(null);
 
   // Callback ref to always have the latest map instance
@@ -39,6 +53,13 @@ const RootMap = ({ children }) => {
       mapRef.current.setView(userLocation, 15);
     }
   }, [userLocation, mapRef.current]);
+
+  // Move map when searchLocation changes
+  useEffect(() => {
+    if (searchLocation && mapRef.current) {
+      mapRef.current.setView(searchLocation, 15);
+    }
+  }, [searchLocation, mapRef.current]);
 
   const handleCurrentLocation = () => {
     if (!navigator.geolocation) {
@@ -66,6 +87,35 @@ const RootMap = ({ children }) => {
     );
   };
 
+  const handleSearch = async () => {
+    if (!searchQuery.trim()) return;
+    setSearchLoading(true);
+    try {
+      const response = await axios.get(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
+          searchQuery
+        )}&limit=1`
+      );
+      if (response.data && response.data.length > 0) {
+        const location = response.data[0];
+        setSearchLocation([parseFloat(location.lat), parseFloat(location.lon)]);
+        setGeoError("");
+      } else {
+        setGeoError("Local não encontrado.");
+      }
+    } catch (error) {
+      setGeoError("Erro ao buscar local.");
+    } finally {
+      setSearchLoading(false);
+    }
+  };
+
+  const handleSearchKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
+
   const handleCloseSnackbar = () => setGeoError("");
 
   return (
@@ -78,6 +128,44 @@ const RootMap = ({ children }) => {
         left: 0,
       }}
     >
+      {/* Search Bar - top right */}
+      <Box
+        sx={{
+          position: "absolute",
+          top: 16,
+          right: 16,
+          zIndex: 5001,
+          width: 320,
+          maxWidth: "90vw",
+        }}
+      >
+        <TextField
+          size="small"
+          fullWidth
+          placeholder="Buscar cidade, endereço..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          onKeyDown={handleSearchKeyDown}
+          InputProps={{
+            sx: {
+              background: "#fff",
+              borderRadius: "8px",
+              boxShadow: 1,
+            },
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton onClick={handleSearch} disabled={searchLoading}>
+                  {searchLoading ? (
+                    <CircularProgress size={20} />
+                  ) : (
+                    <SearchIcon />
+                  )}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
+        />
+      </Box>
       <MapContainer
         center={defaultPosition}
         zoom={13}
@@ -108,6 +196,7 @@ const RootMap = ({ children }) => {
           </LayersControl.BaseLayer>
         </LayersControl>
         {userLocation && <Marker position={userLocation} icon={redIcon} />}
+        {searchLocation && <Marker position={searchLocation} icon={redIcon} />}
         {children}
       </MapContainer>
       {/* Current Location Button - bottom right above LayersControl */}
