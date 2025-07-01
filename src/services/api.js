@@ -4,6 +4,9 @@ const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8000/api";
 
 const api = axios.create({
   baseURL: API_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
 
 // Add a request interceptor to include the auth token
@@ -50,52 +53,20 @@ export const users = {
 };
 
 export const plantLocations = {
-  // Get basic map markers data
-  getMapMarkers: () => api.get("/planted-plants/map-markers"),
-
-  // Get admin plants list
-  getAdminPlantsList: () => api.get("/planted-plants/admin/plants"),
-
-  // Get farmer's plants with relevant data
-  getFarmerPlants: () => api.get("/planted-plants/farmer/plants"),
-
-  // Get company's plants with relevant data
-  getCompanyPlants: () => api.get("/planted-plants/company/plants"),
-
-  // Get company's plants with detailed information including updates, species, and project data
-  getCompanyPlantsDetailed: () =>
-    api.get("/planted-plants/company/plants-detailed"),
-
-  // Get detailed plant information
-  getPlantDetails: (id) => api.get(`/planted-plants/details/${id}`),
-
-  // Assign plant to company
-  assignCompany: (plantId, data) =>
-    api.put(`/planted-plants/${plantId}/assign-company`, data),
-
-  // Create new planted plant
-  create: (data) =>
-    api.post("/planted-plants", {
-      latitude: parseFloat(data.latitude),
-      longitude: parseFloat(data.longitude),
-      speciesId: parseInt(data.plantId),
-      description: data.description,
-      projectId: parseInt(data.projectId),
-      imageUrl: data.imageUrl,
-      height: parseFloat(data.height),
-      diameter: parseFloat(data.width),
-    }),
-
-  // Delete planted plant
-  delete: (id) => api.delete(`/planted-plants/${id}`),
+  getMapMarkers: () => api.get("/plant-locations"),
+  getCompanyPlantsDetailed: () => api.get("/plant-locations/company"),
+  getFarmerPlants: () => api.get("/plant-locations/farmer"),
+  getPlantDetails: (id) => api.get(`/plant-locations/${id}`),
+  create: (data) => api.post("/plant-locations", data),
+  update: (id, data) => api.put(`/plant-locations/${id}`, data),
+  delete: (id) => api.delete(`/plant-locations/${id}`),
 };
 
 export const plants = {
-  getAll: () => api.get("/plants"),
-  getList: () => api.get("/plants/list"), // New endpoint for getting all plants without pagination
-  getOne: (id) => api.get(`/plants/${id}`),
-  create: (plantData) => api.post("/plants", plantData),
-  update: (id, plantData) => api.put(`/plants/${id}`, plantData),
+  getList: () => api.get("/plants"),
+  getDetails: (id) => api.get(`/plants/${id}`),
+  create: (data) => api.post("/plants", data),
+  update: (id, data) => api.put(`/plants/${id}`, data),
   delete: (id) => api.delete(`/plants/${id}`),
 };
 
@@ -109,23 +80,12 @@ export const uploads = {
 };
 
 export const plantUpdates = {
-  create: async (data) => {
-    return api.post("/plant-updates", {
-      plantedPlantId: data.plantedPlantId,
-      healthStatus: data.healthStatus,
-      notes: data.notes,
-      imageUrl: data.imageUrl,
-      height: parseFloat(data.height),
-      diameter: parseFloat(data.diameter),
-    });
-  },
-  getByPlantId: (plantLocationId) =>
-    api.get(`/plant-updates/plant/${plantLocationId}`),
-  delete: (id) => api.delete(`/plant-updates/${id}`),
+  create: (data) => api.post("/plant-updates", data),
+  getForPlant: (plantId) => api.get(`/plant-updates/plant/${plantId}`),
 };
 
 export const geoGpt = {
-  analyze: (plants) => api.post("/geogpt/analyze", { plants }),
+  analyze: (data) => api.post("/geo-gpt/analyze", data),
 };
 
 export const geocoding = {
@@ -147,18 +107,12 @@ export const projects = {
 };
 
 export const farmer = {
-  // Get complete dashboard data including projects, plants and stats
+  getProjects: () => api.get("/projects/farmer"),
+  createProject: (data) => api.post("/projects", data),
+  updateProject: (id, data) => api.put(`/projects/${id}`, data),
+  deleteProject: (id) => api.delete(`/projects/${id}`),
   getDashboardComplete: () =>
     api.get("/planted-plants/farmer/dashboard-complete"),
-
-  // Get dashboard data including plants and stats
-  getDashboardData: () => api.get("/planted-plants/farmer/dashboard"),
-
-  // Get projects list with plant counts
-  getProjects: () => api.get("/planted-plants/farmer/projects"),
-
-  // Get plants table data
-  getPlantsTable: () => api.get("/planted-plants/farmer/plants-table"),
 };
 
 // Export both named exports and default export

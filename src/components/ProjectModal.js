@@ -14,13 +14,11 @@ import {
   MenuItem,
   IconButton,
   Alert,
+  FormControl,
+  InputLabel,
+  Select,
 } from "@mui/material";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
 import { MapContainer, TileLayer, Polygon, LayersControl } from "react-leaflet";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import "leaflet/dist/leaflet.css";
 import { projects, uploads } from "../services/api";
 import {
@@ -52,6 +50,17 @@ const getMapCenter = (coordinates) => {
   }
 
   return defaultPosition;
+};
+
+// Helper function for date formatting
+const formatDate = (dateString) => {
+  if (!dateString) return "";
+  const date = new Date(dateString);
+  return date.toLocaleDateString("pt-BR", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
 };
 
 const ProjectModal = ({ open, onClose, projectId, onUpdate }) => {
@@ -382,39 +391,26 @@ const ProjectModal = ({ open, onClose, projectId, onUpdate }) => {
 
             <Grid item xs={12} sm={6}>
               {editing ? (
-                <LocalizationProvider
-                  dateAdapter={AdapterDateFns}
-                  adapterLocale={ptBR}
-                >
-                  <DatePicker
-                    label="Data de Início"
-                    value={
-                      editedProject?.startDate
-                        ? new Date(editedProject.startDate)
-                        : null
-                    }
-                    onChange={(newValue) =>
-                      setEditedProject({
-                        ...editedProject,
-                        startDate: newValue?.toISOString().split("T")[0],
-                      })
-                    }
-                    slotProps={{ textField: { fullWidth: true } }}
-                  />
-                </LocalizationProvider>
+                <TextField
+                  fullWidth
+                  label="Data de Início"
+                  type="date"
+                  value={editedProject?.startDate}
+                  onChange={(e) =>
+                    setEditedProject({
+                      ...editedProject,
+                      startDate: e.target.value,
+                    })
+                  }
+                  InputLabelProps={{ shrink: true }}
+                />
               ) : (
                 <>
                   <Typography variant="subtitle2" color="text.secondary">
                     Data de Início
                   </Typography>
                   <Typography variant="body1">
-                    {format(
-                      new Date(project?.startDate),
-                      "dd 'de' MMMM 'de' yyyy",
-                      {
-                        locale: ptBR,
-                      }
-                    )}
+                    {formatDate(project?.startDate)}
                   </Typography>
                 </>
               )}
@@ -422,31 +418,19 @@ const ProjectModal = ({ open, onClose, projectId, onUpdate }) => {
 
             <Grid item xs={12} sm={6}>
               {editing ? (
-                <LocalizationProvider
-                  dateAdapter={AdapterDateFns}
-                  adapterLocale={ptBR}
-                >
-                  <DatePicker
-                    label="Data de Término"
-                    value={
-                      editedProject?.endDate
-                        ? new Date(editedProject.endDate)
-                        : null
-                    }
-                    onChange={(newValue) =>
-                      setEditedProject({
-                        ...editedProject,
-                        endDate: newValue?.toISOString().split("T")[0],
-                      })
-                    }
-                    slotProps={{ textField: { fullWidth: true } }}
-                    minDate={
-                      editedProject?.startDate
-                        ? new Date(editedProject.startDate)
-                        : null
-                    }
-                  />
-                </LocalizationProvider>
+                <TextField
+                  fullWidth
+                  label="Data de Término"
+                  type="date"
+                  value={editedProject?.endDate}
+                  onChange={(e) =>
+                    setEditedProject({
+                      ...editedProject,
+                      endDate: e.target.value,
+                    })
+                  }
+                  InputLabelProps={{ shrink: true }}
+                />
               ) : (
                 project?.endDate && (
                   <>
@@ -454,13 +438,7 @@ const ProjectModal = ({ open, onClose, projectId, onUpdate }) => {
                       Data de Término
                     </Typography>
                     <Typography variant="body1">
-                      {format(
-                        new Date(project.endDate),
-                        "dd 'de' MMMM 'de' yyyy",
-                        {
-                          locale: ptBR,
-                        }
-                      )}
+                      {formatDate(project.endDate)}
                     </Typography>
                   </>
                 )

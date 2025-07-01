@@ -22,7 +22,7 @@ const Login = () => {
     e.preventDefault();
     try {
       const response = await auth.login({ email, password });
-      login(response.data.token);
+      login(response.data.user, response.data.token);
 
       // Redirect based on user role
       const role = response.data.user.role;

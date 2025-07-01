@@ -77,6 +77,12 @@ const GrowthChart = ({ updates }) => {
   );
 };
 
+// Add this helper function for date formatting
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  return date.toLocaleDateString();
+};
+
 const PlantDetailsModal = ({
   open,
   onClose,
@@ -257,12 +263,10 @@ const PlantDetailsModal = ({
               <Grid item xs={12} sm={4}>
                 <Box>
                   <Typography variant="body2" color="text.secondary">
-                    Data do Plantio
-                  </Typography>
-                  <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                    {selectedPlant?.plantedAt
-                      ? new Date(selectedPlant.plantedAt).toLocaleDateString()
-                      : "Não informado"}
+                    Data de plantio:{" "}
+                    {formatDate(
+                      selectedPlant?.plantedAt || selectedPlant?.createdAt
+                    )}
                   </Typography>
                 </Box>
               </Grid>
@@ -368,7 +372,10 @@ const PlantDetailsModal = ({
                                 : "Doente"}
                             </Typography>
                             <Typography variant="body2" color="text.secondary">
-                              {new Date(update.createdAt).toLocaleDateString()}
+                              Atualização em{" "}
+                              {formatDate(
+                                update.updateDate || update.createdAt
+                              )}
                             </Typography>
                           </Box>
                         </Box>
@@ -426,9 +433,9 @@ const PlantDetailsModal = ({
                             <Box
                               component="img"
                               src={update.imageUrl}
-                              alt={`Update on ${new Date(
-                                update.createdAt
-                              ).toLocaleDateString()}`}
+                              alt={`Update on ${formatDate(
+                                update.updateDate || update.createdAt
+                              )}`}
                               sx={{
                                 width: "100%",
                                 height: "300px",

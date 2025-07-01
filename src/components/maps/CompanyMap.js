@@ -12,9 +12,15 @@ import {
   PictureAsPdf,
   Autorenew as AutorenewIcon,
 } from "@mui/icons-material";
-import { format } from "date-fns";
 import { useAuth } from "../../context/AuthContext";
-import { plantLocations, geoGpt, plantUpdates } from "../../services/api";
+import {
+  plantLocations,
+  plants,
+  plantUpdates,
+  geoGpt,
+  api,
+  farmer,
+} from "../../services/api";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import CompanyReport from "../CompanyReport";
 import BaseMap from "./BaseMap";
@@ -36,6 +42,11 @@ const formatPlantCategory = (category) => {
   };
 
   return categoryMap[category] || category;
+};
+
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  return date.toLocaleDateString();
 };
 
 const CompanyMap = () => {
@@ -209,9 +220,8 @@ const CompanyMap = () => {
                     locations={locations}
                   />
                 }
-                fileName={`relatorio-impacto-ambiental-${format(
-                  new Date(),
-                  "dd-MM-yyyy"
+                fileName={`relatorio-impacto-ambiental-${formatDate(
+                  new Date().toISOString()
                 )}.pdf`}
               >
                 {({ loading }) => (
@@ -546,9 +556,7 @@ const CompanyMap = () => {
                               }}
                             >
                               Última atualização:{" "}
-                              {new Date(
-                                plant.updates[0].createdAt
-                              ).toLocaleDateString()}
+                              {formatDate(plant.updates[0].createdAt)}
                             </Typography>
                           )}
                         </Box>
