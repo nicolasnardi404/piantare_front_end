@@ -1,5 +1,12 @@
 import React, { useRef, useState, useCallback, useEffect } from "react";
-import { MapContainer, TileLayer, LayersControl, Marker } from "react-leaflet";
+import {
+  MapContainer,
+  TileLayer,
+  LayersControl,
+  Marker,
+  Polygon,
+  Popup,
+} from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import {
@@ -15,6 +22,8 @@ import {
 import MyLocationIcon from "@mui/icons-material/MyLocation";
 import SearchIcon from "@mui/icons-material/Search";
 import axios from "axios";
+import { useAuth } from "../../context/AuthContext";
+import { plantLocations, projects, farmer } from "../../services/api";
 
 // São Paulo coordinates as default center
 const defaultPosition = [-23.5505, -46.6333];
@@ -39,6 +48,11 @@ const RootMap = ({ children }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchLoading, setSearchLoading] = useState(false);
   const mapRef = useRef(null);
+  const { user } = useAuth();
+  const [plants, setPlants] = useState([]);
+  const [projectPolygons, setProjectPolygons] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   // Callback ref to always have the latest map instance
   const setMapRef = useCallback((mapInstance) => {
@@ -60,6 +74,81 @@ const RootMap = ({ children }) => {
       mapRef.current.setView(searchLocation, 15);
     }
   }, [searchLocation, mapRef.current]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      setError("");
+      try {
+        if (!user) return;
+        if (user.role === "ADMIN") {
+          // Admin: all plants and all projects
+          const [plantsRes, projectsRes] = await Promise.all([
+            plantLocations.getMapMarkers(),
+            projects.getList(),
+          ]);
+          setPlants(plantsRes.data);
+          setProjectPolygons(
+            (projectsRes.data || [])
+              .filter((p) => p.areaCoordinates)
+              .map((p) => ({
+                ...p,
+                areaCoordinates:
+                  typeof p.areaCoordinates === "string"
+                    ? JSON.parse(p.areaCoordinates)
+                    : p.areaCoordinates,
+              }))
+          );
+        } else if (user.role === "FARMER") {
+          // Farmer: their plants and projects
+          const [plantsRes, projectsRes] = await Promise.all([
+            plantLocations.getFarmerPlants(),
+            farmer.getProjects(),
+          ]);
+          setPlants(plantsRes.data);
+          setProjectPolygons(
+            (projectsRes.data || [])
+              .filter((p) => p.areaCoordinates)
+              .map((p) => ({
+                ...p,
+                areaCoordinates:
+                  typeof p.areaCoordinates === "string"
+                    ? JSON.parse(p.areaCoordinates)
+                    : p.areaCoordinates,
+              }))
+          );
+        } else if (user.role === "COMPANY") {
+          // Company: only assigned plants and their projects
+          const plantsRes = await plantLocations.getCompanyPlantsDetailed();
+          setPlants(plantsRes.data);
+          // Extract unique projects from plants
+          const uniqueProjects = [];
+          const seen = new Set();
+          (plantsRes.data || []).forEach((plant) => {
+            const proj = plant.project;
+            if (proj && proj.areaCoordinates && !seen.has(proj.id)) {
+              seen.add(proj.id);
+              uniqueProjects.push({
+                ...proj,
+                areaCoordinates:
+                  typeof proj.areaCoordinates === "string"
+                    ? JSON.parse(proj.areaCoordinates)
+                    : proj.areaCoordinates,
+              });
+            }
+          });
+          setProjectPolygons(uniqueProjects);
+        }
+      } catch (err) {
+        setError("Erro ao carregar dados do mapa.");
+        // eslint-disable-next-line no-console
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [user]);
 
   const handleCurrentLocation = () => {
     if (!navigator.geolocation) {
@@ -128,6 +217,37 @@ const RootMap = ({ children }) => {
         left: 0,
       }}
     >
+      {/* Loading and error states */}
+      {loading && (
+        <Box
+          sx={{
+            position: "absolute",
+            top: 80,
+            left: 0,
+            right: 0,
+            zIndex: 9999,
+            display: "flex",
+            justifyContent: "center",
+          }}
+        >
+          <CircularProgress />
+        </Box>
+      )}
+      {error && (
+        <Box
+          sx={{
+            position: "absolute",
+            top: 80,
+            left: 0,
+            right: 0,
+            zIndex: 9999,
+            display: "flex",
+            justifyContent: "center",
+          }}
+        >
+          <Alert severity="error">{error}</Alert>
+        </Box>
+      )}
       {/* Search Bar - top right */}
       <Box
         sx={{
@@ -197,6 +317,102 @@ const RootMap = ({ children }) => {
         </LayersControl>
         {userLocation && <Marker position={userLocation} icon={redIcon} />}
         {searchLocation && <Marker position={searchLocation} icon={redIcon} />}
+        {/* Project polygons */}
+        {projectPolygons.map((project) =>
+          project.areaCoordinates && project.areaCoordinates.length > 0 ? (
+            <Polygon
+              key={project.id}
+              positions={[project.areaCoordinates]}
+              pathOptions={{
+                color:
+                  project.status === "IN_PROGRESS"
+                    ? "#4caf50"
+                    : project.status === "COMPLETED"
+                    ? "#2196f3"
+                    : project.status === "PLANNING"
+                    ? "#ff9800"
+                    : project.status === "ON_HOLD"
+                    ? "#fdd835"
+                    : "#f44336",
+                fillColor:
+                  project.status === "IN_PROGRESS"
+                    ? "#4caf5033"
+                    : project.status === "COMPLETED"
+                    ? "#2196f333"
+                    : project.status === "PLANNING"
+                    ? "#ff980033"
+                    : project.status === "ON_HOLD"
+                    ? "#fdd83533"
+                    : "#f4433633",
+                fillOpacity: 0.3,
+                weight: 2,
+              }}
+            >
+              <Popup>
+                <Box>
+                  <strong>Projeto:</strong> {project.name}
+                  <br />
+                  <strong>Status:</strong> {project.status}
+                  {project.description && (
+                    <>
+                      <br />
+                      <strong>Descrição:</strong> {project.description}
+                    </>
+                  )}
+                </Box>
+              </Popup>
+            </Polygon>
+          ) : null
+        )}
+        {/* Plant markers */}
+        {plants.map((plant) =>
+          plant.latitude && plant.longitude ? (
+            <Marker
+              key={plant.id}
+              position={[plant.latitude, plant.longitude]}
+              icon={redIcon}
+            >
+              <Popup>
+                <Box>
+                  <strong>{plant.species?.commonName}</strong>
+                  <br />
+                  <em>{plant.species?.scientificName}</em>
+                  <br />
+                  {plant.description && (
+                    <span>
+                      {plant.description}
+                      <br />
+                    </span>
+                  )}
+                  {plant.project && (
+                    <span>
+                      Projeto: {plant.project.name}
+                      <br />
+                    </span>
+                  )}
+                  {plant.project?.status && (
+                    <span>
+                      Status: {plant.project.status}
+                      <br />
+                    </span>
+                  )}
+                  {plant.height && plant.width && (
+                    <span>
+                      Dimensões: {plant.height}m x {plant.width}m<br />
+                    </span>
+                  )}
+                  {plant.plantedAt && (
+                    <span>
+                      Plantado em:{" "}
+                      {new Date(plant.plantedAt).toLocaleDateString()}
+                      <br />
+                    </span>
+                  )}
+                </Box>
+              </Popup>
+            </Marker>
+          ) : null
+        )}
         {children}
       </MapContainer>
       {/* Current Location Button - bottom right above LayersControl */}
