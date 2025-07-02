@@ -436,6 +436,9 @@ const Home = () => {
                 >
                   Permacultura
                 </NavLink>
+                <NavLink component={Link} to="/mapa" startIcon={<MapIcon />}>
+                  Mapa
+                </NavLink>
               </Box>
               {/* Right: CTA + Login */}
               <Box sx={{ display: "flex", alignItems: "center" }}>
