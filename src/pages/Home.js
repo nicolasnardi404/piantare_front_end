@@ -467,81 +467,17 @@ const Home = () => {
             >
               Forest Tomorrow
             </FuzzyText>
+            <Box
+              sx={{
+                mt: 4,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+              }}
+            ></Box>
           </Container>
         </HeroSection>
       </Fade>
-
-      <Container sx={{ py: { xs: 4, md: 8 } }}>
-        <ScrollTriggeredSection>
-          <Grid
-            container
-            spacing={{ xs: 2, md: 3 }}
-            justifyContent="center"
-            sx={{ mb: { xs: 2, md: 4 } }}
-          >
-            <Grid item xs={12}>
-              <StatsCard>
-                <Typography variant="h4" color="primary" gutterBottom>
-                  {plants.length}
-                </Typography>
-                <Typography variant="subtitle1">
-                  Plantas Plantadas no Total
-                </Typography>
-              </StatsCard>
-            </Grid>
-          </Grid>
-
-          <MapWrapper>
-            <MapContainer
-              center={center}
-              zoom={4}
-              style={{ height: "100%", width: "100%" }}
-            >
-              <TileLayer
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              />
-              {plants.map((plant) => (
-                <Marker
-                  key={plant.id}
-                  position={[plant.latitude, plant.longitude]}
-                >
-                  <Popup>
-                    <Box sx={{ p: 1 }}>
-                      <Typography variant="h6" gutterBottom>
-                        {plant.species?.commonName ||
-                          "Espécie não especificada"}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        {plant.species?.scientificName &&
-                          `(${plant.species.scientificName})`}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        Projeto: {plant.project?.name || "Não especificado"}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        Agricultor:{" "}
-                        {plant.project?.farmer?.user?.name ||
-                          "Não especificado"}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        Data:{" "}
-                        {format(
-                          new Date(plant.createdAt || new Date()),
-                          "dd/MM/yyyy",
-                          {
-                            locale: ptBR,
-                          }
-                        )}
-                      </Typography>
-                    </Box>
-                  </Popup>
-                </Marker>
-              ))}
-            </MapContainer>
-          </MapWrapper>
-        </ScrollTriggeredSection>
-      </Container>
 
       <Container sx={{ py: { xs: 4, md: 8 } }}>
         <ScrollTriggeredSection>
