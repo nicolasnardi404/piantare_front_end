@@ -429,6 +429,13 @@ const Home = () => {
                 >
                   Apoie
                 </NavLink>
+                <NavLink
+                  component={Link}
+                  to="/permaculture"
+                  startIcon={<InfoIcon />}
+                >
+                  Permacultura
+                </NavLink>
               </Box>
               {/* Right: CTA + Login */}
               <Box sx={{ display: "flex", alignItems: "center" }}>
