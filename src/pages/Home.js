@@ -15,6 +15,7 @@ import {
   Stack,
   AppBar,
   Toolbar,
+  CardMedia,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { Link } from "react-router-dom";
@@ -260,6 +261,66 @@ const NavButton = styled(Button)(({ theme }) => ({
   },
 }));
 
+const HoverCard = styled(Card)(({ theme }) => ({
+  position: "relative",
+  overflow: "visible",
+  transition: "transform 0.3s, box-shadow 0.3s",
+  cursor: "pointer",
+  "&:hover": {
+    transform: "scale(1.04)",
+    boxShadow: "0 8px 32px rgba(76, 175, 80, 0.2)",
+    zIndex: 2,
+  },
+}));
+
+const Overlay = styled(Box)(({ theme }) => ({
+  position: "absolute",
+  top: 0,
+  left: 0,
+  width: "100%",
+  height: "100%",
+  background: "rgba(34, 49, 63, 0.85)",
+  color: "#fff",
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "center",
+  alignItems: "center",
+  opacity: 0,
+  transition: "opacity 0.3s",
+  pointerEvents: "none",
+  zIndex: 3,
+  padding: theme.spacing(3),
+  textAlign: "center",
+  "&.open": {
+    opacity: 1,
+    pointerEvents: "auto",
+  },
+}));
+
+const cardData = [
+  {
+    image: "/images/solodebananeira.jpg",
+    bgPos: "left",
+    title: "Cuidado do Solo",
+    short: "Uso de recursos naturais para regenerar e alimentar o solo.",
+    long: "O solo de bananeira é rico em matéria orgânica e nutrientes. Ao devolver restos vegetais ao solo, promovemos a vida microbiana, aumentamos a fertilidade e reduzimos a dependência de insumos químicos. Cuidar do solo é garantir a saúde das plantas e a sustentabilidade do sistema.",
+  },
+  {
+    image: "/images/piantare1.jpg",
+    bgPos: "center",
+    title: "Biodiversidade e Polinizadores",
+    short: "Flores e abelhas: a base da biodiversidade.",
+    long: "A presença de flores atrai abelhas e outros polinizadores, essenciais para a reprodução das plantas e o equilíbrio do ecossistema. Promover a biodiversidade é fortalecer a resiliência do ambiente e garantir colheitas mais saudáveis.",
+  },
+  {
+    image: "/images/mudadetomate.jpg",
+    bgPos: "right",
+    title: "Produção Coletiva de Mudas",
+    short: "Apoio a coletivos para produção de mudas.",
+    long: "Incentivar a produção coletiva de mudas fortalece comunidades, promove a troca de saberes e amplia o acesso a alimentos saudáveis. Juntos, podemos cultivar um futuro mais justo e sustentável.",
+  },
+];
+
 function ScrollTriggeredSection({ children, threshold = 0.3 }) {
   const [isVisible, setIsVisible] = useState(false);
   const [element, setElement] = useState(null);
@@ -303,7 +364,9 @@ L.Icon.Default.mergeOptions({
 const Home = () => {
   const [plants, setPlants] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [hovered, setHovered] = useState(null);
   const theme = useTheme();
+  const [activeIdx, setActiveIdx] = useState(null);
 
   useEffect(() => {
     fetchPlants();
@@ -729,6 +792,195 @@ const Home = () => {
           </ScrollTriggeredSection>
         </Container>
       </Box>
+
+      <Container sx={{ py: { xs: 6, md: 10 } }}>
+        <Typography
+          variant="h3"
+          align="center"
+          sx={{
+            mb: 8,
+            fontWeight: 700,
+            fontSize: { xs: "2rem", md: "2.8rem" },
+          }}
+        >
+          Práticas Sustentáveis em Destaque
+        </Typography>
+        <Box
+          sx={{
+            position: "relative",
+            borderRadius: 6,
+            overflow: "hidden",
+            boxShadow: 6,
+            minHeight: { xs: 320, md: 520 },
+            background: "#f5f7fa",
+            width: "100%",
+            maxWidth: 1400,
+            mx: "auto",
+          }}
+        >
+          {/* Multi-image state (no hover) */}
+          <Fade in={activeIdx === null} timeout={500} unmountOnExit>
+            <Box
+              sx={{
+                display: "flex",
+                width: "100%",
+                height: { xs: 320, md: 520 },
+                position: "absolute",
+                top: 0,
+                left: 0,
+                zIndex: 1,
+              }}
+            >
+              {cardData.map((card, idx) => (
+                <Box
+                  key={idx}
+                  sx={{
+                    flex: 1,
+                    position: "relative",
+                    backgroundImage: `url(${card.image})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: card.bgPos,
+                    height: "100%",
+                    transition:
+                      "background-image 0.4s, background-position 0.4s",
+                    minWidth: 0,
+                  }}
+                >
+                  <Box
+                    sx={{
+                      position: "absolute",
+                      bottom: 0,
+                      left: 0,
+                      width: "100%",
+                      bgcolor: "rgba(34,49,63,0.3)",
+                      color: "#fff",
+                      p: 3,
+                      zIndex: 3,
+                    }}
+                  >
+                    <Typography variant="h5" sx={{ fontWeight: 600 }}>
+                      {card.title}
+                    </Typography>
+                  </Box>
+                </Box>
+              ))}
+            </Box>
+          </Fade>
+          {/* Single-image state (hovered) */}
+          <Fade in={activeIdx !== null} timeout={500} unmountOnExit>
+            <Box
+              sx={{
+                width: "100%",
+                height: { xs: 320, md: 520 },
+                position: "absolute",
+                top: 0,
+                left: 0,
+                zIndex: 2,
+              }}
+            >
+              <Box
+                sx={{
+                  width: "100%",
+                  height: "100%",
+                  backgroundImage: `url(${cardData[activeIdx ?? 0].image})`,
+                  backgroundSize: "cover",
+                  backgroundPosition: cardData[activeIdx ?? 0].bgPos,
+                  transition: "background-image 0.4s, background-position 0.4s",
+                }}
+              />
+              {/* Floating text panel */}
+              <Box
+                sx={{
+                  position: "absolute",
+                  right: 0,
+                  top: 0,
+                  height: "100%",
+                  width: { xs: "100%", md: "38%" },
+                  bgcolor: "rgba(34,49,63,0.92)",
+                  color: "#fff",
+                  p: { xs: 3, md: 6 },
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  alignItems: "flex-start",
+                  zIndex: 10,
+                  transition: "all 0.3s",
+                  borderTopRightRadius: 48,
+                  borderBottomRightRadius: 48,
+                  boxShadow: 8,
+                }}
+              >
+                <Box
+                  sx={{
+                    width: 6,
+                    height: 60,
+                    bgcolor: "#4caf50",
+                    borderRadius: 3,
+                    mb: 3,
+                  }}
+                />
+                <Typography
+                  variant="h4"
+                  sx={{
+                    fontWeight: 700,
+                    mb: 2,
+                    fontSize: { xs: "1.5rem", md: "2.2rem" },
+                  }}
+                >
+                  {cardData[activeIdx ?? 0].title}
+                </Typography>
+                <Typography
+                  color="inherit"
+                  sx={{
+                    mt: 1,
+                    fontSize: { xs: "1rem", md: "1.2rem" },
+                    lineHeight: 1.6,
+                  }}
+                >
+                  {cardData[activeIdx ?? 0].long}
+                </Typography>
+              </Box>
+            </Box>
+          </Fade>
+          {/* Hover zones */}
+          <Box
+            sx={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "33.33%",
+              height: "100%",
+              zIndex: 20,
+            }}
+            onMouseEnter={() => setActiveIdx(0)}
+            onMouseLeave={() => setActiveIdx(null)}
+          />
+          <Box
+            sx={{
+              position: "absolute",
+              top: 0,
+              left: "33.33%",
+              width: "33.34%",
+              height: "100%",
+              zIndex: 20,
+            }}
+            onMouseEnter={() => setActiveIdx(1)}
+            onMouseLeave={() => setActiveIdx(null)}
+          />
+          <Box
+            sx={{
+              position: "absolute",
+              top: 0,
+              left: "66.67%",
+              width: "33.33%",
+              height: "100%",
+              zIndex: 20,
+            }}
+            onMouseEnter={() => setActiveIdx(2)}
+            onMouseLeave={() => setActiveIdx(null)}
+          />
+        </Box>
+      </Container>
     </Box>
   );
 };
