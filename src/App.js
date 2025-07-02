@@ -23,6 +23,7 @@ import CompanyMap from "./components/maps/CompanyMap";
 import RootMap from "./components/maps/RootMap";
 import PermaculturePage from "./pages/PermaculturePage";
 import MapPage from "./pages/MapPage";
+import HowItWorks from "./pages/HowItWorks";
 import "./App.css";
 
 // Create a theme instance with translations for user-visible text
@@ -102,6 +103,7 @@ function App() {
             <Route path="/about" element={<About />} />
             <Route path="/permaculture" element={<PermaculturePage />} />
             <Route path="/mapa" element={<MapPage />} />
+            <Route path="/how-it-works" element={<HowItWorks />} />
             {/* Protected routes */}
             <Route
               path="/dashboard"

@@ -95,6 +95,9 @@ const AppBarMenu = () => (
         <NavLink component={Link} to="/mapa" startIcon={<MapIcon />}>
           Mapa
         </NavLink>
+        <NavLink component={Link} to="/how-it-works">
+          Como Funciona
+        </NavLink>
       </Box>
       <Box sx={{ display: "flex", alignItems: "center" }}>
         <CTAButton component={Link} to="/login" startIcon={<LoginIcon />}>
