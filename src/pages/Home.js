@@ -25,6 +25,7 @@ import "leaflet/dist/leaflet.css";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import api from "../services/api";
+import Particles from "../components/Particles";
 
 import YardIcon from "@mui/icons-material/Yard";
 import BusinessIcon from "@mui/icons-material/Business";
@@ -72,7 +73,7 @@ const HeroSection = styled(Box)(({ theme }) => ({
     right: 0,
     bottom: 0,
     background:
-      "linear-gradient(135deg, rgba(26,116,49,0.8) 0%, rgba(46,125,50,0.8) 100%)",
+      "linear-gradient(135deg, rgba(26,116,49,0.5) 0%, rgba(46,125,50,0.5) 100%)",
     zIndex: -1,
   },
 }));
@@ -405,6 +406,18 @@ const Home = () => {
     <Box>
       <Fade in={true} timeout={1000}>
         <HeroSection>
+          <Box sx={{ position: "absolute", inset: 0, zIndex: 0 }}>
+            <Particles
+              particleColors={["#ffffff", "#4caf50"]}
+              particleCount={200}
+              particleSpread={10}
+              speed={0.1}
+              particleBaseSize={100}
+              moveParticlesOnHover={true}
+              alphaParticles={false}
+              disableRotation={false}
+            />
+          </Box>
           <TopBar>
             <Toolbar sx={{ justifyContent: "flex-end" }}>
               <LoginButton
@@ -416,7 +429,7 @@ const Home = () => {
               </LoginButton>
             </Toolbar>
           </TopBar>
-          <Container>
+          <Container sx={{ position: "relative", zIndex: 1 }}>
             <Typography
               variant="h1"
               sx={{
@@ -426,7 +439,7 @@ const Home = () => {
                 textShadow: "2px 2px 4px rgba(0,0,0,0.3)",
               }}
             >
-              Piantare
+              ApeForest
             </Typography>
             <Typography
               variant="h2"
@@ -438,7 +451,7 @@ const Home = () => {
                 textShadow: "1px 1px 2px rgba(0,0,0,0.3)",
               }}
             >
-              Conectando Agricultores e Empresas para Cultivar a Biodiversidade
+              Plant Today, Forest Tomorrow
             </Typography>
             <Stack
               direction={{ xs: "column", sm: "row" }}
