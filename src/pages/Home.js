@@ -27,6 +27,7 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import api from "../services/api";
 import Particles from "../components/Particles";
+import AppBarMenu from "../components/AppBarMenu";
 
 import YardIcon from "@mui/icons-material/Yard";
 import BusinessIcon from "@mui/icons-material/Business";
@@ -389,69 +390,7 @@ const Home = () => {
               disableRotation={false}
             />
           </Box>
-          <AppBar
-            position="absolute"
-            elevation={0}
-            sx={{
-              background: "rgba(0,0,0,0.15)",
-              boxShadow: "none",
-              backdropFilter: "blur(6px)",
-              zIndex: 2,
-              py: 1,
-            }}
-          >
-            <Toolbar sx={{ justifyContent: "space-between", minHeight: 64 }}>
-              {/* Left: Logo + Slogan */}
-              <Logo>
-                {/* <img
-                  src="/images/logo.svg"
-                  alt="ApeForest"
-                  style={{ height: 36, marginRight: 8 }}
-                /> */}
-                ApeForest
-              </Logo>
-              {/* Center: Navigation */}
-              <Box
-                sx={{
-                  display: { xs: "none", md: "flex" },
-                  flex: 1,
-                  justifyContent: "left",
-                  marginLeft: "20px",
-                }}
-              >
-                <NavLink component={Link} to="/about" startIcon={<InfoIcon />}>
-                  Sobre
-                </NavLink>
-                <NavLink
-                  component={Link}
-                  to="/support"
-                  startIcon={<VolunteerActivismIcon />}
-                >
-                  Apoie
-                </NavLink>
-                <NavLink
-                  component={Link}
-                  to="/permaculture"
-                  startIcon={<InfoIcon />}
-                >
-                  Permacultura
-                </NavLink>
-                <NavLink component={Link} to="/mapa" startIcon={<MapIcon />}>
-                  Mapa
-                </NavLink>
-              </Box>
-              {/* Right: CTA + Login */}
-              <Box sx={{ display: "flex", alignItems: "center" }}>
-                <CTAButton
-                  component={Link}
-                  to="/login"
-                  startIcon={<LoginIcon />}
-                >
-                  Entrar
-                </CTAButton>
-              </Box>
-            </Toolbar>
-          </AppBar>
+          <AppBarMenu />
           <Container sx={{ position: "relative", zIndex: 1 }}>
             <FuzzyText
               baseIntensity={0.05}

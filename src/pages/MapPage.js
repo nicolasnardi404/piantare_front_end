@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box, Typography, AppBar, Toolbar, Button } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { Link } from "react-router-dom";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
@@ -13,6 +13,7 @@ import InfoIcon from "@mui/icons-material/Info";
 import VolunteerActivismIcon from "@mui/icons-material/VolunteerActivism";
 import LoginIcon from "@mui/icons-material/Login";
 import YardIcon from "@mui/icons-material/Yard";
+import AppBarMenu from "../components/AppBarMenu";
 const treeIconUrl = process.env.PUBLIC_URL + "/images/color-tree-icon.svg";
 
 const Logo = styled(Box)(({ theme }) => ({
@@ -30,7 +31,7 @@ const Logo = styled(Box)(({ theme }) => ({
   },
 }));
 
-const NavLink = styled(Button)(({ theme }) => ({
+const NavLink = styled(Link)(({ theme }) => ({
   color: "#fff",
   fontWeight: 700,
   fontFamily: "'Montserrat', sans-serif",
@@ -45,7 +46,7 @@ const NavLink = styled(Button)(({ theme }) => ({
   },
 }));
 
-const CTAButton = styled(Button)(({ theme }) => ({
+const CTAButton = styled(Link)(({ theme }) => ({
   background: "#4caf50",
   color: "#fff",
   fontWeight: 700,
@@ -149,55 +150,7 @@ const MapPage = () => {
         overflow: "hidden",
       }}
     >
-      <AppBar
-        position="absolute"
-        elevation={0}
-        sx={{
-          background: "rgba(0,0,0,0.15)",
-          boxShadow: "none",
-          backdropFilter: "blur(6px)",
-          zIndex: 20,
-          py: 1,
-        }}
-      >
-        <Toolbar sx={{ justifyContent: "space-between", minHeight: 64 }}>
-          <Logo>ApeForest</Logo>
-          <Box
-            sx={{
-              display: { xs: "none", md: "flex" },
-              flex: 1,
-              justifyContent: "left",
-              marginLeft: "20px",
-            }}
-          >
-            <NavLink component={Link} to="/about" startIcon={<InfoIcon />}>
-              Sobre
-            </NavLink>
-            <NavLink
-              component={Link}
-              to="/support"
-              startIcon={<VolunteerActivismIcon />}
-            >
-              Apoie
-            </NavLink>
-            <NavLink
-              component={Link}
-              to="/permaculture"
-              startIcon={<InfoIcon />}
-            >
-              Permacultura
-            </NavLink>
-            <NavLink component={Link} to="/mapa" startIcon={<MapIcon />}>
-              Mapa
-            </NavLink>
-          </Box>
-          <Box sx={{ display: "flex", alignItems: "center" }}>
-            <CTAButton component={Link} to="/login" startIcon={<LoginIcon />}>
-              Entrar
-            </CTAButton>
-          </Box>
-        </Toolbar>
-      </AppBar>
+      <AppBarMenu />
       <MapWrapper>
         <MapContainer
           center={center}
