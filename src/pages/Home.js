@@ -18,6 +18,7 @@ import {
   CardMedia,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import FuzzyText from "../components/FuzzyText";
 import { Link } from "react-router-dom";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
@@ -41,9 +42,12 @@ import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import InfoIcon from "@mui/icons-material/Info";
 import ContactSupportIcon from "@mui/icons-material/ContactSupport";
 import VolunteerActivismIcon from "@mui/icons-material/VolunteerActivism";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 
 const HeroSection = styled(Box)(({ theme }) => ({
-  minHeight: "80vh",
+  minHeight: "100vh",
+  height: "100vh",
+  width: "100vw",
   display: "flex",
   flexDirection: "column",
   justifyContent: "center",
@@ -52,6 +56,8 @@ const HeroSection = styled(Box)(({ theme }) => ({
   position: "relative",
   color: "white",
   overflow: "hidden",
+  padding: 0,
+  margin: 0,
   "&::before": {
     content: '""',
     position: "absolute",
@@ -216,85 +222,50 @@ const MapWrapper = styled(Box)(({ theme }) => ({
   },
 }));
 
-const TopBar = styled(AppBar)(({ theme }) => ({
-  background: "transparent",
-  boxShadow: "none",
-  position: "absolute",
-  top: 0,
-  zIndex: 1,
-}));
-
-const LoginButton = styled(Button)(({ theme }) => ({
-  backgroundColor: "rgba(255, 255, 255, 0.1)",
-  color: "white",
-  backdropFilter: "blur(10px)",
-  borderRadius: theme.spacing(2),
-  padding: theme.spacing(1, 3),
-  textTransform: "none",
-  fontSize: "0.9rem",
-  border: "1px solid rgba(255, 255, 255, 0.2)",
-  transition: "all 0.3s ease",
-  "&:hover": {
-    backgroundColor: "rgba(255, 255, 255, 0.2)",
-    transform: "translateY(-2px)",
-  },
-  "& .MuiButton-startIcon": {
+const Logo = styled(Box)(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  fontWeight: 800,
+  fontFamily: "'Montserrat', sans-serif",
+  fontSize: "1.7rem",
+  letterSpacing: "0.04em",
+  color: "#fff",
+  textShadow: "1px 1px 4px rgba(0,0,0,0.2)",
+  "& img": {
+    height: 36,
     marginRight: theme.spacing(1),
   },
 }));
 
-const NavButton = styled(Button)(({ theme }) => ({
-  backgroundColor: "rgba(255, 255, 255, 0.1)",
-  color: "white",
-  backdropFilter: "blur(10px)",
-  borderRadius: theme.spacing(2),
-  padding: theme.spacing(1.5, 3),
+const NavLink = styled(Button)(({ theme }) => ({
+  color: "#fff",
+  fontWeight: 700,
+  fontFamily: "'Montserrat', sans-serif",
+  fontSize: "1.1rem",
+  textTransform: "none",
+  letterSpacing: "0.03em",
+  marginRight: "20px",
+  mx: 1.5,
+  background: "transparent",
+  "&:hover": {
+    background: "rgba(255,255,255,0.08)",
+  },
+}));
+
+const CTAButton = styled(Button)(({ theme }) => ({
+  background: "#4caf50",
+  color: "#fff",
+  fontWeight: 700,
+  fontFamily: "'Montserrat', sans-serif",
+  borderRadius: 24,
+  px: 3,
+  py: 1,
+  boxShadow: "0 2px 8px rgba(76,175,80,0.15)",
   textTransform: "none",
   fontSize: "1rem",
-  border: "1px solid rgba(255, 255, 255, 0.2)",
-  transition: "all 0.3s ease",
+  ml: 2,
   "&:hover": {
-    backgroundColor: "rgba(255, 255, 255, 0.2)",
-    transform: "translateY(-2px)",
-  },
-  "& .MuiButton-startIcon": {
-    marginRight: theme.spacing(1),
-  },
-}));
-
-const HoverCard = styled(Card)(({ theme }) => ({
-  position: "relative",
-  overflow: "visible",
-  transition: "transform 0.3s, box-shadow 0.3s",
-  cursor: "pointer",
-  "&:hover": {
-    transform: "scale(1.04)",
-    boxShadow: "0 8px 32px rgba(76, 175, 80, 0.2)",
-    zIndex: 2,
-  },
-}));
-
-const Overlay = styled(Box)(({ theme }) => ({
-  position: "absolute",
-  top: 0,
-  left: 0,
-  width: "100%",
-  height: "100%",
-  background: "rgba(34, 49, 63, 0.85)",
-  color: "#fff",
-  display: "flex",
-  flexDirection: "column",
-  justifyContent: "center",
-  alignItems: "center",
-  opacity: 0,
-  transition: "opacity 0.3s",
-  pointerEvents: "none",
-  zIndex: 3,
-  padding: theme.spacing(3),
-  textAlign: "center",
-  "&.open": {
-    opacity: 1,
-    pointerEvents: "auto",
+    background: "#388e3c",
   },
 }));
 
@@ -418,63 +389,74 @@ const Home = () => {
               disableRotation={false}
             />
           </Box>
-          <TopBar>
-            <Toolbar sx={{ justifyContent: "flex-end" }}>
-              <LoginButton
-                component={Link}
-                to="/login"
-                startIcon={<LoginIcon />}
+          <AppBar
+            position="absolute"
+            elevation={0}
+            sx={{
+              background: "rgba(0,0,0,0.15)",
+              boxShadow: "none",
+              backdropFilter: "blur(6px)",
+              zIndex: 2,
+              py: 1,
+            }}
+          >
+            <Toolbar sx={{ justifyContent: "space-between", minHeight: 64 }}>
+              {/* Left: Logo + Slogan */}
+              <Logo>
+                {/* <img
+                  src="/images/logo.svg"
+                  alt="ApeForest"
+                  style={{ height: 36, marginRight: 8 }}
+                /> */}
+                ApeForest
+              </Logo>
+              {/* Center: Navigation */}
+              <Box
+                sx={{
+                  display: { xs: "none", md: "flex" },
+                  flex: 1,
+                  justifyContent: "left",
+                  marginLeft: "20px",
+                }}
               >
-                Entrar
-              </LoginButton>
+                <NavLink component={Link} to="/about" startIcon={<InfoIcon />}>
+                  Sobre
+                </NavLink>
+                <NavLink
+                  component={Link}
+                  to="/support"
+                  startIcon={<VolunteerActivismIcon />}
+                >
+                  Apoie
+                </NavLink>
+              </Box>
+              {/* Right: CTA + Login */}
+              <Box sx={{ display: "flex", alignItems: "center" }}>
+                <CTAButton
+                  component={Link}
+                  to="/login"
+                  startIcon={<LoginIcon />}
+                >
+                  Entrar
+                </CTAButton>
+              </Box>
             </Toolbar>
-          </TopBar>
+          </AppBar>
           <Container sx={{ position: "relative", zIndex: 1 }}>
-            <Typography
-              variant="h1"
-              sx={{
-                fontFamily: "'Montserrat', sans-serif",
-                fontWeight: 800,
-                fontSize: { xs: "2.5rem", md: "4rem" },
-                mb: 3,
-                textShadow: "2px 2px 4px rgba(0,0,0,0.3)",
-                letterSpacing: "0.04em",
-              }}
+            <FuzzyText
+              baseIntensity={0.05}
+              hoverIntensity={0}
+              enableHover={false}
             >
-              ApeForest
-            </Typography>
-            <Typography
-              variant="h2"
-              sx={{
-                fontFamily: "'Poppins', sans-serif",
-                fontWeight: 400,
-                fontSize: { xs: "1.5rem", md: "2rem" },
-                mb: 4,
-                maxWidth: "800px",
-                mx: "auto",
-                textShadow: "1px 1px 2px rgba(0,0,0,0.3)",
-                letterSpacing: "0.01em",
-              }}
+              Plant Today
+            </FuzzyText>
+            <FuzzyText
+              baseIntensity={0.05}
+              hoverIntensity={0}
+              enableHover={false}
             >
-              Plant Today, Forest Tomorrow
-            </Typography>
-            <Stack
-              direction={{ xs: "column", sm: "row" }}
-              spacing={2}
-              justifyContent="center"
-              alignItems="center"
-            >
-              <NavButton component={Link} to="/about" startIcon={<InfoIcon />}>
-                Sobre
-              </NavButton>
-              <NavButton
-                component={Link}
-                to="/support"
-                startIcon={<VolunteerActivismIcon />}
-              >
-                Apoie
-              </NavButton>
-            </Stack>
+              Forest Tomorrow
+            </FuzzyText>
           </Container>
         </HeroSection>
       </Fade>
