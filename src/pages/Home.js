@@ -433,10 +433,12 @@ const Home = () => {
             <Typography
               variant="h1"
               sx={{
+                fontFamily: "'Montserrat', sans-serif",
+                fontWeight: 800,
                 fontSize: { xs: "2.5rem", md: "4rem" },
-                fontWeight: "bold",
                 mb: 3,
                 textShadow: "2px 2px 4px rgba(0,0,0,0.3)",
+                letterSpacing: "0.04em",
               }}
             >
               ApeForest
@@ -444,11 +446,14 @@ const Home = () => {
             <Typography
               variant="h2"
               sx={{
+                fontFamily: "'Poppins', sans-serif",
+                fontWeight: 400,
                 fontSize: { xs: "1.5rem", md: "2rem" },
                 mb: 4,
                 maxWidth: "800px",
                 mx: "auto",
                 textShadow: "1px 1px 2px rgba(0,0,0,0.3)",
+                letterSpacing: "0.01em",
               }}
             >
               Plant Today, Forest Tomorrow
