@@ -24,6 +24,7 @@ import RootMap from "./components/maps/RootMap";
 import PermaculturePage from "./pages/PermaculturePage";
 import MapPage from "./pages/MapPage";
 import HowItWorks from "./pages/HowItWorks";
+import AddPlantGroupPage from "./pages/AddPlantGroupPage";
 import "./App.css";
 
 // Create a theme instance with translations for user-visible text
@@ -184,6 +185,16 @@ function App() {
                 <ProtectedRoute roles={["ADMIN", "COMPANY", "FARMER"]}>
                   <Layout>
                     <RootMap />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/add-plant-group/:projectId?"
+              element={
+                <ProtectedRoute roles={["FARMER"]}>
+                  <Layout>
+                    <AddPlantGroupPage />
                   </Layout>
                 </ProtectedRoute>
               }

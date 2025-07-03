@@ -47,6 +47,7 @@ import PlantUpdates from "./PlantUpdates";
 import ProjectModal from "./ProjectModal";
 import { MapContainer, TileLayer, Polygon } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
+import { useNavigate } from "react-router-dom";
 
 // São Paulo coordinates as default center
 const defaultPosition = [-23.5505, -46.6333];
@@ -99,6 +100,7 @@ const FarmerDashboard = () => {
   const [selectedProjectId, setSelectedProjectId] = useState(null);
   const [showProjectModal, setShowProjectModal] = useState(false);
   const [initialTab, setInitialTab] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     loadDashboardData();
@@ -718,6 +720,24 @@ const FarmerDashboard = () => {
                         >
                           Excluir
                         </Button>
+                        <Button
+                          startIcon={<Add />}
+                          variant="outlined"
+                          size="small"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/add-plant-group/${project.id}`);
+                          }}
+                          sx={{
+                            mr: 1,
+                            "&:hover": {
+                              transform: "translateY(-2px)",
+                            },
+                            transition: "transform 0.2s",
+                          }}
+                        >
+                          Novo Grupo
+                        </Button>
                       </Box>
                     </CardActions>
                   </Box>
@@ -755,7 +775,10 @@ const FarmerDashboard = () => {
                         <TableBody>
                           {project.plantGroups?.map((group) => (
                             <TableRow key={group.id} hover>
-                              <TableCell>{group.species}</TableCell>
+                              <TableCell>
+                                {group.species?.commonName ||
+                                  "Espécie não especificada"}
+                              </TableCell>
                               <TableCell>
                                 {group._count?.plantedPlants || 0} plantas
                               </TableCell>
