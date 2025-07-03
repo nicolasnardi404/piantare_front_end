@@ -37,6 +37,7 @@ import {
   Clear as ClearIcon,
   Lightbulb as LightbulbIcon,
   CropSquare as CropSquareIcon,
+  Yard as YardIcon,
 } from "@mui/icons-material";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -49,6 +50,7 @@ import {
   Marker,
   useMapEvents,
   Circle,
+  Popup,
 } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -56,18 +58,20 @@ import "leaflet/dist/leaflet.css";
 // São Paulo coordinates as default center
 const defaultPosition = [-23.5505, -46.6333];
 
-// Custom tree icon
-const treeIcon = new L.Icon({
-  iconUrl:
-    "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png",
-  shadowUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41],
-  shadowAnchor: [12, 41],
-});
+// Create a custom tree icon using the SVG file
+const createTreeIcon = (color = "#2E7D36") => {
+  return new L.Icon({
+    iconUrl: "/images/light-green-tree.svg",
+    iconSize: [32, 32],
+    iconAnchor: [16, 32],
+    popupAnchor: [0, -32],
+    className: "custom-tree-icon",
+  });
+};
+
+// Create different colored tree icons
+const treeIcon = createTreeIcon("#2E7D36"); // Green for new trees
+const existingTreeIcon = createTreeIcon("#1976D2"); // Blue for existing trees
 
 // Map click handler component
 const MapClickHandler = ({ onMapClick, disabled }) => {
@@ -140,6 +144,10 @@ const AddPlantGroupPage = () => {
   const [plantingCircle, setPlantingCircle] = useState(null);
   const [circleCenter, setCircleCenter] = useState(null);
   const [circleRadius, setCircleRadius] = useState("");
+
+  // Add state for existing plants
+  const [existingPlants, setExistingPlants] = useState([]);
+  const [loadingExistingPlants, setLoadingExistingPlants] = useState(false);
 
   useEffect(() => {
     loadInitialData();
@@ -566,6 +574,49 @@ const AddPlantGroupPage = () => {
     }
   };
 
+  // Add function to load existing plants for the project
+  const loadExistingPlants = async () => {
+    if (!selectedProject?.id) return;
+
+    setLoadingExistingPlants(true);
+    try {
+      const response = await plantGroupService.getProjectPlantGroups(
+        selectedProject.id
+      );
+      const allPlants = [];
+
+      // Extract all planted plants from all groups
+      response.forEach((group) => {
+        if (group.plantedPlants && Array.isArray(group.plantedPlants)) {
+          group.plantedPlants.forEach((plant) => {
+            if (plant.latitude && plant.longitude) {
+              allPlants.push({
+                id: plant.id,
+                lat: plant.latitude,
+                lng: plant.longitude,
+                species: group.species,
+                groupId: group.id,
+              });
+            }
+          });
+        }
+      });
+
+      setExistingPlants(allPlants);
+    } catch (error) {
+      console.error("Error loading existing plants:", error);
+    } finally {
+      setLoadingExistingPlants(false);
+    }
+  };
+
+  // Load existing plants when project is selected
+  useEffect(() => {
+    if (selectedProject?.id) {
+      loadExistingPlants();
+    }
+  }, [selectedProject]);
+
   const renderStepContent = (step) => {
     switch (step) {
       case 0:
@@ -779,7 +830,7 @@ const AddPlantGroupPage = () => {
       case 3:
         console.log("🗺️ Rendering map step");
         console.log("Current plant coordinates:", plantCoordinates);
-        console.log("Planting circle:", plantingCircle);
+        console.log("Existing plants:", existingPlants);
 
         return (
           <Box>
@@ -834,7 +885,7 @@ const AddPlantGroupPage = () => {
                     disabled={
                       !circleCenter || !circleRadius || !formData.quantity
                     }
-                    startIcon={<CropSquareIcon />}
+                    startIcon={<YardIcon />}
                     fullWidth
                     size="small"
                   >
@@ -885,12 +936,20 @@ const AddPlantGroupPage = () => {
                 Plantas posicionadas: {plantCoordinates.length} /{" "}
                 {formData.quantity}
               </Typography>
+              {existingPlants.length > 0 && (
+                <Chip
+                  label={`${existingPlants.length} plantas existentes`}
+                  color="info"
+                  size="small"
+                  icon={<YardIcon />}
+                />
+              )}
               {plantingCircle && (
                 <Chip
                   label="Grade Inteligente aplicada"
                   color="success"
                   size="small"
-                  icon={<CropSquareIcon />}
+                  icon={<YardIcon />}
                 />
               )}
             </Box>
@@ -1010,15 +1069,52 @@ const AddPlantGroupPage = () => {
                   />
                 )}
 
-                {/* Plant markers */}
+                {/* Existing plant markers */}
+                {existingPlants.map((plant, index) => (
+                  <Marker
+                    key={`existing-${plant.id}`}
+                    position={[plant.lat, plant.lng]}
+                    icon={existingTreeIcon}
+                  >
+                    <Popup>
+                      <div>
+                        <Typography variant="subtitle2">
+                          Planta Existente
+                        </Typography>
+                        <Typography variant="body2">
+                          Espécie: {plant.species}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          ID: {plant.id}
+                        </Typography>
+                      </div>
+                    </Popup>
+                  </Marker>
+                ))}
+
+                {/* New plant markers */}
                 {plantCoordinates.map((coord, index) => {
-                  console.log(`🎯 Rendering marker ${index}:`, coord);
+                  console.log(`🎯 Rendering new marker ${index}:`, coord);
                   return (
                     <Marker
-                      key={index}
+                      key={`new-${index}`}
                       position={[coord.lat, coord.lng]}
                       icon={treeIcon}
-                    />
+                    >
+                      <Popup>
+                        <div>
+                          <Typography variant="subtitle2">
+                            Nova Planta
+                          </Typography>
+                          <Typography variant="body2">
+                            Espécie: {selectedSpecies?.commonName}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            Posição: {index + 1}
+                          </Typography>
+                        </div>
+                      </Popup>
+                    </Marker>
                   );
                 })}
 
