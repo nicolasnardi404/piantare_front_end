@@ -35,6 +35,8 @@ import {
   CheckCircle,
   Undo as UndoIcon,
   Clear as ClearIcon,
+  Lightbulb as LightbulbIcon,
+  CropSquare as CropSquareIcon,
 } from "@mui/icons-material";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -46,6 +48,7 @@ import {
   Polygon,
   Marker,
   useMapEvents,
+  Circle,
 } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -113,6 +116,30 @@ const AddPlantGroupPage = () => {
   // Map states
   const [plantCoordinates, setPlantCoordinates] = useState([]);
   const [mapCenter, setMapCenter] = useState(defaultPosition);
+
+  // Add new state for suggestions
+  const [suggestedPositions, setSuggestedPositions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [areaInfo, setAreaInfo] = useState(null);
+
+  // Add new state for auto-placement
+  const [autoPlaced, setAutoPlaced] = useState(false);
+
+  // Add new state for rectangle planting
+  const [plantingRectangle, setPlantingRectangle] = useState(null);
+  const [isDrawingRectangle, setIsDrawingRectangle] = useState(false);
+  const [rectangleStart, setRectangleStart] = useState(null);
+
+  // Add new state for rectangle dimensions
+  const [rectangleDimensions, setRectangleDimensions] = useState({
+    width: "",
+    height: "",
+  });
+
+  // Simplify state - remove unnecessary circle and pattern states
+  const [plantingCircle, setPlantingCircle] = useState(null);
+  const [circleCenter, setCircleCenter] = useState(null);
+  const [circleRadius, setCircleRadius] = useState("");
 
   useEffect(() => {
     loadInitialData();
@@ -203,16 +230,40 @@ const AddPlantGroupPage = () => {
       ...prev,
       [field]: value,
     }));
+
+    // Reset auto-placement if quantity changes
+    if (field === "quantity") {
+      setAutoPlaced(false);
+      setPlantCoordinates([]);
+    }
   };
 
   const handleMapClick = (latlng) => {
-    const targetQuantity = parseInt(formData.quantity) || 0;
+    if (isDrawingRectangle) {
+      // Finish drawing rectangle
+      if (rectangleStart) {
+        const rect = {
+          north: Math.max(rectangleStart.lat, latlng.lat),
+          south: Math.min(rectangleStart.lat, latlng.lat),
+          east: Math.max(rectangleStart.lng, latlng.lng),
+          west: Math.min(rectangleStart.lng, latlng.lng),
+        };
+        setPlantingRectangle(rect);
+        setIsDrawingRectangle(false);
+        setRectangleStart(null);
 
-    if (plantCoordinates.length < targetQuantity) {
-      setPlantCoordinates((prev) => [
-        ...prev,
-        { lat: latlng.lat, lng: latlng.lng },
-      ]);
+        // Auto-place trees in the rectangle
+        placeTreesInRectangle(rect);
+      }
+    } else {
+      // Regular single tree placement
+      const targetQuantity = parseInt(formData.quantity) || 0;
+      if (plantCoordinates.length < targetQuantity) {
+        setPlantCoordinates((prev) => [
+          ...prev,
+          { lat: latlng.lat, lng: latlng.lng },
+        ]);
+      }
     }
   };
 
@@ -290,6 +341,229 @@ const AddPlantGroupPage = () => {
       CANCELLED: "CANCELADO",
     };
     return labels[status] || status;
+  };
+
+  // Simplified smart grid function
+  const placeTreesInSmartGrid = (center, radius, treeCount) => {
+    const positions = [];
+    const radiusInDegrees = radius / 111320;
+
+    // Calculate grid dimensions
+    const sideLength = Math.ceil(Math.sqrt(treeCount));
+    const spacing = (2 * radiusInDegrees) / sideLength;
+
+    let placed = 0;
+    for (let row = 0; row < sideLength && placed < treeCount; row++) {
+      for (let col = 0; col < sideLength && placed < treeCount; col++) {
+        // Add some randomness to make it look more natural
+        const randomOffset = (Math.random() - 0.5) * spacing * 0.3;
+
+        const lat =
+          center.lat - radiusInDegrees + (row + 0.5) * spacing + randomOffset;
+        const lng =
+          center.lng - radiusInDegrees + (col + 0.5) * spacing + randomOffset;
+
+        // Check if within circle
+        const distance = Math.sqrt(
+          Math.pow(lat - center.lat, 2) + Math.pow(lng - center.lng, 2)
+        );
+
+        if (distance <= radiusInDegrees) {
+          positions.push({ lat, lng });
+          placed++;
+        }
+      }
+    }
+
+    return positions;
+  };
+
+  // Simplified apply smart grid function
+  const applySmartGrid = () => {
+    if (!circleCenter || !circleRadius || !formData.quantity) {
+      setError("Por favor, defina o centro, raio e quantidade");
+      return;
+    }
+
+    const radius = parseFloat(circleRadius);
+    const targetQuantity = parseInt(formData.quantity);
+    const positions = placeTreesInSmartGrid(
+      circleCenter,
+      radius,
+      targetQuantity
+    );
+
+    if (positions.length > 0) {
+      setPlantCoordinates(positions);
+      setPlantingCircle({ center: circleCenter, radius });
+      setError("");
+    } else {
+      setError("Não foi possível gerar posições para a grade inteligente");
+    }
+  };
+
+  const startRectangleDrawing = () => {
+    setIsDrawingRectangle(true);
+    setPlantingRectangle(null);
+    setPlantCoordinates([]);
+    setAutoPlaced(false);
+  };
+
+  const placeTreesInRectangle = (rect) => {
+    const targetQuantity = parseInt(formData.quantity);
+    if (!targetQuantity || !rect) return;
+
+    console.log("🌳 Placing trees in rectangle:", rect);
+    console.log("Target quantity:", targetQuantity);
+
+    // Calculate optimal grid
+    const positions = calculateGridPositions(rect, targetQuantity);
+
+    console.log("Generated positions:", positions);
+
+    if (positions.length > 0) {
+      setPlantCoordinates(positions);
+      setAutoPlaced(true);
+      console.log("✅ Trees placed successfully");
+    }
+  };
+
+  const calculateGridPositions = (rect, treeCount) => {
+    if (treeCount <= 0) return [];
+
+    // Calculate rectangle dimensions in meters
+    const latDiff = rect.north - rect.south;
+    const lngDiff = rect.east - rect.west;
+
+    // Convert to meters (approximate)
+    const widthMeters =
+      lngDiff *
+      111320 *
+      Math.cos((((rect.north + rect.south) / 2) * Math.PI) / 180);
+    const heightMeters = latDiff * 111320;
+
+    console.log("Rectangle dimensions:", {
+      widthMeters: widthMeters.toFixed(2),
+      heightMeters: heightMeters.toFixed(2),
+      area: (widthMeters * heightMeters).toFixed(2),
+    });
+
+    // Calculate optimal grid
+    const aspectRatio = widthMeters / heightMeters;
+    const cols = Math.ceil(Math.sqrt(treeCount * aspectRatio));
+    const rows = Math.ceil(treeCount / cols);
+
+    console.log("Grid dimensions:", { rows, cols, total: rows * cols });
+
+    // Calculate spacing
+    const spacingX = widthMeters / (cols + 1);
+    const spacingY = heightMeters / (rows + 1);
+
+    // Convert spacing back to degrees
+    const spacingLat = spacingY / 111320;
+    const spacingLng =
+      spacingX /
+      (111320 * Math.cos((((rect.north + rect.south) / 2) * Math.PI) / 180));
+
+    console.log("Spacing:", {
+      spacingX: spacingX.toFixed(2),
+      spacingY: spacingY.toFixed(2),
+      spacingLat: spacingLat.toFixed(6),
+      spacingLng: spacingLng.toFixed(6),
+    });
+
+    const positions = [];
+    let placedCount = 0;
+
+    // Place trees in grid
+    for (let row = 0; row < rows && placedCount < treeCount; row++) {
+      for (let col = 0; col < cols && placedCount < treeCount; col++) {
+        const lat = rect.south + (row + 1) * spacingLat;
+        const lng = rect.west + (col + 1) * spacingLng;
+
+        positions.push({ lat, lng });
+        placedCount++;
+      }
+    }
+
+    console.log("Final positions:", positions);
+    return positions;
+  };
+
+  const clearPlantingArea = () => {
+    setPlantingRectangle(null);
+    setPlantCoordinates([]);
+    setAutoPlaced(false);
+    setIsDrawingRectangle(false);
+    setRectangleStart(null);
+    setCircleCenter(null);
+    setPlantingCircle(null);
+  };
+
+  const handleRectangleDimensionChange = (field, value) => {
+    setRectangleDimensions((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  const placeTreesInSpecifiedDimensions = () => {
+    const targetQuantity = parseInt(formData.quantity);
+    const width = parseFloat(rectangleDimensions.width);
+    const height = parseFloat(rectangleDimensions.height);
+
+    if (!targetQuantity || !width || !height) {
+      setError(
+        "Por favor, especifique a quantidade e as dimensões do retângulo"
+      );
+      return;
+    }
+
+    if (!selectedProject?.areaCoordinates) {
+      setError("Nenhum projeto selecionado");
+      return;
+    }
+
+    try {
+      // Get project center
+      const coordinates =
+        typeof selectedProject.areaCoordinates === "string"
+          ? JSON.parse(selectedProject.areaCoordinates)
+          : selectedProject.areaCoordinates;
+
+      if (!Array.isArray(coordinates) || coordinates.length === 0) {
+        setError("Coordenadas do projeto inválidas");
+        return;
+      }
+
+      // Calculate center of project
+      const centerLat =
+        coordinates.reduce((sum, coord) => sum + coord[0], 0) /
+        coordinates.length;
+      const centerLng =
+        coordinates.reduce((sum, coord) => sum + coord[1], 0) /
+        coordinates.length;
+
+      // Convert dimensions from meters to degrees
+      const widthInDegrees =
+        width / (111320 * Math.cos((centerLat * Math.PI) / 180));
+      const heightInDegrees = height / 111320;
+
+      // Create rectangle centered on project
+      const rect = {
+        north: centerLat + heightInDegrees / 2,
+        south: centerLat - heightInDegrees / 2,
+        east: centerLng + widthInDegrees / 2,
+        west: centerLng - widthInDegrees / 2,
+      };
+
+      setPlantingRectangle(rect);
+      placeTreesInRectangle(rect);
+      setError(""); // Clear any previous errors
+    } catch (error) {
+      setError("Erro ao calcular as dimensões do retângulo");
+      console.error("Error placing trees with specified dimensions:", error);
+    }
   };
 
   const renderStepContent = (step) => {
@@ -503,30 +777,106 @@ const AddPlantGroupPage = () => {
         );
 
       case 3:
+        console.log("🗺️ Rendering map step");
+        console.log("Current plant coordinates:", plantCoordinates);
+        console.log("Planting circle:", plantingCircle);
+
         return (
           <Box>
             <Typography variant="h6" gutterBottom>
               Posicionar Plantas no Mapa
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-              Clique no mapa para posicionar cada planta dentro da área do
-              projeto.
+              Clique no mapa para posicionar cada planta individualmente ou use
+              a Grade Inteligente para posicionamento automático.
             </Typography>
 
-            <Box sx={{ mb: 2 }}>
-              <Paper sx={{ p: 2, bgcolor: "info.50" }}>
-                <Typography variant="subtitle2" gutterBottom>
-                  Instruções
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  • Clique no mapa para adicionar plantas
-                  <br />• Você precisa posicionar {formData.quantity} plantas
-                  <br />• Use os botões abaixo para desfazer ou limpar todas as
-                  plantas
-                </Typography>
-              </Paper>
-            </Box>
+            {/* Planting Instructions */}
+            <Paper sx={{ p: 2, mb: 2, bgcolor: "info.50" }}>
+              <Typography variant="subtitle2" gutterBottom>
+                Métodos de Posicionamento
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                • <strong>Método 1:</strong> Clique no mapa para posicionar cada
+                planta individualmente
+                <br />• <strong>Método 2:</strong> Use a Grade Inteligente para
+                posicionamento automático em uma área circular
+              </Typography>
+            </Paper>
 
+            {/* Smart Grid Tool */}
+            <Paper sx={{ p: 2, mb: 2, bgcolor: "primary.50" }}>
+              <Typography variant="subtitle2" gutterBottom>
+                Grade Inteligente (Opcional)
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                Posicione automaticamente as árvores em uma grade natural dentro
+                de uma área circular.
+              </Typography>
+
+              <Grid container spacing={2} alignItems="center">
+                <Grid item xs={12} sm={3}>
+                  <TextField
+                    fullWidth
+                    label="Raio da Área (metros)"
+                    type="number"
+                    value={circleRadius}
+                    onChange={(e) => setCircleRadius(e.target.value)}
+                    inputProps={{ min: 1, step: 0.1 }}
+                    size="small"
+                    helperText="Raio da área circular"
+                  />
+                </Grid>
+                <Grid item xs={12} sm={3}>
+                  <Button
+                    variant="contained"
+                    onClick={applySmartGrid}
+                    disabled={
+                      !circleCenter || !circleRadius || !formData.quantity
+                    }
+                    startIcon={<CropSquareIcon />}
+                    fullWidth
+                    size="small"
+                  >
+                    Aplicar Grade Inteligente
+                  </Button>
+                </Grid>
+                <Grid item xs={12} sm={3}>
+                  <Button
+                    variant="outlined"
+                    onClick={() => setCircleCenter(null)}
+                    disabled={!circleCenter}
+                    color="secondary"
+                    fullWidth
+                    size="small"
+                  >
+                    Limpar Centro
+                  </Button>
+                </Grid>
+                <Grid item xs={12} sm={3}>
+                  <Button
+                    variant="outlined"
+                    onClick={clearPlantingArea}
+                    color="error"
+                    fullWidth
+                    size="small"
+                  >
+                    Limpar Tudo
+                  </Button>
+                </Grid>
+              </Grid>
+
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                sx={{ mt: 1, display: "block" }}
+              >
+                Clique no mapa para definir o centro da área, depois especifique
+                o raio e aplique a grade inteligente.
+              </Typography>
+            </Paper>
+
+            {/* Status Information */}
             <Box sx={{ mb: 2, display: "flex", alignItems: "center", gap: 2 }}>
               <Badge badgeContent={plantCoordinates.length} color="primary">
                 <LocalFlorist color="primary" />
@@ -535,9 +885,18 @@ const AddPlantGroupPage = () => {
                 Plantas posicionadas: {plantCoordinates.length} /{" "}
                 {formData.quantity}
               </Typography>
+              {plantingCircle && (
+                <Chip
+                  label="Grade Inteligente aplicada"
+                  color="success"
+                  size="small"
+                  icon={<CropSquareIcon />}
+                />
+              )}
             </Box>
 
-            <Box sx={{ mb: 2, display: "flex", gap: 1 }}>
+            {/* Planting Controls */}
+            <Box sx={{ mb: 2, display: "flex", gap: 1, flexWrap: "wrap" }}>
               <Button
                 variant="outlined"
                 startIcon={<UndoIcon />}
@@ -546,16 +905,37 @@ const AddPlantGroupPage = () => {
               >
                 Desfazer Última
               </Button>
+
               <Button
                 variant="outlined"
                 color="error"
                 startIcon={<ClearIcon />}
-                onClick={handleClearAllPlants}
-                disabled={plantCoordinates.length === 0}
+                onClick={clearPlantingArea}
+                disabled={plantCoordinates.length === 0 && !plantingCircle}
               >
-                Limpar Todas
+                Limpar Tudo
               </Button>
             </Box>
+
+            {/* Circle Information */}
+            {plantingCircle && (
+              <Paper sx={{ p: 2, mb: 2, bgcolor: "success.50" }}>
+                <Typography variant="subtitle2" gutterBottom>
+                  Grade Inteligente Aplicada
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  • Raio da área: {plantingCircle.radius} metros
+                  <br />• Área total:{" "}
+                  {(
+                    Math.PI *
+                    plantingCircle.radius *
+                    plantingCircle.radius
+                  ).toFixed(1)}{" "}
+                  m²
+                  <br />• Plantas posicionadas automaticamente em grade natural
+                </Typography>
+              </Paper>
+            )}
 
             <Box
               sx={{
@@ -594,23 +974,70 @@ const AddPlantGroupPage = () => {
                     pathOptions={{
                       color: "#4caf50",
                       fillColor: "#4caf50",
-                      fillOpacity: 0.2,
+                      fillOpacity: 0.1,
                       weight: 2,
                     }}
                   />
                 )}
 
-                {/* Plant markers */}
-                {plantCoordinates.map((coord, index) => (
+                {/* Circle center marker */}
+                {circleCenter && (
                   <Marker
-                    key={index}
-                    position={[coord.lat, coord.lng]}
-                    icon={treeIcon}
+                    position={[circleCenter.lat, circleCenter.lng]}
+                    icon={
+                      new L.Icon({
+                        iconUrl:
+                          "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png",
+                        iconSize: [25, 41],
+                        iconAnchor: [12, 41],
+                      })
+                    }
                   />
-                ))}
+                )}
+
+                {/* Circle outline */}
+                {circleCenter && circleRadius && (
+                  <Circle
+                    center={[circleCenter.lat, circleCenter.lng]}
+                    radius={parseFloat(circleRadius)}
+                    pathOptions={{
+                      color: "#2196f3",
+                      fillColor: "#2196f3",
+                      fillOpacity: 0.1,
+                      weight: 2,
+                      dashArray: "5, 5",
+                    }}
+                  />
+                )}
+
+                {/* Plant markers */}
+                {plantCoordinates.map((coord, index) => {
+                  console.log(`🎯 Rendering marker ${index}:`, coord);
+                  return (
+                    <Marker
+                      key={index}
+                      position={[coord.lat, coord.lng]}
+                      icon={treeIcon}
+                    />
+                  );
+                })}
 
                 <MapClickHandler
-                  onMapClick={handleMapClick}
+                  onMapClick={(latlng) => {
+                    if (!circleCenter) {
+                      // Set circle center
+                      setCircleCenter(latlng);
+                    } else {
+                      // Regular tree placement
+                      const targetQuantity = parseInt(formData.quantity) || 0;
+                      if (plantCoordinates.length < targetQuantity) {
+                        setPlantCoordinates((prev) => [
+                          ...prev,
+                          { lat: latlng.lat, lng: latlng.lng },
+                        ]);
+                      }
+                    }
+                  }}
                   disabled={
                     plantCoordinates.length >= parseInt(formData.quantity)
                   }
