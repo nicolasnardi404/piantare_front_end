@@ -98,6 +98,7 @@ const FarmerDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
   const [showProjectModal, setShowProjectModal] = useState(false);
+  const [initialTab, setInitialTab] = useState(null);
 
   useEffect(() => {
     loadDashboardData();
@@ -148,37 +149,53 @@ const FarmerDashboard = () => {
   };
 
   const calculateStats = () => {
+    if (!dashboardData?.projects)
+      return {
+        totalPlants: 0,
+        healthyPlants: 0,
+        needsAttention: 0,
+        sickPlants: 0,
+      };
+
     const stats = {
-      totalPlants: dashboardData.projects.length,
+      totalPlants: 0,
       healthyPlants: 0,
       needsAttention: 0,
       sickPlants: 0,
     };
 
     dashboardData.projects.forEach((project) => {
-      project.plantedPlants.forEach((plant) => {
-        // Get the latest update if it exists
-        const lastUpdate = plant.updates?.[0];
+      if (!project.plantGroups) return;
 
-        if (!lastUpdate) {
-          // Plants without updates are considered healthy
-          stats.healthyPlants++;
-        } else {
-          switch (lastUpdate.healthStatus) {
-            case "HEALTHY":
-              stats.healthyPlants++;
-              break;
-            case "NEEDS_ATTENTION":
-              stats.needsAttention++;
-              break;
-            case "SICK":
-              stats.sickPlants++;
-              break;
-            default:
-              // Unknown status plants are considered healthy
-              stats.healthyPlants++;
+      project.plantGroups.forEach((group) => {
+        if (!group.plantedPlants) return;
+
+        stats.totalPlants += group.plantedPlants.length;
+
+        group.plantedPlants.forEach((plant) => {
+          // Get the latest update if it exists
+          const lastUpdate = plant.updates?.[0];
+
+          if (!lastUpdate) {
+            // Plants without updates are considered healthy
+            stats.healthyPlants++;
+          } else {
+            switch (lastUpdate.healthStatus) {
+              case "HEALTHY":
+                stats.healthyPlants++;
+                break;
+              case "NEEDS_ATTENTION":
+                stats.needsAttention++;
+                break;
+              case "SICK":
+                stats.sickPlants++;
+                break;
+              default:
+                // Unknown status plants are considered healthy
+                stats.healthyPlants++;
+            }
           }
-        }
+        });
       });
     });
 
@@ -603,7 +620,11 @@ const FarmerDashboard = () => {
                             >
                               <LocalFlorist fontSize="small" color="primary" />
                               Total de Plantas:{" "}
-                              {project._count?.plantedPlants || 0}
+                              {project.plantGroups?.reduce(
+                                (total, group) =>
+                                  total + (group._count?.plantedPlants || 0),
+                                0
+                              ) || 0}
                             </Typography>
                             <Typography
                               variant="body2"
@@ -653,8 +674,10 @@ const FarmerDashboard = () => {
                         </IconButton>
                         <Typography variant="body2" color="text.secondary">
                           {expandedProject === project.id
-                            ? "Recolher plantas"
-                            : `Ver ${project._count.plantedPlants} plantas`}
+                            ? "Recolher grupos"
+                            : `Ver ${
+                                project.plantGroups?.length || 0
+                              } grupos de plantas`}
                         </Typography>
                       </Box>
                       <Box>
@@ -710,10 +733,10 @@ const FarmerDashboard = () => {
                       }}
                     >
                       <Typography variant="h6" gutterBottom>
-                        Plantas do Projeto
+                        Grupos de Plantas
                       </Typography>
                       <Typography variant="body2" color="text.secondary">
-                        Total: {project.plantedPlants.length} plantas
+                        Total: {project.plantGroups?.length || 0} grupos
                       </Typography>
                     </Box>
                     <TableContainer
@@ -724,55 +747,25 @@ const FarmerDashboard = () => {
                         <TableHead>
                           <TableRow>
                             <TableCell>Espécie</TableCell>
-                            <TableCell>Localização</TableCell>
+                            <TableCell>Quantidade</TableCell>
                             <TableCell>Status</TableCell>
-                            <TableCell>Última Atualização</TableCell>
                             <TableCell align="right">Ações</TableCell>
                           </TableRow>
                         </TableHead>
                         <TableBody>
-                          {project.plantedPlants.map((plant) => (
-                            <TableRow key={plant.id} hover>
+                          {project.plantGroups?.map((group) => (
+                            <TableRow key={group.id} hover>
+                              <TableCell>{group.species}</TableCell>
                               <TableCell>
-                                {plant.species.commonName} (
-                                {plant.species.scientificName})
-                              </TableCell>
-                              <TableCell>
-                                <Stack
-                                  direction="row"
-                                  spacing={1}
-                                  alignItems="center"
-                                >
-                                  <LocationOn color="action" fontSize="small" />
-                                  <Typography variant="body2">
-                                    {`${plant.latitude.toFixed(
-                                      6
-                                    )}, ${plant.longitude.toFixed(6)}`}
-                                  </Typography>
-                                </Stack>
+                                {group._count?.plantedPlants || 0} plantas
                               </TableCell>
                               <TableCell>
                                 <Chip
-                                  label={getHealthStatusLabel(
-                                    plant.updates?.[0]?.healthStatus
-                                  )}
-                                  color={getHealthStatusColor(
-                                    plant.updates?.[0]?.healthStatus
-                                  )}
+                                  label={getStatusLabel(project.status)}
+                                  color={getStatusColor(project.status)}
                                   size="small"
                                   sx={{ minWidth: 100 }}
                                 />
-                              </TableCell>
-                              <TableCell>
-                                {plant.updates?.[0]
-                                  ? format(
-                                      new Date(plant.updates[0].createdAt),
-                                      "dd/MM/yyyy HH:mm",
-                                      {
-                                        locale: ptBR,
-                                      }
-                                    )
-                                  : "Sem atualizações"}
                               </TableCell>
                               <TableCell align="right">
                                 <Stack
@@ -780,48 +773,33 @@ const FarmerDashboard = () => {
                                   spacing={1}
                                   justifyContent="flex-end"
                                 >
-                                  <Tooltip title="Ver histórico">
+                                  <Tooltip title="Ver no mapa">
                                     <IconButton
                                       size="small"
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        setSelectedPlant(plant);
+                                      onClick={() => {
+                                        setSelectedProjectId(project.id);
+                                        setShowProjectModal(true);
                                       }}
                                     >
-                                      <Timeline />
+                                      <MapIcon fontSize="small" />
                                     </IconButton>
                                   </Tooltip>
-                                  <Tooltip title="Editar planta">
+                                  <Tooltip title="Adicionar plantas">
                                     <IconButton
                                       size="small"
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        // Add edit plant handler here
+                                      onClick={() => {
+                                        setSelectedProjectId(project.id);
+                                        setShowProjectModal(true);
+                                        setInitialTab("tree-planting");
                                       }}
                                     >
-                                      <Edit />
+                                      <Add fontSize="small" />
                                     </IconButton>
                                   </Tooltip>
                                 </Stack>
                               </TableCell>
                             </TableRow>
                           ))}
-                          {project.plantedPlants.length === 0 && (
-                            <TableRow>
-                              <TableCell
-                                colSpan={5}
-                                align="center"
-                                sx={{ py: 3 }}
-                              >
-                                <Typography
-                                  variant="body2"
-                                  color="text.secondary"
-                                >
-                                  Nenhuma planta cadastrada neste projeto
-                                </Typography>
-                              </TableCell>
-                            </TableRow>
-                          )}
                         </TableBody>
                       </Table>
                     </TableContainer>
@@ -858,9 +836,11 @@ const FarmerDashboard = () => {
         onClose={() => {
           setShowProjectModal(false);
           setSelectedProjectId(null);
+          setInitialTab(null);
         }}
         projectId={selectedProjectId}
         onUpdate={loadDashboardData}
+        initialTab={initialTab}
       />
     </Box>
   );

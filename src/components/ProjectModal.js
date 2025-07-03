@@ -14,6 +14,8 @@ import {
   MenuItem,
   IconButton,
   Alert,
+  Tabs,
+  Tab,
 } from "@mui/material";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -29,10 +31,13 @@ import {
   Close as CloseIcon,
   Camera as CameraIcon,
   Delete as DeleteIcon,
+  InfoOutlined,
+  LocalFlorist,
 } from "@mui/icons-material";
 import ProjectAreaMap from "./ProjectAreaMap";
 import html2canvas from "html2canvas";
 import L from "leaflet";
+import TreePlanting from "./TreePlanting";
 
 // São Paulo coordinates as default center
 const defaultPosition = [-23.5505, -46.6333];
@@ -54,34 +59,28 @@ const getMapCenter = (coordinates) => {
   return defaultPosition;
 };
 
-const ProjectModal = ({ open, onClose, projectId, onUpdate }) => {
+const ProjectModal = ({ open, onClose, projectId, onUpdate, initialTab }) => {
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [editing, setEditing] = useState(false);
   const [editedProject, setEditedProject] = useState(null);
   const [error, setError] = useState(null);
   const [capturedMap, setCapturedMap] = useState(null);
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
+  const [activeTab, setActiveTab] = useState("details");
 
   useEffect(() => {
     if (projectId) {
       fetchProjectDetails();
-    } else {
-      // New project
-      setProject(null);
-      setEditing(true);
-      setEditedProject({
-        name: "",
-        description: "",
-        status: "PLANNING",
-        startDate: new Date().toISOString().split("T")[0],
-        endDate: null,
-        areaCoordinates: null,
-      });
-      setLoading(false);
     }
   }, [projectId]);
+
+  useEffect(() => {
+    // Set the initial tab when the modal opens
+    if (open && initialTab) {
+      setActiveTab(initialTab);
+    }
+  }, [open, initialTab]);
 
   const fetchProjectDetails = async () => {
     try {
@@ -277,7 +276,7 @@ const ProjectModal = ({ open, onClose, projectId, onUpdate }) => {
     <Dialog
       open={open}
       onClose={onClose}
-      maxWidth="md"
+      maxWidth="lg"
       fullWidth
       PaperProps={{
         sx: {
@@ -286,355 +285,282 @@ const ProjectModal = ({ open, onClose, projectId, onUpdate }) => {
         },
       }}
     >
-      <DialogTitle sx={{ pb: 1 }}>
-        {loading ? (
-          <CircularProgress size={24} />
-        ) : (
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            {editing ? (
-              <TextField
-                fullWidth
-                label="Nome do Projeto"
-                value={editedProject?.name || ""}
-                onChange={(e) =>
-                  setEditedProject({ ...editedProject, name: e.target.value })
-                }
-                sx={{ mr: 2 }}
-              />
-            ) : (
-              <Typography variant="h5" component="span">
-                {project?.name}
-              </Typography>
-            )}
-            {editing ? (
-              <TextField
-                select
-                value={editedProject?.status || "PLANNING"}
-                onChange={(e) =>
-                  setEditedProject({ ...editedProject, status: e.target.value })
-                }
-                sx={{ minWidth: 150 }}
-              >
-                {statusOptions.map((option) => (
-                  <MenuItem key={option.value} value={option.value}>
-                    {option.label}
-                  </MenuItem>
-                ))}
-              </TextField>
-            ) : (
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                <Chip
-                  label={getStatusLabel(project?.status)}
-                  color={getStatusColor(project?.status)}
-                  size="small"
-                />
-                <IconButton size="small" onClick={() => setEditing(true)}>
-                  <EditIcon fontSize="small" />
-                </IconButton>
-              </Box>
-            )}
-          </Box>
-        )}
-      </DialogTitle>
+      <DialogTitle>{projectId ? "Project Details" : "New Project"}</DialogTitle>
 
       <DialogContent dividers>
         {loading ? (
           <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
             <CircularProgress />
           </Box>
+        ) : error ? (
+          <Alert severity="error">{error}</Alert>
         ) : (
-          <Grid container spacing={3}>
-            {error && (
-              <Grid item xs={12}>
-                <Alert severity="error" onClose={() => setError(null)}>
-                  {error}
-                </Alert>
-              </Grid>
+          <>
+            {!project && (
+              <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 2 }}>
+                <Tabs
+                  value={activeTab}
+                  onChange={(e, newValue) => setActiveTab(newValue)}
+                  sx={{ borderBottom: 1, borderColor: "divider", mb: 2 }}
+                >
+                  <Tab
+                    label="Detalhes"
+                    value="details"
+                    icon={<InfoOutlined />}
+                    iconPosition="start"
+                  />
+                  <Tab
+                    label="Plantio de Árvores"
+                    value="tree-planting"
+                    icon={<LocalFlorist />}
+                    iconPosition="start"
+                  />
+                </Tabs>
+              </Box>
             )}
 
-            <Grid item xs={12}>
-              {editing ? (
-                <TextField
-                  fullWidth
-                  multiline
-                  rows={3}
-                  label="Descrição"
-                  value={editedProject?.description || ""}
-                  onChange={(e) =>
-                    setEditedProject({
-                      ...editedProject,
-                      description: e.target.value,
-                    })
-                  }
-                />
-              ) : (
-                <Typography variant="body1" color="text.secondary" paragraph>
-                  {project?.description}
-                </Typography>
-              )}
-            </Grid>
-
-            <Grid item xs={12} sm={6}>
-              {editing ? (
-                <LocalizationProvider
-                  dateAdapter={AdapterDateFns}
-                  adapterLocale={ptBR}
-                >
-                  <DatePicker
-                    label="Data de Início"
-                    value={
-                      editedProject?.startDate
-                        ? new Date(editedProject.startDate)
-                        : null
-                    }
-                    onChange={(newValue) =>
-                      setEditedProject({
-                        ...editedProject,
-                        startDate: newValue?.toISOString().split("T")[0],
-                      })
-                    }
-                    slotProps={{ textField: { fullWidth: true } }}
-                  />
-                </LocalizationProvider>
-              ) : (
-                <>
-                  <Typography variant="subtitle2" color="text.secondary">
-                    Data de Início
-                  </Typography>
-                  <Typography variant="body1">
-                    {format(
-                      new Date(project?.startDate),
-                      "dd 'de' MMMM 'de' yyyy",
-                      {
-                        locale: ptBR,
+            {project && activeTab === "details" && (
+              <Box>
+                <Grid container spacing={2}>
+                  <Grid item xs={12}>
+                    <TextField
+                      fullWidth
+                      multiline
+                      rows={3}
+                      label="Descrição"
+                      value={project?.description || ""}
+                      onChange={(e) =>
+                        setEditedProject({
+                          ...editedProject,
+                          description: e.target.value,
+                        })
                       }
-                    )}
-                  </Typography>
-                </>
-              )}
-            </Grid>
+                    />
+                  </Grid>
 
-            <Grid item xs={12} sm={6}>
-              {editing ? (
-                <LocalizationProvider
-                  dateAdapter={AdapterDateFns}
-                  adapterLocale={ptBR}
-                >
-                  <DatePicker
-                    label="Data de Término"
-                    value={
-                      editedProject?.endDate
-                        ? new Date(editedProject.endDate)
-                        : null
-                    }
-                    onChange={(newValue) =>
-                      setEditedProject({
-                        ...editedProject,
-                        endDate: newValue?.toISOString().split("T")[0],
-                      })
-                    }
-                    slotProps={{ textField: { fullWidth: true } }}
-                    minDate={
-                      editedProject?.startDate
-                        ? new Date(editedProject.startDate)
-                        : null
-                    }
-                  />
-                </LocalizationProvider>
-              ) : (
-                project?.endDate && (
-                  <>
-                    <Typography variant="subtitle2" color="text.secondary">
-                      Data de Término
-                    </Typography>
-                    <Typography variant="body1">
-                      {format(
-                        new Date(project.endDate),
-                        "dd 'de' MMMM 'de' yyyy",
-                        {
-                          locale: ptBR,
+                  <Grid item xs={12} sm={6}>
+                    <LocalizationProvider
+                      dateAdapter={AdapterDateFns}
+                      adapterLocale={ptBR}
+                    >
+                      <DatePicker
+                        label="Data de Início"
+                        value={
+                          project?.startDate
+                            ? new Date(project.startDate)
+                            : null
                         }
-                      )}
-                    </Typography>
-                  </>
-                )
-              )}
-            </Grid>
+                        onChange={(newValue) =>
+                          setEditedProject({
+                            ...editedProject,
+                            startDate: newValue?.toISOString().split("T")[0],
+                          })
+                        }
+                        slotProps={{ textField: { fullWidth: true } }}
+                      />
+                    </LocalizationProvider>
+                  </Grid>
 
-            <Grid item xs={12}>
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  mb: 1,
-                }}
-              >
-                <Typography variant="subtitle2" color="text.secondary">
-                  Área do Projeto
-                </Typography>
-              </Box>
+                  <Grid item xs={12} sm={6}>
+                    <LocalizationProvider
+                      dateAdapter={AdapterDateFns}
+                      adapterLocale={ptBR}
+                    >
+                      <DatePicker
+                        label="Data de Término"
+                        value={
+                          project?.endDate ? new Date(project.endDate) : null
+                        }
+                        onChange={(newValue) =>
+                          setEditedProject({
+                            ...editedProject,
+                            endDate: newValue?.toISOString().split("T")[0],
+                          })
+                        }
+                        slotProps={{ textField: { fullWidth: true } }}
+                        minDate={
+                          project?.startDate
+                            ? new Date(project.startDate)
+                            : null
+                        }
+                      />
+                    </LocalizationProvider>
+                  </Grid>
 
-              {/* Map preview if captured */}
-              {capturedMap && (
-                <Box sx={{ mb: 2, position: "relative" }}>
-                  <img
-                    src={URL.createObjectURL(capturedMap)}
-                    alt="Mapa capturado"
-                    style={{
-                      width: "100%",
-                      maxWidth: 500,
-                      height: "auto",
-                      borderRadius: 8,
-                      display: "block",
-                      margin: "0 auto",
-                    }}
-                  />
-                  <IconButton
-                    onClick={() => setCapturedMap(null)}
-                    sx={{
-                      position: "absolute",
-                      top: 8,
-                      right: 8,
-                      bgcolor: "background.paper",
-                      "&:hover": {
-                        bgcolor: "action.hover",
-                      },
-                    }}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </Box>
-              )}
-
-              {/* Original map box */}
-              <Box
-                ref={mapRef}
-                sx={{
-                  height: 500,
-                  width: "100%",
-                  aspectRatio: "1/1",
-                  maxWidth: 500,
-                  margin: "0 auto",
-                  borderRadius: 2,
-                  overflow: "hidden",
-                  border: "1px solid",
-                  borderColor: "divider",
-                }}
-              >
-                {editing ? (
-                  <ProjectAreaMap
-                    initialArea={editedProject?.areaCoordinates}
-                    onChange={handleAreaChange}
-                    onMapInstance={handleMapInstance}
-                    satelliteOnly={true}
-                  />
-                ) : editedProject?.areaCoordinates ? (
-                  <MapContainer
-                    center={getMapCenter(editedProject.areaCoordinates)}
-                    zoom={13}
-                    style={{ height: "100%", width: "100%" }}
-                    zoomControl={true}
-                    dragging={true}
-                    scrollWheelZoom={true}
-                    ref={mapInstanceRef}
-                  >
-                    <TileLayer
-                      url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-                      maxZoom={19}
-                    />
-                    <Polygon
-                      positions={
-                        typeof editedProject.areaCoordinates === "string"
-                          ? JSON.parse(editedProject.areaCoordinates)
-                          : editedProject.areaCoordinates
-                      }
-                      pathOptions={{
-                        color: "#4CAF50",
-                        fillColor: "#4CAF50",
-                        fillOpacity: 0.2,
+                  <Grid item xs={12}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        mb: 1,
                       }}
-                    />
-                  </MapContainer>
-                ) : (
-                  <Box
-                    sx={{
-                      height: "100%",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      bgcolor: "action.hover",
-                    }}
-                  >
-                    <Typography color="text.secondary">
-                      Nenhuma área definida
-                    </Typography>
-                  </Box>
-                )}
-              </Box>
-            </Grid>
+                    >
+                      <Typography variant="subtitle2" color="text.secondary">
+                        Área do Projeto
+                      </Typography>
+                    </Box>
 
-            {!editing && (
-              <Grid item xs={12}>
-                <Typography
-                  variant="subtitle2"
-                  color="text.secondary"
-                  gutterBottom
-                >
-                  Plantas no Projeto
+                    {/* Map preview if captured */}
+                    {capturedMap && (
+                      <Box sx={{ mb: 2, position: "relative" }}>
+                        <img
+                          src={URL.createObjectURL(capturedMap)}
+                          alt="Mapa capturado"
+                          style={{
+                            width: "100%",
+                            maxWidth: 500,
+                            height: "auto",
+                            borderRadius: 8,
+                            display: "block",
+                            margin: "0 auto",
+                          }}
+                        />
+                        <IconButton
+                          onClick={() => setCapturedMap(null)}
+                          sx={{
+                            position: "absolute",
+                            top: 8,
+                            right: 8,
+                            bgcolor: "background.paper",
+                            "&:hover": {
+                              bgcolor: "action.hover",
+                            },
+                          }}
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      </Box>
+                    )}
+
+                    {/* Original map box */}
+                    <Box
+                      ref={mapRef}
+                      sx={{
+                        height: 500,
+                        width: "100%",
+                        aspectRatio: "1/1",
+                        maxWidth: 500,
+                        margin: "0 auto",
+                        borderRadius: 2,
+                        overflow: "hidden",
+                        border: "1px solid",
+                        borderColor: "divider",
+                      }}
+                    >
+                      {project?.areaCoordinates ? (
+                        <MapContainer
+                          center={getMapCenter(project.areaCoordinates)}
+                          zoom={13}
+                          style={{ height: "100%", width: "100%" }}
+                          zoomControl={true}
+                          dragging={true}
+                          scrollWheelZoom={true}
+                          ref={mapInstanceRef}
+                        >
+                          <TileLayer
+                            url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+                            maxZoom={19}
+                          />
+                          <Polygon
+                            positions={
+                              typeof project.areaCoordinates === "string"
+                                ? JSON.parse(project.areaCoordinates)
+                                : project.areaCoordinates
+                            }
+                            pathOptions={{
+                              color: "#4CAF50",
+                              fillColor: "#4CAF50",
+                              fillOpacity: 0.2,
+                            }}
+                          />
+                        </MapContainer>
+                      ) : (
+                        <Box
+                          sx={{
+                            height: "100%",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            bgcolor: "action.hover",
+                          }}
+                        >
+                          <Typography color="text.secondary">
+                            Nenhuma área definida
+                          </Typography>
+                        </Box>
+                      )}
+                    </Box>
+                  </Grid>
+
+                  {!project && (
+                    <Grid item xs={12}>
+                      <Typography
+                        variant="subtitle2"
+                        color="text.secondary"
+                        gutterBottom
+                      >
+                        Plantas no Projeto
+                      </Typography>
+                      <Typography variant="h6">
+                        {project?._count?.locations || 0} plantas
+                      </Typography>
+                    </Grid>
+                  )}
+                </Grid>
+
+                <Typography variant="h6" sx={{ mt: 3, mb: 2 }}>
+                  Project Area
                 </Typography>
-                <Typography variant="h6">
-                  {project?._count?.locations || 0} plantas
-                </Typography>
-              </Grid>
+                <Box ref={mapRef} sx={{ height: 400, width: "100%" }}>
+                  <ProjectAreaMap
+                    coordinates={project.areaCoordinates}
+                    onMapInstance={handleMapInstance}
+                  />
+                </Box>
+              </Box>
             )}
-          </Grid>
+
+            {!project && project && activeTab === "tree-planting" && (
+              <Box>
+                <TreePlanting
+                  projectId={project.id}
+                  mapRef={mapInstanceRef}
+                  onPlantingComplete={() => {
+                    // Optionally refresh project data
+                    fetchProjectDetails();
+                  }}
+                />
+              </Box>
+            )}
+          </>
         )}
       </DialogContent>
 
       <DialogActions sx={{ p: 2 }}>
-        {editing ? (
-          <>
-            <Button
-              onClick={() => {
-                if (projectId) {
-                  setEditing(false);
-                  setEditedProject(project);
-                } else {
-                  onClose();
-                }
-              }}
-            >
-              Cancelar
-            </Button>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleSave}
-              disabled={loading || !editedProject?.areaCoordinates}
-              startIcon={<SaveIcon />}
-            >
-              Salvar
-            </Button>
-          </>
-        ) : (
-          <>
-            <Button onClick={onClose}>Fechar</Button>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => setEditing(true)}
-              startIcon={<EditIcon />}
-            >
-              Editar
-            </Button>
-          </>
+        {!project && (
+          <Button onClick={onClose} color="primary">
+            Close
+          </Button>
+        )}
+        {!project && project && (
+          <Button
+            startIcon={<EditIcon />}
+            onClick={() => setActiveTab("details")}
+            color="primary"
+          >
+            Edit
+          </Button>
+        )}
+        {!project && project && (
+          <Button
+            onClick={handleSave}
+            color="primary"
+            variant="contained"
+            disabled={loading}
+          >
+            {loading ? "Saving..." : "Save"}
+          </Button>
         )}
       </DialogActions>
     </Dialog>
