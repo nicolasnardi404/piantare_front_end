@@ -50,47 +50,145 @@ import StraightenIcon from "@mui/icons-material/Straighten";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import ProcessSection from "../components/ProcessSection";
 import ScrollTriggeredSection from "../components/ScrollTriggeredSection";
+import { styled } from "@mui/material/styles";
+
+const HeroSection = styled(Box)(({ theme }) => ({
+  minHeight: "40vh",
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "center",
+  alignItems: "center",
+  textAlign: "center",
+  position: "relative",
+  backgroundImage: 'url("/images/brinco_de_princesa_amarelo.jpg")',
+
+  color: "white",
+  overflow: "hidden",
+  "&::before": {
+    content: '""',
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    filter: "brightness(0.6)",
+    zIndex: -2,
+  },
+  "&::after": {
+    content: '""',
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    background:
+      "linear-gradient(135deg, rgba(26,116,49,0.8) 0%, rgba(46,125,50,0.8) 100%)",
+    zIndex: -1,
+  },
+}));
+
+const PlatformOverview = () => (
+  <Box
+    sx={{
+      maxWidth: 900,
+      mx: "auto",
+      my: { xs: 6, md: 8 },
+      p: { xs: 3, md: 5 },
+      background:
+        "linear-gradient(120deg, rgba(255,255,255,0.85) 60%, rgba(200,230,201,0.25) 100%)",
+      borderLeft: "8px solid #4caf50",
+      boxShadow: "0 2px 24px 0 rgba(76,175,80,0.08)",
+      backdropFilter: "blur(2px)",
+      position: "relative",
+      overflow: "hidden",
+    }}
+  >
+    {/* Optional: Decorative leaf or nature icon */}
+    <Box
+      sx={{
+        position: "absolute",
+        top: 16,
+        right: 24,
+        opacity: 0.08,
+        fontSize: 120,
+        zIndex: 0,
+        pointerEvents: "none",
+      }}
+    >
+      🌿
+    </Box>
+    <Typography
+      variant="h4"
+      sx={{
+        color: "primary.main",
+        fontWeight: 700,
+        mb: 3,
+        letterSpacing: "-0.5px",
+        zIndex: 1,
+        position: "relative",
+      }}
+    >
+      ApeForest: Transparência e Conexão para o Reflorestamento
+    </Typography>
+    <Typography
+      color="text.secondary"
+      sx={{
+        fontSize: { xs: "1.1rem", md: "1.25rem" },
+        mb: 2,
+        zIndex: 1,
+        position: "relative",
+      }}
+    >
+      Plataforma digital completa desenvolvida para gerenciar projetos de
+      reflorestamento de forma eficiente e transparente. O sistema conecta
+      agricultores, empresas e especialistas em um ambiente colaborativo para o
+      monitoramento e controle de plantios florestais.
+    </Typography>
+    <Typography
+      color="text.secondary"
+      sx={{
+        fontSize: { xs: "1.1rem", md: "1.25rem" },
+        zIndex: 1,
+        position: "relative",
+      }}
+    >
+      Ao mapear áreas de plantio, documentar espécies e monitorar o
+      desenvolvimento das plantas, garantimos transparência e dados confiáveis
+      para todos os envolvidos.
+    </Typography>
+  </Box>
+);
 
 const HowItWorks = () => (
   <Box sx={{ minHeight: "100vh", bgcolor: "background.default" }}>
     <AppBarMenu />
-    <Container maxWidth="xl" sx={{ pt: 12 }}>
-      {/* Platform Overview */}
-      <Box
-        sx={{
-          maxWidth: 900,
-          mx: "auto",
-          mb: { xs: 6, md: 8 },
-          p: { xs: 2, md: 4 },
-          background: "rgba(255,255,255,0.92)",
-          borderRadius: 4,
-          boxShadow: 2,
-        }}
-      >
+    <HeroSection>
+      <Container maxWidth="lg">
+        <Typography
+          variant="h2"
+          sx={{
+            fontWeight: "bold",
+            mb: 2,
+            textShadow: "2px 2px 4px rgba(0,0,0,0.3)",
+            mt: 8,
+          }}
+        >
+          Como Funciona
+        </Typography>
         <Typography
           variant="h5"
           sx={{
-            fontWeight: 600,
-            color: "primary.main",
-            mb: 2,
-            textAlign: "center",
+            maxWidth: "800px",
+            mx: "auto",
+            textShadow: "1px 1px 2px rgba(0,0,0,0.3)",
           }}
         >
-          ApeForest - Controle de Cadastro e Monitoramento das Árvores
+          Plataforma digital para monitoramento de projetos de reflorestamento
         </Typography>
-        <Typography color="text.secondary" sx={{ mb: 2, textAlign: "center" }}>
-          Plataforma digital completa desenvolvida para gerenciar projetos de
-          reflorestamento de forma eficiente e transparente. O sistema conecta
-          agricultores, empresas e especialistas em um ambiente colaborativo
-          para o monitoramento e controle de plantios florestais.
-        </Typography>
-        <Typography color="text.secondary" sx={{ textAlign: "center" }}>
-          Ao mapear áreas de plantio, documentar espécies e monitorar o
-          desenvolvimento das plantas, garantimos transparência e dados
-          confiáveis para todos os envolvidos.
-        </Typography>
-      </Box>
-
+      </Container>
+    </HeroSection>
+    <PlatformOverview />
+    <Container maxWidth="xl" sx={{ pt: 8 }}>
       {/* User Profiles - Keeping the original structure */}
       <ScrollTriggeredSection>
         <Box
@@ -276,7 +374,7 @@ const HowItWorks = () => (
             variant="h4"
             sx={{ mb: 4, textAlign: "center", color: "primary.main" }}
           >
-            Como Funciona o Monitoramento
+            Etapas de Monitoramento
           </Typography>
 
           {/* Step 1: Project Registration */}

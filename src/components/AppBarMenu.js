@@ -89,9 +89,9 @@ const AppBarMenu = () => (
         >
           Apoie
         </NavLink>
-        <NavLink component={Link} to="/permaculture" startIcon={<InfoIcon />}>
+        {/* <NavLink component={Link} to="/permaculture" startIcon={<InfoIcon />}>
           Permacultura
-        </NavLink>
+        </NavLink> */}
         <NavLink component={Link} to="/mapa" startIcon={<MapIcon />}>
           Mapa
         </NavLink>

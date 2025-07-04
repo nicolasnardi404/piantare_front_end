@@ -26,6 +26,7 @@ import MapPage from "./pages/MapPage";
 import HowItWorks from "./pages/HowItWorks";
 import AddPlantGroupPage from "./pages/AddPlantGroupPage";
 import AddProjectPage from "./pages/AddProjectPage";
+import Footer from "./components/Footer";
 import "./App.css";
 
 // Create a theme instance with translations for user-visible text
@@ -103,7 +104,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/about" element={<About />} />
-            <Route path="/permaculture" element={<PermaculturePage />} />
+            {/* <Route path="/permaculture" element={<PermaculturePage />} /> */}
             <Route path="/mapa" element={<MapPage />} />
             <Route path="/how-it-works" element={<HowItWorks />} />
             {/* Protected routes */}
@@ -117,7 +118,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-
             {/* Map routes based on role */}
             <Route
               path="/map"
@@ -139,7 +139,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-
             <Route
               path="/users"
               element={
@@ -202,6 +201,7 @@ function App() {
             />
             <Route path="/add-project" element={<AddProjectPage />} />
           </Routes>
+          <Footer />
         </Router>
       </AuthProvider>
     </ThemeProvider>

@@ -24,46 +24,7 @@ import PublicIcon from "@mui/icons-material/Public";
 import HandshakeIcon from "@mui/icons-material/Handshake";
 import LoginIcon from "@mui/icons-material/Login";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-
-const TopBar = styled(AppBar)(({ theme }) => ({
-  background: "transparent",
-  boxShadow: "none",
-  position: "absolute",
-  top: 0,
-  zIndex: 1,
-}));
-
-const LoginButton = styled(Button)(({ theme }) => ({
-  backgroundColor: "rgba(255, 255, 255, 0.1)",
-  color: "white",
-  backdropFilter: "blur(10px)",
-  borderRadius: theme.spacing(2),
-  padding: theme.spacing(1, 3),
-  textTransform: "none",
-  fontSize: "0.9rem",
-  border: "1px solid rgba(255, 255, 255, 0.2)",
-  transition: "all 0.3s ease",
-  "&:hover": {
-    backgroundColor: "rgba(255, 255, 255, 0.2)",
-    transform: "translateY(-2px)",
-  },
-}));
-
-const BackButton = styled(Button)(({ theme }) => ({
-  backgroundColor: "rgba(255, 255, 255, 0.1)",
-  color: "white",
-  backdropFilter: "blur(10px)",
-  borderRadius: theme.spacing(2),
-  padding: theme.spacing(1, 3),
-  textTransform: "none",
-  fontSize: "0.9rem",
-  border: "1px solid rgba(255, 255, 255, 0.2)",
-  transition: "all 0.3s ease",
-  "&:hover": {
-    backgroundColor: "rgba(255, 255, 255, 0.2)",
-    transform: "translateY(-2px)",
-  },
-}));
+import AppBarMenu from "../components/AppBarMenu";
 
 const HeroSection = styled(Box)(({ theme }) => ({
   minHeight: "40vh",
@@ -143,16 +104,7 @@ const ValueIcon = styled(Avatar)(({ theme }) => ({
 const About = () => {
   return (
     <Box>
-      <TopBar>
-        <Toolbar sx={{ justifyContent: "space-between" }}>
-          <BackButton component={Link} to="/" startIcon={<ArrowBackIcon />}>
-            Voltar
-          </BackButton>
-          <LoginButton component={Link} to="/login" startIcon={<LoginIcon />}>
-            Entrar
-          </LoginButton>
-        </Toolbar>
-      </TopBar>
+      <AppBarMenu />
 
       <HeroSection>
         <Container maxWidth="lg">
