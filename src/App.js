@@ -20,6 +20,12 @@ import Profile from "./components/Profile";
 import CompanyProfile from "./components/CompanyProfile";
 import AdminPlants from "./components/AdminPlants";
 import CompanyMap from "./components/maps/CompanyMap";
+import RootMap from "./components/maps/RootMap";
+import PermaculturePage from "./pages/PermaculturePage";
+import MapPage from "./pages/MapPage";
+import HowItWorks from "./pages/HowItWorks";
+import AddPlantGroupPage from "./pages/AddPlantGroupPage";
+import AddProjectPage from "./pages/AddProjectPage";
 import "./App.css";
 
 // Create a theme instance with translations for user-visible text
@@ -97,7 +103,9 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/about" element={<About />} />
-
+            <Route path="/permaculture" element={<PermaculturePage />} />
+            <Route path="/mapa" element={<MapPage />} />
+            <Route path="/how-it-works" element={<HowItWorks />} />
             {/* Protected routes */}
             <Route
               path="/dashboard"
@@ -172,6 +180,27 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/root-map"
+              element={
+                <ProtectedRoute roles={["ADMIN", "COMPANY", "FARMER"]}>
+                  <Layout>
+                    <RootMap />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/add-plant-group/:projectId?"
+              element={
+                <ProtectedRoute roles={["FARMER"]}>
+                  <Layout>
+                    <AddPlantGroupPage />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/add-project" element={<AddProjectPage />} />
           </Routes>
         </Router>
       </AuthProvider>

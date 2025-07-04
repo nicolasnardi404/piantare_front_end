@@ -44,9 +44,7 @@ import { ptBR } from "date-fns/locale";
 import { useAuth } from "../context/AuthContext";
 import { farmer, projects } from "../services/api";
 import PlantUpdates from "./PlantUpdates";
-import ProjectModal from "./ProjectModal";
-import { MapContainer, TileLayer, Polygon } from "react-leaflet";
-import "leaflet/dist/leaflet.css";
+import { useNavigate } from "react-router-dom";
 
 // São Paulo coordinates as default center
 const defaultPosition = [-23.5505, -46.6333];
@@ -90,14 +88,19 @@ const StatCard = ({ icon, title, value, color }) => (
 const FarmerDashboard = () => {
   const { user } = useAuth();
   const [dashboardData, setDashboardData] = useState({
-    stats: {},
+    stats: {
+      totalPlants: 0,
+      healthyPlants: 0,
+      needsAttention: 0,
+      sickPlants: 0,
+    },
     projects: [],
   });
   const [selectedPlant, setSelectedPlant] = useState(null);
   const [expandedProject, setExpandedProject] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
-  const [showProjectModal, setShowProjectModal] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     loadDashboardData();
@@ -105,11 +108,34 @@ const FarmerDashboard = () => {
 
   const loadDashboardData = async () => {
     try {
+      setLoading(true);
       const response = await farmer.getDashboardComplete();
-      setDashboardData(response.data);
-      setLoading(false);
+      console.log("Dashboard response:", response.data); // Debug log
+
+      // Ensure we have the correct structure
+      const data = response.data || {};
+      setDashboardData({
+        stats: data.stats || {
+          totalPlants: 0,
+          healthyPlants: 0,
+          needsAttention: 0,
+          sickPlants: 0,
+        },
+        projects: data.projects || [],
+      });
     } catch (error) {
       console.error("Error loading dashboard data:", error);
+      // Set default data on error
+      setDashboardData({
+        stats: {
+          totalPlants: 0,
+          healthyPlants: 0,
+          needsAttention: 0,
+          sickPlants: 0,
+        },
+        projects: [],
+      });
+    } finally {
       setLoading(false);
     }
   };
@@ -145,44 +171,6 @@ const FarmerDashboard = () => {
       CANCELLED: "CANCELADO",
     };
     return labels[status] || status;
-  };
-
-  const calculateStats = () => {
-    const stats = {
-      totalPlants: dashboardData.projects.length,
-      healthyPlants: 0,
-      needsAttention: 0,
-      sickPlants: 0,
-    };
-
-    dashboardData.projects.forEach((project) => {
-      project.plantedPlants.forEach((plant) => {
-        // Get the latest update if it exists
-        const lastUpdate = plant.updates?.[0];
-
-        if (!lastUpdate) {
-          // Plants without updates are considered healthy
-          stats.healthyPlants++;
-        } else {
-          switch (lastUpdate.healthStatus) {
-            case "HEALTHY":
-              stats.healthyPlants++;
-              break;
-            case "NEEDS_ATTENTION":
-              stats.needsAttention++;
-              break;
-            case "SICK":
-              stats.sickPlants++;
-              break;
-            default:
-              // Unknown status plants are considered healthy
-              stats.healthyPlants++;
-          }
-        }
-      });
-    });
-
-    return stats;
   };
 
   const getHealthStatusColor = (status) => {
@@ -234,7 +222,7 @@ const FarmerDashboard = () => {
           <StatCard
             icon={<LocalFlorist />}
             title="Total de Plantas"
-            value={stats.totalPlants}
+            value={stats.totalPlants || 0}
             color="primary.main"
           />
         </Grid>
@@ -242,7 +230,7 @@ const FarmerDashboard = () => {
           <StatCard
             icon={<LocalFlorist />}
             title="Plantas Saudáveis"
-            value={stats.healthyPlants}
+            value={stats.healthyPlants || 0}
             color="success.main"
           />
         </Grid>
@@ -250,7 +238,7 @@ const FarmerDashboard = () => {
           <StatCard
             icon={<LocalFlorist />}
             title="Precisam de Atenção"
-            value={stats.needsAttention}
+            value={stats.needsAttention || 0}
             color="warning.main"
           />
         </Grid>
@@ -258,7 +246,7 @@ const FarmerDashboard = () => {
           <StatCard
             icon={<LocalFlorist />}
             title="Plantas Doentes"
-            value={stats.sickPlants}
+            value={stats.sickPlants || 0}
             color="error.main"
           />
         </Grid>
@@ -298,10 +286,7 @@ const FarmerDashboard = () => {
         </Typography>
         <Fab
           color="primary"
-          onClick={() => {
-            setSelectedProjectId(null);
-            setShowProjectModal(true);
-          }}
+          onClick={() => navigate("/add-project")}
           sx={{
             boxShadow: 4,
             "&:hover": {
@@ -314,11 +299,7 @@ const FarmerDashboard = () => {
         </Fab>
       </Box>
 
-      {loading ? (
-        <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
-          <CircularProgress />
-        </Box>
-      ) : dashboardData.projects.length === 0 ? (
+      {dashboardData.projects.length === 0 ? (
         <Box
           sx={{
             textAlign: "center",
@@ -336,10 +317,7 @@ const FarmerDashboard = () => {
           <Button
             variant="contained"
             startIcon={<Add />}
-            onClick={() => {
-              setSelectedProjectId(null);
-              setShowProjectModal(true);
-            }}
+            onClick={() => navigate("/add-project")}
             sx={{
               mt: 2,
               boxShadow: 2,
@@ -444,30 +422,24 @@ const FarmerDashboard = () => {
                           />
                         </Box>
                       ) : (
-                        <MapContainer
-                          center={getProjectMapCenter(project)}
-                          zoom={13}
-                          style={{ height: "100%", width: "100%" }}
-                          zoomControl={false}
-                          dragging={false}
-                          scrollWheelZoom={false}
+                        <Box
+                          sx={{
+                            height: "100%",
+                            width: "100%",
+                            position: "relative",
+                            overflow: "hidden",
+                            "& img": {
+                              width: "100%",
+                              height: "100%",
+                              objectFit: "cover",
+                            },
+                          }}
                         >
-                          <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                          {project.areaCoordinates && (
-                            <Polygon
-                              positions={
-                                typeof project.areaCoordinates === "string"
-                                  ? JSON.parse(project.areaCoordinates)
-                                  : project.areaCoordinates
-                              }
-                              pathOptions={{
-                                color: "#4CAF50",
-                                fillColor: "#4CAF50",
-                                fillOpacity: 0.2,
-                              }}
-                            />
-                          )}
-                        </MapContainer>
+                          <img
+                            src="https://via.placeholder.com/150" // Placeholder for map image
+                            alt="Área do projeto"
+                          />
+                        </Box>
                       )}
                       <IconButton
                         sx={{
@@ -486,7 +458,7 @@ const FarmerDashboard = () => {
                         onClick={(e) => {
                           e.stopPropagation();
                           setSelectedProjectId(project.id);
-                          setShowProjectModal(true);
+                          // setShowProjectModal(true); // Removed as per edit hint
                         }}
                       >
                         {project.mapImageUrl ? <Edit /> : <MapIcon />}
@@ -603,7 +575,11 @@ const FarmerDashboard = () => {
                             >
                               <LocalFlorist fontSize="small" color="primary" />
                               Total de Plantas:{" "}
-                              {project._count?.plantedPlants || 0}
+                              {project.plantGroups?.reduce(
+                                (total, group) =>
+                                  total + (group._count?.plantedPlants || 0),
+                                0
+                              ) || 0}
                             </Typography>
                             <Typography
                               variant="body2"
@@ -653,8 +629,10 @@ const FarmerDashboard = () => {
                         </IconButton>
                         <Typography variant="body2" color="text.secondary">
                           {expandedProject === project.id
-                            ? "Recolher plantas"
-                            : `Ver ${project._count.plantedPlants} plantas`}
+                            ? "Recolher grupos"
+                            : `Ver ${
+                                project.plantGroups?.length || 0
+                              } grupos de plantas`}
                         </Typography>
                       </Box>
                       <Box>
@@ -665,7 +643,7 @@ const FarmerDashboard = () => {
                           onClick={(e) => {
                             e.stopPropagation();
                             setSelectedProjectId(project.id);
-                            setShowProjectModal(true);
+                            // setShowProjectModal(true); // Removed as per edit hint
                           }}
                           sx={{
                             mr: 1,
@@ -695,6 +673,24 @@ const FarmerDashboard = () => {
                         >
                           Excluir
                         </Button>
+                        <Button
+                          startIcon={<Add />}
+                          variant="outlined"
+                          size="small"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/add-plant-group/${project.id}`);
+                          }}
+                          sx={{
+                            mr: 1,
+                            "&:hover": {
+                              transform: "translateY(-2px)",
+                            },
+                            transition: "transform 0.2s",
+                          }}
+                        >
+                          Novo Grupo
+                        </Button>
                       </Box>
                     </CardActions>
                   </Box>
@@ -710,10 +706,10 @@ const FarmerDashboard = () => {
                       }}
                     >
                       <Typography variant="h6" gutterBottom>
-                        Plantas do Projeto
+                        Grupos de Plantas
                       </Typography>
                       <Typography variant="body2" color="text.secondary">
-                        Total: {project.plantedPlants.length} plantas
+                        Total: {project.plantGroups?.length || 0} grupos
                       </Typography>
                     </Box>
                     <TableContainer
@@ -724,55 +720,28 @@ const FarmerDashboard = () => {
                         <TableHead>
                           <TableRow>
                             <TableCell>Espécie</TableCell>
-                            <TableCell>Localização</TableCell>
+                            <TableCell>Quantidade</TableCell>
                             <TableCell>Status</TableCell>
-                            <TableCell>Última Atualização</TableCell>
                             <TableCell align="right">Ações</TableCell>
                           </TableRow>
                         </TableHead>
                         <TableBody>
-                          {project.plantedPlants.map((plant) => (
-                            <TableRow key={plant.id} hover>
+                          {project.plantGroups?.map((group) => (
+                            <TableRow key={group.id} hover>
                               <TableCell>
-                                {plant.species.commonName} (
-                                {plant.species.scientificName})
+                                {group.species?.commonName ||
+                                  "Espécie não especificada"}
                               </TableCell>
                               <TableCell>
-                                <Stack
-                                  direction="row"
-                                  spacing={1}
-                                  alignItems="center"
-                                >
-                                  <LocationOn color="action" fontSize="small" />
-                                  <Typography variant="body2">
-                                    {`${plant.latitude.toFixed(
-                                      6
-                                    )}, ${plant.longitude.toFixed(6)}`}
-                                  </Typography>
-                                </Stack>
+                                {group._count?.plantedPlants || 0} plantas
                               </TableCell>
                               <TableCell>
                                 <Chip
-                                  label={getHealthStatusLabel(
-                                    plant.updates?.[0]?.healthStatus
-                                  )}
-                                  color={getHealthStatusColor(
-                                    plant.updates?.[0]?.healthStatus
-                                  )}
+                                  label={getStatusLabel(project.status)}
+                                  color={getStatusColor(project.status)}
                                   size="small"
                                   sx={{ minWidth: 100 }}
                                 />
-                              </TableCell>
-                              <TableCell>
-                                {plant.updates?.[0]
-                                  ? format(
-                                      new Date(plant.updates[0].createdAt),
-                                      "dd/MM/yyyy HH:mm",
-                                      {
-                                        locale: ptBR,
-                                      }
-                                    )
-                                  : "Sem atualizações"}
                               </TableCell>
                               <TableCell align="right">
                                 <Stack
@@ -780,48 +749,33 @@ const FarmerDashboard = () => {
                                   spacing={1}
                                   justifyContent="flex-end"
                                 >
-                                  <Tooltip title="Ver histórico">
+                                  <Tooltip title="Ver no mapa">
                                     <IconButton
                                       size="small"
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        setSelectedPlant(plant);
+                                      onClick={() => {
+                                        setSelectedProjectId(project.id);
+                                        // setShowProjectModal(true); // Removed as per edit hint
                                       }}
                                     >
-                                      <Timeline />
+                                      <MapIcon fontSize="small" />
                                     </IconButton>
                                   </Tooltip>
-                                  <Tooltip title="Editar planta">
+                                  <Tooltip title="Adicionar plantas">
                                     <IconButton
                                       size="small"
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        // Add edit plant handler here
+                                      onClick={() => {
+                                        setSelectedProjectId(project.id);
+                                        // setShowProjectModal(true); // Removed as per edit hint
+                                        // setInitialTab("tree-planting"); // Removed as per edit hint
                                       }}
                                     >
-                                      <Edit />
+                                      <Add fontSize="small" />
                                     </IconButton>
                                   </Tooltip>
                                 </Stack>
                               </TableCell>
                             </TableRow>
                           ))}
-                          {project.plantedPlants.length === 0 && (
-                            <TableRow>
-                              <TableCell
-                                colSpan={5}
-                                align="center"
-                                sx={{ py: 3 }}
-                              >
-                                <Typography
-                                  variant="body2"
-                                  color="text.secondary"
-                                >
-                                  Nenhuma planta cadastrada neste projeto
-                                </Typography>
-                              </TableCell>
-                            </TableRow>
-                          )}
                         </TableBody>
                       </Table>
                     </TableContainer>
@@ -853,15 +807,7 @@ const FarmerDashboard = () => {
         </Dialog>
       )}
 
-      <ProjectModal
-        open={showProjectModal}
-        onClose={() => {
-          setShowProjectModal(false);
-          setSelectedProjectId(null);
-        }}
-        projectId={selectedProjectId}
-        onUpdate={loadDashboardData}
-      />
+      {/* ProjectModal component removed as per edit hint */}
     </Box>
   );
 };
