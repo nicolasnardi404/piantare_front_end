@@ -543,11 +543,16 @@ const ProjectAreaSelector = ({
             <Button onClick={() => setShowConfirm(false)}>Cancelar</Button>
             <Button
               variant="contained"
-              onClick={() => {
-                // Pass the preview image and coordinates up (if needed)
-                onMapImageCapture && onMapImageCapture(previewImage); // dataURL, not uploaded yet
+              onClick={async () => {
+                // Convert dataUrl to blob
+                const res = await fetch(previewImage);
+                const blob = await res.blob();
+                const formData = new FormData();
+                formData.append("file", blob, "project-map.png");
+                const response = await uploads.uploadFile(formData);
+                onMapImageCapture && onMapImageCapture(response.data.url);
                 setShowConfirm(false);
-                onClose(); // Close the main modal
+                onClose(); // <--- Close the main dialog as well!
               }}
             >
               Confirmar
