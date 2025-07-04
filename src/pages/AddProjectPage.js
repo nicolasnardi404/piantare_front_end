@@ -18,17 +18,19 @@ import {
   Divider,
   IconButton,
   Chip,
+  useMediaQuery,
 } from "@mui/material";
 import {
   ArrowBack,
   Save,
-  Add as AddIcon,
+  Map as MapIcon,
   LocationOn,
-  Description,
   CalendarToday,
   Business,
-  Map as MapIcon,
+  Description,
+  Image as ImageIcon,
 } from "@mui/icons-material";
+import { useTheme } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 import { projects } from "../services/api";
 import { useAuth } from "../context/AuthContext";
@@ -37,6 +39,9 @@ import ProjectAreaSelector from "../components/ProjectAreaSelector";
 const AddProjectPage = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -46,24 +51,24 @@ const AddProjectPage = () => {
     name: "",
     description: "",
     status: "PLANNING",
-    startDate: new Date().toISOString().split("T")[0], // Today's date
+    startDate: new Date().toISOString().split("T")[0],
     endDate: "",
     areaCoordinates: null,
     mapImageUrl: "",
   });
 
   const handleInputChange = (field) => (event) => {
-    setFormData({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       [field]: event.target.value,
-    });
+    }));
   };
 
   const handleAreaChange = (coordinates) => {
-    setFormData({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       areaCoordinates: coordinates,
-    });
+    }));
   };
 
   const handleMapImageCapture = (imageUrl) => {
@@ -71,7 +76,6 @@ const AddProjectPage = () => {
       ...prev,
       mapImageUrl: imageUrl,
     }));
-    console.log("Image URL received from map:", imageUrl);
   };
 
   const validateForm = () => {
@@ -94,23 +98,18 @@ const AddProjectPage = () => {
       setError("Data de término deve ser posterior à data de início");
       return false;
     }
-
     return true;
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
-    if (!validateForm()) {
-      return;
-    }
+    if (!validateForm()) return;
 
     setLoading(true);
     setError("");
     setSuccess("");
 
     try {
-      // Prepare the data for submission
       const projectData = {
         name: formData.name.trim(),
         description: formData.description.trim(),
@@ -121,18 +120,10 @@ const AddProjectPage = () => {
         mapImageUrl: formData.mapImageUrl || null,
       };
 
-      console.log("Form data before submit:", formData);
-      console.log("Sending projectData:", projectData);
       const response = await projects.create(projectData);
-
       setSuccess("Projeto criado com sucesso!");
-
-      // Redirect to dashboard after a short delay
-      setTimeout(() => {
-        navigate("/dashboard");
-      }, 2000);
+      setTimeout(() => navigate("/dashboard"), 1500);
     } catch (error) {
-      console.error("Error creating project:", error);
       setError(
         error.response?.data?.error || "Erro ao criar projeto. Tente novamente."
       );
@@ -141,9 +132,7 @@ const AddProjectPage = () => {
     }
   };
 
-  const handleCancel = () => {
-    navigate("/dashboard");
-  };
+  const handleCancel = () => navigate("/dashboard");
 
   const statusOptions = [
     { value: "PLANNING", label: "Planejamento" },
@@ -154,32 +143,72 @@ const AddProjectPage = () => {
   ];
 
   return (
-    <Box sx={{ p: 3, maxWidth: 800, mx: "auto" }}>
-      {/* Header */}
-      <Paper sx={{ p: 3, mb: 3 }}>
-        <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
+    <Box
+      sx={{
+        minHeight: "100vh",
+        bgcolor: "background.default",
+        py: 4,
+        px: { xs: 1, md: 4 },
+      }}
+    >
+      <Paper
+        elevation={3}
+        sx={{
+          maxWidth: 1600, // or even 1800 for ultra-wide screens
+          mx: "auto",
+          p: { xs: 2, md: 4 },
+          borderRadius: 4,
+        }}
+      >
+        {/* Header */}
+        <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 3 }}>
           <IconButton onClick={handleCancel} color="primary">
             <ArrowBack />
           </IconButton>
           <Box>
-            <Typography variant="h4" component="h1" gutterBottom>
+            <Typography variant="h4" fontWeight={700}>
               Criar Novo Projeto
             </Typography>
-            <Typography variant="body1" color="text.secondary">
+            <Typography color="text.secondary">
               Adicione um novo projeto de plantio para gerenciar suas atividades
             </Typography>
           </Box>
         </Stack>
-      </Paper>
+        <Divider sx={{ mb: 3 }} />
 
-      {/* Form */}
-      <Paper sx={{ p: 3 }}>
-        <form onSubmit={handleSubmit}>
-          <Grid container spacing={3}>
-            {/* Project Name */}
-            <Grid item xs={12}>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: { xs: "column", md: "row" },
+            gap: 4,
+            width: "100%",
+            alignItems: "flex-start",
+            justifyContent: "center",
+          }}
+        >
+          {/* Informações do Projeto */}
+          <Box
+            sx={{
+              flex: 2, // or even 2.5 for more space
+              minWidth: 0,
+              p: 3,
+              borderRadius: 3,
+              bgcolor: "grey.50",
+              boxShadow: 0,
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            <Typography variant="h6" fontWeight={600} sx={{ mb: 2 }}>
+              Informações do Projeto
+            </Typography>
+            {/* Row 1: Name, Status */}
+            <Stack
+              direction={isMobile ? "column" : "row"}
+              spacing={2}
+              sx={{ mb: 2 }}
+            >
               <TextField
-                fullWidth
                 label="Nome do Projeto"
                 value={formData.name}
                 onChange={handleInputChange("name")}
@@ -191,32 +220,9 @@ const AddProjectPage = () => {
                   ),
                 }}
                 placeholder="Ex: Reflorestamento da Área Norte"
+                sx={{ flex: 2 }}
               />
-            </Grid>
-
-            {/* Description */}
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Descrição do Projeto"
-                value={formData.description}
-                onChange={handleInputChange("description")}
-                required
-                multiline
-                rows={4}
-                variant="outlined"
-                InputProps={{
-                  startAdornment: (
-                    <Description sx={{ mr: 1, color: "text.secondary" }} />
-                  ),
-                }}
-                placeholder="Descreva os objetivos, espécies a serem plantadas, e outras informações relevantes do projeto..."
-              />
-            </Grid>
-
-            {/* Status and Dates */}
-            <Grid item xs={12} md={6}>
-              <FormControl fullWidth required>
+              <FormControl required sx={{ flex: 1 }}>
                 <InputLabel>Status do Projeto</InputLabel>
                 <Select
                   value={formData.status}
@@ -233,170 +239,207 @@ const AddProjectPage = () => {
                   ))}
                 </Select>
               </FormControl>
-            </Grid>
-
-            <Grid item xs={12} md={6}>
+            </Stack>
+            {/* Row 2: Start Date, End Date */}
+            <Stack
+              direction="row"
+              spacing={2}
+              sx={{ mb: 2, alignItems: "center" }}
+            >
               <TextField
-                fullWidth
                 label="Data de Início"
                 type="date"
                 value={formData.startDate}
                 onChange={handleInputChange("startDate")}
                 required
                 variant="outlined"
-                InputLabelProps={{
-                  shrink: true,
-                }}
+                InputLabelProps={{ shrink: true }}
                 InputProps={{
                   startAdornment: (
                     <CalendarToday sx={{ mr: 1, color: "text.secondary" }} />
                   ),
                 }}
+                sx={{ width: 180 }}
               />
-            </Grid>
-
-            {/* End Date */}
-            <Grid item xs={12} md={6}>
               <TextField
-                fullWidth
                 label="Data de Término (Opcional)"
                 type="date"
                 value={formData.endDate}
                 onChange={handleInputChange("endDate")}
                 variant="outlined"
-                InputLabelProps={{
-                  shrink: true,
-                }}
+                InputLabelProps={{ shrink: true }}
                 InputProps={{
                   startAdornment: (
                     <CalendarToday sx={{ mr: 1, color: "text.secondary" }} />
                   ),
                 }}
+                sx={{ width: 180 }}
               />
-            </Grid>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{ ml: 2, minWidth: 200, maxWidth: 260 }}
+              >
+                Deixe em branco se o projeto ainda não tem data de conclusão
+              </Typography>
+            </Stack>
+            {/* Row 3: Description */}
+            <TextField
+              fullWidth
+              label="Descrição do Projeto"
+              value={formData.description}
+              onChange={handleInputChange("description")}
+              required
+              multiline
+              minRows={4}
+              variant="outlined"
+              InputProps={{
+                startAdornment: (
+                  <Description sx={{ mr: 1, color: "text.secondary" }} />
+                ),
+              }}
+              placeholder="Descreva os objetivos, espécies a serem plantadas, e outras informações relevantes do projeto..."
+              sx={{ mb: 2 }}
+            />
+          </Box>
 
-            {/* Area Coordinates */}
-            <Grid item xs={12}>
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="h6" gutterBottom>
-                  Área do Projeto
-                </Typography>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  sx={{ mb: 2 }}
-                >
-                  Defina a área geográfica do seu projeto usando o mapa
-                </Typography>
-                <Stack direction="row" spacing={2} alignItems="center">
-                  <Button
+          {/* Área do Projeto */}
+          <Card
+            variant="outlined"
+            sx={{
+              flex: 1,
+              minWidth: 350, // or less if you want the info card even wider
+              p: 3,
+              borderRadius: 3,
+              boxShadow: 0,
+              bgcolor: "grey.50",
+            }}
+          >
+            <Typography variant="h6" fontWeight={600} sx={{ mb: 2 }}>
+              Área do Projeto
+            </Typography>
+            <Stack spacing={2} alignItems="center">
+              <Button
+                variant="outlined"
+                onClick={() => setShowMapSelector(true)}
+                startIcon={<MapIcon />}
+                sx={{ minWidth: 180 }}
+              >
+                {formData.areaCoordinates ? "Editar Área" : "Selecionar Área"}
+              </Button>
+              <Stack direction="row" spacing={1}>
+                {formData.areaCoordinates && (
+                  <Chip
+                    label={`${formData.areaCoordinates.length} pontos`}
+                    color="success"
                     variant="outlined"
-                    onClick={() => setShowMapSelector(true)}
-                    startIcon={<MapIcon />}
-                    sx={{ minWidth: 200 }}
-                  >
-                    {formData.areaCoordinates
-                      ? "Editar Área"
-                      : "Selecionar Área"}
-                  </Button>
-                  {formData.areaCoordinates && (
-                    <Chip
-                      label={`${formData.areaCoordinates.length} pontos selecionados`}
-                      color="success"
-                      variant="outlined"
-                    />
-                  )}
-                  {formData.mapImageUrl && (
-                    <Chip
-                      label="Imagem capturada"
-                      color="primary"
-                      variant="outlined"
-                      startIcon={<LocationOn />}
-                    />
-                  )}
-                </Stack>
-              </Box>
-              <ProjectAreaSelector
-                open={showMapSelector}
-                onClose={() => setShowMapSelector(false)}
-                initialArea={formData.areaCoordinates}
-                onAreaChange={handleAreaChange}
-                onMapImageCapture={handleMapImageCapture}
-              />
-            </Grid>
-
-            {/* Error/Success Messages */}
-            {error && (
-              <Grid item xs={12}>
-                <Alert severity="error" onClose={() => setError("")}>
-                  {error}
-                </Alert>
-              </Grid>
-            )}
-
-            {success && (
-              <Grid item xs={12}>
-                <Alert severity="success" onClose={() => setSuccess("")}>
-                  {success}
-                </Alert>
-              </Grid>
-            )}
-
-            {/* Action Buttons */}
-            <Grid item xs={12}>
-              <Divider sx={{ my: 2 }} />
-              <Stack direction="row" spacing={2} justifyContent="flex-end">
-                <Button
-                  variant="outlined"
-                  onClick={handleCancel}
-                  disabled={loading}
-                  startIcon={<ArrowBack />}
-                >
-                  Cancelar
-                </Button>
-                <Button
-                  type="submit"
-                  variant="contained"
-                  disabled={loading}
-                  startIcon={
-                    loading ? <CircularProgress size={20} /> : <Save />
-                  }
-                  sx={{
-                    minWidth: 120,
-                    "&:hover": {
-                      transform: "translateY(-2px)",
-                      transition: "transform 0.2s",
-                    },
-                  }}
-                >
-                  {loading ? "Criando..." : "Criar Projeto"}
-                </Button>
+                  />
+                )}
+                {formData.mapImageUrl && (
+                  <Chip
+                    label="Imagem capturada"
+                    color="primary"
+                    variant="outlined"
+                    startIcon={<ImageIcon />}
+                  />
+                )}
               </Stack>
-            </Grid>
+              <Box
+                sx={{
+                  width: "100%",
+                  maxWidth: 320,
+                  height: 180,
+                  borderRadius: 2,
+                  overflow: "hidden",
+                  bgcolor: "#e0e0e0",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  border: "1px solid #ccc",
+                }}
+              >
+                {formData.mapImageUrl ? (
+                  <img
+                    src={formData.mapImageUrl}
+                    alt="Área do projeto"
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      borderRadius: 8,
+                    }}
+                  />
+                ) : (
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    align="center"
+                  >
+                    Nenhuma imagem capturada
+                  </Typography>
+                )}
+              </Box>
+            </Stack>
+            <ProjectAreaSelector
+              open={showMapSelector}
+              onClose={() => setShowMapSelector(false)}
+              initialArea={formData.areaCoordinates}
+              onAreaChange={handleAreaChange}
+              onMapImageCapture={handleMapImageCapture}
+            />
+          </Card>
+        </Box>
+
+        {/* Error/Success Messages */}
+        {error && (
+          <Grid item xs={12}>
+            <Alert severity="error" onClose={() => setError("")}>
+              {error}
+            </Alert>
           </Grid>
-        </form>
+        )}
+        {success && (
+          <Grid item xs={12}>
+            <Alert severity="success" onClose={() => setSuccess("")}>
+              {success}
+            </Alert>
+          </Grid>
+        )}
       </Paper>
 
-      {/* Help Card */}
-      <Card sx={{ mt: 3, bgcolor: "grey.50" }}>
-        <CardContent>
-          <Typography variant="h6" gutterBottom>
-            💡 Dicas para um bom projeto
-          </Typography>
-          <Typography variant="body2" color="text.secondary" paragraph>
-            • Use um nome descritivo que identifique claramente o projeto
-          </Typography>
-          <Typography variant="body2" color="text.secondary" paragraph>
-            • Inclua detalhes sobre as espécies que serão plantadas
-          </Typography>
-          <Typography variant="body2" color="text.secondary" paragraph>
-            • Defina datas realistas para início e término
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            • As coordenadas da área podem ser adicionadas posteriormente
-          </Typography>
-        </CardContent>
-      </Card>
+      {/* Action Buttons */}
+      <Stack
+        direction={isMobile ? "column" : "row"}
+        spacing={2}
+        justifyContent="flex-end"
+        alignItems="center"
+        sx={{ mt: 4 }}
+      >
+        <Button
+          variant="outlined"
+          onClick={handleCancel}
+          disabled={loading}
+          startIcon={<ArrowBack />}
+          sx={{ minWidth: 120 }}
+          fullWidth={isMobile}
+        >
+          Cancelar
+        </Button>
+        <Button
+          type="submit"
+          variant="contained"
+          disabled={loading}
+          startIcon={loading ? <CircularProgress size={20} /> : <Save />}
+          sx={{
+            minWidth: 160,
+            fontWeight: 700,
+            fontSize: "1.1rem",
+          }}
+          fullWidth={isMobile}
+        >
+          {loading ? "Criando..." : "Criar Projeto"}
+        </Button>
+      </Stack>
     </Box>
   );
 };
