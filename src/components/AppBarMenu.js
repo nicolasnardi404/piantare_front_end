@@ -67,7 +67,14 @@ const AppBarMenu = () => (
     }}
   >
     <Toolbar sx={{ justifyContent: "space-between", minHeight: 64 }}>
-      <Logo>
+      <Logo
+        component={Link}
+        to="/"
+        sx={{
+          cursor: "pointer",
+          textDecoration: "none",
+        }}
+      >
         {/* <img src="/images/apeforestlogo.svg" alt="ApeForest" style={{ height: 36, marginRight: 8 }} /> */}
         ApeForest
       </Logo>

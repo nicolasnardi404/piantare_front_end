@@ -365,9 +365,9 @@ const Home = () => {
     }
   };
 
-  if (loading) {
-    return <Typography>Carregando...</Typography>;
-  }
+  // if (loading) {
+  //   return <Typography>Carregando...</Typography>;
+  // }
 
   const center =
     plants.length > 0
