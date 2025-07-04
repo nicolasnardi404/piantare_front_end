@@ -14,6 +14,9 @@ import VolunteerActivismIcon from "@mui/icons-material/VolunteerActivism";
 import LoginIcon from "@mui/icons-material/Login";
 import YardIcon from "@mui/icons-material/Yard";
 import AppBarMenu from "../components/AppBarMenu";
+import MarkerClusterGroup from "@changey/react-leaflet-markercluster";
+import CountUp from "../components/CountUp";
+
 const treeIconUrl = process.env.PUBLIC_URL + "/images/color-tree-icon.svg";
 
 const Logo = styled(Box)(({ theme }) => ({
@@ -161,42 +164,53 @@ const MapPage = () => {
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
-          {plants.map((plant) => (
-            <Marker
-              key={plant.id}
-              position={[plant.latitude, plant.longitude]}
-              icon={treeIcon}
-            >
-              <Popup>
-                <Box sx={{ p: 1 }}>
-                  <Typography variant="h6" gutterBottom>
-                    {plant.species?.commonName || "Espécie não especificada"}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {plant.species?.scientificName &&
-                      `(${plant.species.scientificName})`}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Projeto: {plant.project?.name || "Não especificado"}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Agricultor:{" "}
-                    {plant.project?.farmer?.user?.name || "Não especificado"}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Data:{" "}
-                    {format(
-                      new Date(plant.createdAt || new Date()),
-                      "dd/MM/yyyy",
-                      {
-                        locale: ptBR,
-                      }
-                    )}
-                  </Typography>
-                </Box>
-              </Popup>
-            </Marker>
-          ))}
+          <MarkerClusterGroup
+            iconCreateFunction={(cluster) =>
+              L.divIcon({
+                html: `<div style="
+                  background: #388e3c;
+                  color: #fff;
+                  border-radius: 50%;
+                  width: 40px;
+                  height: 40px;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  font-size: 1.2rem;
+                  font-weight: bold;
+                  border: 3px solid #fff;
+                  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+                ">${cluster.getChildCount()}</div>`,
+                className: "custom-cluster-icon",
+                iconSize: [40, 40],
+              })
+            }
+          >
+            {plants.map((plant) => (
+              <Marker
+                key={plant.id}
+                position={[plant.latitude, plant.longitude]}
+                icon={treeIcon}
+              >
+                <Popup>
+                  <Box sx={{ p: 1 }}>
+                    <Typography variant="h6" gutterBottom>
+                      {plant.plantGroup?.species?.commonName ||
+                        "Espécie não especificada"}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {plant.plantGroup?.species?.scientificName &&
+                        `(${plant.plantGroup.species.scientificName})`}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Projeto:{" "}
+                      {plant.plantGroup?.project?.name || "Não especificado"}
+                    </Typography>
+                  </Box>
+                </Popup>
+              </Marker>
+            ))}
+          </MarkerClusterGroup>
         </MapContainer>
         <FloatingBadge>
           <YardIcon sx={{ fontSize: 32, color: "#388e3c" }} />
@@ -219,7 +233,14 @@ const MapPage = () => {
                 lineHeight: 1,
               }}
             >
-              {plants.length}
+              <CountUp
+                from={0}
+                to={plants.length}
+                separator=","
+                direction="up"
+                duration={1}
+                className="count-up-text"
+              />
             </Typography>
           </Box>
         </FloatingBadge>
