@@ -1,26 +1,26 @@
-import React, { useState, useEffect } from "react";
-import {
-  Box,
-  Typography,
-  Grid,
-  Button,
-  CircularProgress,
-  Chip,
-} from "@mui/material";
-import {
-  LocationOn,
-  PictureAsPdf,
-  Autorenew as AutorenewIcon,
-} from "@mui/icons-material";
-import { format } from "date-fns";
-import { useAuth } from "../../context/AuthContext";
-import { plantLocations, geoGpt, plantUpdates } from "../../services/api";
-import { PDFDownloadLink } from "@react-pdf/renderer";
-import CompanyReport from "../CompanyReport";
-import BaseMap from "./BaseMap";
-import { Marker, Popup, Polygon } from "react-leaflet";
-import L from "leaflet";
-import PlantDetailsModal from "./PlantDetailsModal";
+// import React, { useState, useEffect } from "react";
+// import {
+//   Box,
+//   Typography,
+//   Grid,
+//   Button,
+//   CircularProgress,
+//   Chip,
+// } from "@mui/material";
+// import {
+//   LocationOn,
+//   PictureAsPdf,
+//   Autorenew as AutorenewIcon,
+// } from "@mui/icons-material";
+// import { format } from "date-fns";
+// import { useAuth } from "../../context/AuthContext";
+// import { plantLocations, geoGpt, plantUpdates } from "../../services/api";
+// import { PDFDownloadLink } from "@react-pdf/renderer";
+// import CompanyReport from "../CompanyReport";
+// import BaseMap from "./BaseMap";
+// import { Marker, Popup, Polygon } from "react-leaflet";
+// import L from "leaflet";
+// import PlantDetailsModal from "./PlantDetailsModal";
 
 // const formatPlantCategory = (category) => {
 //   const categoryMap = {
@@ -35,8 +35,8 @@ import PlantDetailsModal from "./PlantDetailsModal";
 //     AQUATIC_OR_MARSH: "Plantas Aquáticas ou Palustres",
 //   };
 
-  return categoryMap[category] || category;
-};
+//   return categoryMap[category] || category;
+// };
 
 // const CompanyMap = () => {
 //   const { user } = useAuth();
@@ -150,157 +150,157 @@ import PlantDetailsModal from "./PlantDetailsModal";
 //     setSelectedPlant(null);
 //   };
 
-  const renderCompanyReport = () => (
-    <Box sx={{ mt: { xs: 2, md: 4 }, mb: { xs: 1, md: 2 } }}>
-      {/* Environmental Impact Analysis Section */}
-      <Box
-        sx={{
-          mb: 4,
-          background:
-            "linear-gradient(145deg, rgba(255,255,255,0.9), rgba(255,255,255,0.95))",
-          backdropFilter: "blur(10px)",
-          borderRadius: "16px",
-          boxShadow: "0 4px 24px -1px rgba(0, 0, 0, 0.1)",
-          overflow: "hidden",
-          border: "1px solid rgba(76, 175, 80, 0.1)",
-        }}
-      >
-        <Box
-          sx={{
-            p: 2,
-            borderBottom: "1px solid rgba(76, 175, 80, 0.1)",
-            background: "rgba(76, 175, 80, 0.05)",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <Typography
-            variant="h6"
-            sx={{ fontWeight: 600, color: "primary.main" }}
-          >
-            Análise de Impacto Ambiental
-          </Typography>
-          <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-            {geoAnalysis.loading && (
-              <CircularProgress size={24} color="primary" />
-            )}
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => {
-                if (companyStats.recentPlants.length > 0) {
-                  analyzeEnvironmentalImpact(companyStats.recentPlants);
-                }
-              }}
-              disabled={
-                geoAnalysis.loading || companyStats.recentPlants.length === 0
-              }
-              startIcon={<AutorenewIcon />}
-            >
-              Gerar Análise
-            </Button>
-            {geoAnalysis.data && (
-              <PDFDownloadLink
-                document={
-                  <CompanyReport
-                    companyStats={companyStats}
-                    geoAnalysis={geoAnalysis}
-                    locations={locations}
-                  />
-                }
-                fileName={`relatorio-impacto-ambiental-${format(
-                  new Date(),
-                  "dd-MM-yyyy"
-                )}.pdf`}
-              >
-                {({ loading }) => (
-                  <Button
-                    variant="contained"
-                    color="secondary"
-                    disabled={loading}
-                    startIcon={<PictureAsPdf />}
-                  >
-                    {loading ? "Gerando PDF..." : "Baixar Relatório"}
-                  </Button>
-                )}
-              </PDFDownloadLink>
-            )}
-          </Box>
-        </Box>
-        <Box sx={{ p: 3 }}>
-          {geoAnalysis.data && (
-            <Box
-              sx={{
-                p: 3,
-                background: "rgba(76, 175, 80, 0.05)",
-                borderRadius: "12px",
-              }}
-            >
-              {geoAnalysis.data.analysis
-                .split(/\[(COMPOSIÇÃO|DISTRIBUIÇÃO|CONTEXTO)\]/)
-                .map((text, index) => {
-                  if (text === "COMPOSIÇÃO") {
-                    return (
-                      <Typography
-                        key={index}
-                        variant="h6"
-                        sx={{
-                          color: "primary.main",
-                          fontWeight: 600,
-                          mt: index === 0 ? 0 : 3,
-                          mb: 2,
-                        }}
-                      >
-                        Composição e Diversidade
-                      </Typography>
-                    );
-                  }
-                  if (text === "DISTRIBUIÇÃO") {
-                    return (
-                      <Typography
-                        key={index}
-                        variant="h6"
-                        sx={{
-                          color: "primary.main",
-                          fontWeight: 600,
-                          mt: 3,
-                          mb: 2,
-                        }}
-                      >
-                        Distribuição Espacial
-                      </Typography>
-                    );
-                  }
-                  if (text === "CONTEXTO") {
-                    return (
-                      <Typography
-                        key={index}
-                        variant="h6"
-                        sx={{
-                          color: "primary.main",
-                          fontWeight: 600,
-                          mt: 3,
-                          mb: 2,
-                        }}
-                      >
-                        Contextualização Regional
-                      </Typography>
-                    );
-                  }
-                  return (
-                    <Typography key={index} sx={{ lineHeight: 1.8, mb: 2 }}>
-                      {text}
-                    </Typography>
-                  );
-                })}
-            </Box>
-          )}
-        </Box>
-      </Box>
-
-//       {/* Plants Report Section */}
+//   const renderCompanyReport = () => (
+//     <Box sx={{ mt: { xs: 2, md: 4 }, mb: { xs: 1, md: 2 } }}>
+//       {/* Environmental Impact Analysis Section */}
 //       <Box
+//         sx={{
+//           mb: 4,
+//           background:
+//             "linear-gradient(145deg, rgba(255,255,255,0.9), rgba(255,255,255,0.95))",
+//           backdropFilter: "blur(10px)",
+//           borderRadius: "16px",
+//           boxShadow: "0 4px 24px -1px rgba(0, 0, 0, 0.1)",
+//           overflow: "hidden",
+//           border: "1px solid rgba(76, 175, 80, 0.1)",
+//         }}
+//       >
+//         <Box
+//           sx={{
+//             p: 2,
+//             borderBottom: "1px solid rgba(76, 175, 80, 0.1)",
+//             background: "rgba(76, 175, 80, 0.05)",
+//             display: "flex",
+//             justifyContent: "space-between",
+//             alignItems: "center",
+//           }}
+//         >
+//           <Typography
+//             variant="h6"
+//             sx={{ fontWeight: 600, color: "primary.main" }}
+//           >
+//             Análise de Impacto Ambiental
+//           </Typography>
+//           <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
+//             {geoAnalysis.loading && (
+//               <CircularProgress size={24} color="primary" />
+//             )}
+//             <Button
+//               variant="contained"
+//               color="primary"
+//               onClick={() => {
+//                 if (companyStats.recentPlants.length > 0) {
+//                   analyzeEnvironmentalImpact(companyStats.recentPlants);
+//                 }
+//               }}
+//               disabled={
+//                 geoAnalysis.loading || companyStats.recentPlants.length === 0
+//               }
+//               startIcon={<AutorenewIcon />}
+//             >
+//               Gerar Análise
+//             </Button>
+//             {geoAnalysis.data && (
+//               <PDFDownloadLink
+//                 document={
+//                   <CompanyReport
+//                     companyStats={companyStats}
+//                     geoAnalysis={geoAnalysis}
+//                     locations={locations}
+//                   />
+//                 }
+//                 fileName={`relatorio-impacto-ambiental-${format(
+//                   new Date(),
+//                   "dd-MM-yyyy"
+//                 )}.pdf`}
+//               >
+//                 {({ loading }) => (
+//                   <Button
+//                     variant="contained"
+//                     color="secondary"
+//                     disabled={loading}
+//                     startIcon={<PictureAsPdf />}
+//                   >
+//                     {loading ? "Gerando PDF..." : "Baixar Relatório"}
+//                   </Button>
+//                 )}
+//               </PDFDownloadLink>
+//             )}
+//           </Box>
+//         </Box>
+//         <Box sx={{ p: 3 }}>
+//           {geoAnalysis.data && (
+//             <Box
+//               sx={{
+//                 p: 3,
+//                 background: "rgba(76, 175, 80, 0.05)",
+//                 borderRadius: "12px",
+//               }}
+//             >
+//               {geoAnalysis.data.analysis
+//                 .split(/\[(COMPOSIÇÃO|DISTRIBUIÇÃO|CONTEXTO)\]/)
+//                 .map((text, index) => {
+//                   if (text === "COMPOSIÇÃO") {
+//                     return (
+//                       <Typography
+//                         key={index}
+//                         variant="h6"
+//                         sx={{
+//                           color: "primary.main",
+//                           fontWeight: 600,
+//                           mt: index === 0 ? 0 : 3,
+//                           mb: 2,
+//                         }}
+//                       >
+//                         Composição e Diversidade
+//                       </Typography>
+//                     );
+//                   }
+//                   if (text === "DISTRIBUIÇÃO") {
+//                     return (
+//                       <Typography
+//                         key={index}
+//                         variant="h6"
+//                         sx={{
+//                           color: "primary.main",
+//                           fontWeight: 600,
+//                           mt: 3,
+//                           mb: 2,
+//                         }}
+//                       >
+//                         Distribuição Espacial
+//                       </Typography>
+//                     );
+//                   }
+//                   if (text === "CONTEXTO") {
+//                     return (
+//                       <Typography
+//                         key={index}
+//                         variant="h6"
+//                         sx={{
+//                           color: "primary.main",
+//                           fontWeight: 600,
+//                           mt: 3,
+//                           mb: 2,
+//                         }}
+//                       >
+//                         Contextualização Regional
+//                       </Typography>
+//                     );
+//                   }
+//                   return (
+//                     <Typography key={index} sx={{ lineHeight: 1.8, mb: 2 }}>
+//                       {text}
+//                     </Typography>
+//                   );
+//                 })}
+//             </Box>
+//           )}
+//         </Box>
+//       </Box>
+
+// //       {/* Plants Report Section */}
+// //       <Box
 //         sx={{
 //           display: "flex",
 //           justifyContent: "space-between",
@@ -536,33 +536,33 @@ import PlantDetailsModal from "./PlantDetailsModal";
 //                             </Box>
 //                           )}
 
-                          {plant.updates && plant.updates.length > 0 && (
-                            <Typography
-                              variant="caption"
-                              sx={{
-                                color: "text.secondary",
-                                display: "block",
-                                mt: 1,
-                              }}
-                            >
-                              Última atualização:{" "}
-                              {new Date(
-                                plant.updates[0].createdAt
-                              ).toLocaleDateString()}
-                            </Typography>
-                          )}
-                        </Box>
-                      </Box>
-                    </Box>
-                  ))}
-                </Box>
-              </Box>
-            </Grid>
-          )
-        )}
-      </Grid>
-    </Box>
-  );
+//                         {plant.updates && plant.updates.length > 0 && (
+//                           <Typography
+//                             variant="caption"
+//                             sx={{
+//                               color: "text.secondary",
+//                               display: "block",
+//                               mt: 1,
+//                             }}
+//                           >
+//                             Última atualização:{" "}
+//                             {new Date(
+//                               plant.updates[0].createdAt
+//                             ).toLocaleDateString()}
+//                           </Typography>
+//                         )}
+//                       </Box>
+//                     </Box>
+//                   </Box>
+//                 ))}
+//               </Box>
+//             </Box>
+//           </Grid>
+//         )
+//       )}
+//     </Grid>
+//   </Box>
+// );
 
 //   return (
 //     <Box

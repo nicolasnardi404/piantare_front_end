@@ -15,11 +15,8 @@
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.10.0",
-<<<<<<< HEAD
-=======
     "date-fns": "^4.1.0",
     "gl-matrix": "^3.4.3",
->>>>>>> new-version
     "html2canvas": "^1.4.1",
     "jwt-decode": "^4.0.0",
     "leaflet": "^1.9.4",
