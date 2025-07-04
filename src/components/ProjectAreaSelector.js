@@ -151,9 +151,11 @@ const ProjectAreaSelector = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [capturingImage, setCapturingImage] = useState(false);
+  const [previewImage, setPreviewImage] = useState(null);
+  const [showConfirm, setShowConfirm] = useState(false);
   const mapRef = useRef(null);
 
-  const handleCreated = (e) => {
+  const handleCreated = async (e) => {
     const { layer } = e;
     if (drawnItems) {
       drawnItems.clearLayers();
@@ -163,6 +165,40 @@ const ProjectAreaSelector = ({
       .getLatLngs()[0]
       .map((latLng) => [latLng.lat, latLng.lng]);
     onAreaChange(coordinates);
+
+    // Wait for the map to render
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    const mapElement = mapInstance.getContainer();
+
+    // Hide draw controls
+    const controls = mapElement.querySelectorAll(".leaflet-draw");
+    controls.forEach((ctrl) => (ctrl.style.display = "none"));
+
+    // Hide zoom controls
+    const zoomControls = mapElement.querySelectorAll(".leaflet-control-zoom");
+    zoomControls.forEach((ctrl) => (ctrl.style.display = "none"));
+
+    // Hide attribution/footer
+    const attribution = mapElement.querySelectorAll(
+      ".leaflet-control-attribution"
+    );
+    attribution.forEach((ctrl) => (ctrl.style.display = "none"));
+
+    const canvas = await html2canvas(mapElement, {
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: null,
+      scale: 2,
+    });
+
+    // Restore draw controls
+    controls.forEach((ctrl) => (ctrl.style.display = ""));
+    zoomControls.forEach((ctrl) => (ctrl.style.display = ""));
+    attribution.forEach((ctrl) => (ctrl.style.display = ""));
+
+    const dataUrl = canvas.toDataURL("image/png");
+    setPreviewImage(dataUrl);
+    setShowConfirm(true);
   };
 
   const handleEdited = (e) => {
@@ -378,7 +414,15 @@ const ProjectAreaSelector = ({
         </Box>
 
         {/* Map Container */}
-        <Box sx={{ flexGrow: 1, position: "relative" }}>
+        <Box
+          sx={{
+            width: 400, // or 500, or any size you want
+            height: 400,
+            mx: "auto",
+            my: 2,
+            position: "relative",
+          }}
+        >
           <MapContainer
             ref={mapRef}
             center={defaultPosition}
@@ -399,7 +443,6 @@ const ProjectAreaSelector = ({
               <EditControl
                 position="topright"
                 onCreated={handleCreated}
-                onEdited={handleEdited}
                 onDeleted={handleDeleted}
                 onDrawStart={handleDrawStart}
                 draw={{
@@ -422,9 +465,8 @@ const ProjectAreaSelector = ({
                   },
                 }}
                 edit={{
-                  featureGroup: drawnItems,
+                  edit: false,
                   remove: true,
-                  edit: true,
                 }}
               />
             </FeatureGroup>
@@ -461,37 +503,22 @@ const ProjectAreaSelector = ({
             alignItems="center"
           >
             <Stack direction="row" spacing={1}>
-              <Button
-                variant="outlined"
-                onClick={handleClearArea}
-                startIcon={<Clear />}
-              >
-                Limpar Área
-              </Button>
-              <Button
-                variant="outlined"
-                onClick={handleCaptureImage}
-                disabled={capturingImage}
-                startIcon={
-                  capturingImage ? (
-                    <CircularProgress size={16} />
-                  ) : (
-                    <CameraAlt />
-                  )
-                }
-              >
-                {capturingImage ? "Capturando..." : "Capturar Imagem"}
-              </Button>
-            </Stack>
-
-            <Stack direction="row" spacing={1}>
               <Button variant="outlined" onClick={onClose}>
                 Cancelar
               </Button>
               <Button
                 variant="contained"
-                onClick={onClose}
-                startIcon={<Check />}
+                onClick={async () => {
+                  // Convert dataUrl to blob
+                  const res = await fetch(previewImage);
+                  const blob = await res.blob();
+                  const formData = new FormData();
+                  formData.append("file", blob, "project-map.png");
+                  const response = await uploads.uploadFile(formData);
+                  onMapImageCapture && onMapImageCapture(response.data.url);
+                  setShowConfirm(false);
+                  onClose(); // <--- Close the main dialog as well!
+                }}
               >
                 Confirmar
               </Button>
@@ -499,6 +526,35 @@ const ProjectAreaSelector = ({
           </Stack>
         </Box>
       </DialogContent>
+      {showConfirm && (
+        <Dialog open={showConfirm} onClose={() => setShowConfirm(false)}>
+          <DialogTitle>Confirme a Imagem da Área</DialogTitle>
+          <DialogContent>
+            <img
+              src={previewImage}
+              alt="Preview da área"
+              style={{ width: "100%", borderRadius: 8 }}
+            />
+            <Typography variant="body2" sx={{ mt: 2 }}>
+              Esta é a imagem que será salva no banco de dados.
+            </Typography>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setShowConfirm(false)}>Cancelar</Button>
+            <Button
+              variant="contained"
+              onClick={() => {
+                // Pass the preview image and coordinates up (if needed)
+                onMapImageCapture && onMapImageCapture(previewImage); // dataURL, not uploaded yet
+                setShowConfirm(false);
+                onClose(); // Close the main modal
+              }}
+            >
+              Confirmar
+            </Button>
+          </DialogActions>
+        </Dialog>
+      )}
     </Dialog>
   );
 };
