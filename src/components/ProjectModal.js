@@ -61,26 +61,45 @@ const getMapCenter = (coordinates) => {
 
 const ProjectModal = ({ open, onClose, projectId, onUpdate, initialTab }) => {
   const [project, setProject] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [editedProject, setEditedProject] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [editedProject, setEditedProject] = useState({
+    name: "",
+    description: "",
+    status: "PLANNING",
+    startDate: null,
+    endDate: null,
+    areaCoordinates: null,
+  });
   const [error, setError] = useState(null);
   const [capturedMap, setCapturedMap] = useState(null);
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const [activeTab, setActiveTab] = useState("details");
 
+  // Reset state when modal opens/closes
   useEffect(() => {
-    if (projectId) {
-      fetchProjectDetails();
+    if (open) {
+      if (projectId) {
+        // Editing existing project
+        setLoading(true);
+        fetchProjectDetails();
+      } else {
+        // Creating new project
+        setProject(null);
+        setEditedProject({
+          name: "",
+          description: "",
+          status: "PLANNING",
+          startDate: null,
+          endDate: null,
+          areaCoordinates: null,
+        });
+        setError(null);
+        setCapturedMap(null);
+        setActiveTab(initialTab || "details");
+      }
     }
-  }, [projectId]);
-
-  useEffect(() => {
-    // Set the initial tab when the modal opens
-    if (open && initialTab) {
-      setActiveTab(initialTab);
-    }
-  }, [open, initialTab]);
+  }, [open, projectId, initialTab]);
 
   const fetchProjectDetails = async () => {
     try {
@@ -179,6 +198,15 @@ const ProjectModal = ({ open, onClose, projectId, onUpdate, initialTab }) => {
   const handleSave = async () => {
     try {
       setLoading(true);
+      setError(null);
+
+      // Validate required fields
+      if (!editedProject.name.trim()) {
+        setError("Por favor, insira o nome do projeto");
+        setLoading(false);
+        return;
+      }
+
       if (!editedProject.areaCoordinates) {
         setError("Por favor, defina a área do projeto no mapa");
         setLoading(false);
@@ -212,8 +240,8 @@ const ProjectModal = ({ open, onClose, projectId, onUpdate, initialTab }) => {
 
       // Create project data
       const projectData = {
-        name: editedProject.name,
-        description: editedProject.description,
+        name: editedProject.name.trim(),
+        description: editedProject.description.trim(),
         status: editedProject.status,
         startDate: editedProject.startDate,
         endDate: editedProject.endDate,
@@ -231,6 +259,7 @@ const ProjectModal = ({ open, onClose, projectId, onUpdate, initialTab }) => {
         await projects.create(projectData);
         console.log("Project created successfully");
       }
+
       onUpdate?.();
       onClose();
     } catch (error) {
@@ -285,7 +314,7 @@ const ProjectModal = ({ open, onClose, projectId, onUpdate, initialTab }) => {
         },
       }}
     >
-      <DialogTitle>{projectId ? "Project Details" : "New Project"}</DialogTitle>
+      <DialogTitle>{projectId ? "Editar Projeto" : "Novo Projeto"}</DialogTitle>
 
       <DialogContent dividers>
         {loading ? (
@@ -293,10 +322,12 @@ const ProjectModal = ({ open, onClose, projectId, onUpdate, initialTab }) => {
             <CircularProgress />
           </Box>
         ) : error ? (
-          <Alert severity="error">{error}</Alert>
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {error}
+          </Alert>
         ) : (
           <>
-            {!project && (
+            {!projectId && (
               <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 2 }}>
                 <Tabs
                   value={activeTab}
@@ -319,16 +350,31 @@ const ProjectModal = ({ open, onClose, projectId, onUpdate, initialTab }) => {
               </Box>
             )}
 
-            {project && activeTab === "details" && (
+            {activeTab === "details" && (
               <Box>
                 <Grid container spacing={2}>
+                  <Grid item xs={12}>
+                    <TextField
+                      fullWidth
+                      label="Nome do Projeto"
+                      value={editedProject.name}
+                      onChange={(e) =>
+                        setEditedProject({
+                          ...editedProject,
+                          name: e.target.value,
+                        })
+                      }
+                      required
+                    />
+                  </Grid>
+
                   <Grid item xs={12}>
                     <TextField
                       fullWidth
                       multiline
                       rows={3}
                       label="Descrição"
-                      value={project?.description || ""}
+                      value={editedProject.description}
                       onChange={(e) =>
                         setEditedProject({
                           ...editedProject,
@@ -339,17 +385,34 @@ const ProjectModal = ({ open, onClose, projectId, onUpdate, initialTab }) => {
                   </Grid>
 
                   <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      select
+                      label="Status"
+                      value={editedProject.status}
+                      onChange={(e) =>
+                        setEditedProject({
+                          ...editedProject,
+                          status: e.target.value,
+                        })
+                      }
+                    >
+                      {statusOptions.map((option) => (
+                        <MenuItem key={option.value} value={option.value}>
+                          {option.label}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+                  </Grid>
+
+                  <Grid item xs={12} sm={6}>
                     <LocalizationProvider
                       dateAdapter={AdapterDateFns}
                       adapterLocale={ptBR}
                     >
                       <DatePicker
                         label="Data de Início"
-                        value={
-                          project?.startDate
-                            ? new Date(project.startDate)
-                            : null
-                        }
+                        value={editedProject.startDate}
                         onChange={(newValue) =>
                           setEditedProject({
                             ...editedProject,
@@ -368,9 +431,7 @@ const ProjectModal = ({ open, onClose, projectId, onUpdate, initialTab }) => {
                     >
                       <DatePicker
                         label="Data de Término"
-                        value={
-                          project?.endDate ? new Date(project.endDate) : null
-                        }
+                        value={editedProject.endDate}
                         onChange={(newValue) =>
                           setEditedProject({
                             ...editedProject,
@@ -378,11 +439,7 @@ const ProjectModal = ({ open, onClose, projectId, onUpdate, initialTab }) => {
                           })
                         }
                         slotProps={{ textField: { fullWidth: true } }}
-                        minDate={
-                          project?.startDate
-                            ? new Date(project.startDate)
-                            : null
-                        }
+                        minDate={editedProject.startDate}
                       />
                     </LocalizationProvider>
                   </Grid>
@@ -397,7 +454,7 @@ const ProjectModal = ({ open, onClose, projectId, onUpdate, initialTab }) => {
                       }}
                     >
                       <Typography variant="subtitle2" color="text.secondary">
-                        Área do Projeto
+                        Área do Projeto *
                       </Typography>
                     </Box>
 
@@ -433,98 +490,45 @@ const ProjectModal = ({ open, onClose, projectId, onUpdate, initialTab }) => {
                       </Box>
                     )}
 
-                    {/* Original map box */}
+                    {/* Map for area selection */}
                     <Box
                       ref={mapRef}
                       sx={{
-                        height: 500,
+                        height: 400,
                         width: "100%",
-                        aspectRatio: "1/1",
-                        maxWidth: 500,
-                        margin: "0 auto",
                         borderRadius: 2,
                         overflow: "hidden",
                         border: "1px solid",
                         borderColor: "divider",
                       }}
                     >
-                      {project?.areaCoordinates ? (
-                        <MapContainer
-                          center={getMapCenter(project.areaCoordinates)}
-                          zoom={13}
-                          style={{ height: "100%", width: "100%" }}
-                          zoomControl={true}
-                          dragging={true}
-                          scrollWheelZoom={true}
-                          ref={mapInstanceRef}
-                        >
-                          <TileLayer
-                            url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-                            maxZoom={19}
-                          />
-                          <Polygon
-                            positions={
-                              typeof project.areaCoordinates === "string"
-                                ? JSON.parse(project.areaCoordinates)
-                                : project.areaCoordinates
-                            }
-                            pathOptions={{
-                              color: "#4CAF50",
-                              fillColor: "#4CAF50",
-                              fillOpacity: 0.2,
-                            }}
-                          />
-                        </MapContainer>
-                      ) : (
-                        <Box
-                          sx={{
-                            height: "100%",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            bgcolor: "action.hover",
-                          }}
-                        >
-                          <Typography color="text.secondary">
-                            Nenhuma área definida
-                          </Typography>
-                        </Box>
-                      )}
+                      <ProjectAreaMap
+                        initialArea={editedProject.areaCoordinates}
+                        onChange={handleAreaChange}
+                        onMapInstance={handleMapInstance}
+                      />
                     </Box>
                   </Grid>
-
-                  {!project && (
-                    <Grid item xs={12}>
-                      <Typography
-                        variant="subtitle2"
-                        color="text.secondary"
-                        gutterBottom
-                      >
-                        Plantas no Projeto
-                      </Typography>
-                      <Typography variant="h6">
-                        {project?._count?.locations || 0} plantas
-                      </Typography>
-                    </Grid>
-                  )}
                 </Grid>
-
-                <Typography variant="h6" sx={{ mt: 3, mb: 2 }}>
-                  Project Area
-                </Typography>
-                <Box ref={mapRef} sx={{ height: 400, width: "100%" }}>
-                  <ProjectAreaMap
-                    coordinates={project.areaCoordinates}
-                    onMapInstance={handleMapInstance}
-                  />
-                </Box>
               </Box>
             )}
 
-            {!project && project && activeTab === "tree-planting" && (
+            {!projectId && activeTab === "tree-planting" && (
+              <Box>
+                <Typography variant="h6" sx={{ mb: 2 }}>
+                  Plantio de Árvores
+                </Typography>
+                <Typography color="text.secondary" sx={{ mb: 3 }}>
+                  Primeiro salve o projeto para poder adicionar grupos de
+                  plantas.
+                </Typography>
+              </Box>
+            )}
+
+            {projectId && activeTab === "tree-planting" && (
               <Box>
                 <TreePlanting
-                  projectId={project.id}
+                  projectId={projectId}
                   mapRef={mapInstanceRef}
                   onPlantingComplete={() => {
                     // Optionally refresh project data
@@ -538,28 +542,22 @@ const ProjectModal = ({ open, onClose, projectId, onUpdate, initialTab }) => {
       </DialogContent>
 
       <DialogActions sx={{ p: 2 }}>
-        {!project && (
-          <Button onClick={onClose} color="primary">
-            Close
-          </Button>
-        )}
-        {!project && project && (
-          <Button
-            startIcon={<EditIcon />}
-            onClick={() => setActiveTab("details")}
-            color="primary"
-          >
-            Edit
-          </Button>
-        )}
-        {!project && project && (
+        <Button onClick={onClose} color="inherit">
+          Cancelar
+        </Button>
+        {activeTab === "details" && (
           <Button
             onClick={handleSave}
             color="primary"
             variant="contained"
             disabled={loading}
+            startIcon={loading ? <CircularProgress size={20} /> : <SaveIcon />}
           >
-            {loading ? "Saving..." : "Save"}
+            {loading
+              ? "Salvando..."
+              : projectId
+              ? "Atualizar"
+              : "Criar Projeto"}
           </Button>
         )}
       </DialogActions>

@@ -25,6 +25,7 @@ import PermaculturePage from "./pages/PermaculturePage";
 import MapPage from "./pages/MapPage";
 import HowItWorks from "./pages/HowItWorks";
 import AddPlantGroupPage from "./pages/AddPlantGroupPage";
+import AddProjectPage from "./pages/AddProjectPage";
 import "./App.css";
 
 // Create a theme instance with translations for user-visible text
@@ -199,6 +200,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route path="/add-project" element={<AddProjectPage />} />
           </Routes>
         </Router>
       </AuthProvider>
