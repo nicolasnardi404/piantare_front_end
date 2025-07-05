@@ -51,6 +51,31 @@ import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import ProcessSection from "../components/ProcessSection";
 import ScrollTriggeredSection from "../components/ScrollTriggeredSection";
 import { styled } from "@mui/material/styles";
+import StepConnector, {
+  stepConnectorClasses,
+} from "@mui/material/StepConnector";
+import { ReactComponent as FarmerIcon } from "../assets/farmer-icon-white.svg";
+import ConnectWithoutContactIcon from "@mui/icons-material/ConnectWithoutContact";
+import ParkIcon from "@mui/icons-material/Park";
+
+const steps = [
+  {
+    label: "Cadastro do Projeto",
+    icon: <MapIcon sx={{ fontSize: 28 }} color="inherit" />,
+  },
+  {
+    label: "Coleta de Dados Biométricos",
+    icon: <StraightenIcon sx={{ fontSize: 28 }} color="inherit" />,
+  },
+  {
+    label: "Estratégia de Amostragem",
+    icon: <TimelineIcon sx={{ fontSize: 28 }} color="inherit" />,
+  },
+  {
+    label: "Documentação e Relatórios",
+    icon: <PhotoCameraIcon sx={{ fontSize: 28 }} color="inherit" />,
+  },
+];
 
 const HeroSection = styled(Box)(({ theme }) => ({
   minHeight: "40vh",
@@ -159,6 +184,25 @@ const PlatformOverview = () => (
   </Box>
 );
 
+const AnimatedConnector = styled(StepConnector)(({ theme }) => ({
+  [`&.${stepConnectorClasses.alternativeLabel}`]: {
+    top: 22,
+  },
+  [`& .${stepConnectorClasses.line}`]: {
+    height: 3,
+    border: 0,
+    background: `
+      linear-gradient(90deg, ${theme.palette.primary.light} 25%, ${theme.palette.primary.main} 50%, ${theme.palette.primary.light} 75%)
+    `,
+    backgroundSize: "200% 100%",
+    animation: "moveLine 2s linear infinite",
+  },
+  "@keyframes moveLine": {
+    "0%": { backgroundPosition: "200% 0" },
+    "100%": { backgroundPosition: "-200% 0" },
+  },
+}));
+
 const HowItWorks = () => (
   <Box sx={{ minHeight: "100vh", bgcolor: "background.default" }}>
     <AppBarMenu />
@@ -187,6 +231,200 @@ const HowItWorks = () => (
         </Typography>
       </Container>
     </HeroSection>
+    <Box
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        my: 4,
+      }}
+    >
+      <Box
+        sx={{
+          width: { xs: "100%", md: "50%" },
+          display: "flex",
+          alignItems: "flex-start",
+          justifyContent: "center",
+        }}
+      >
+        {/* Company */}
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <Box
+            sx={{
+              bgcolor: "primary.main",
+              color: "white",
+              borderRadius: "50%",
+              width: 56,
+              height: 56,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              boxShadow: 2,
+              fontSize: 32,
+            }}
+          >
+            <BusinessIcon sx={{ fontSize: 32 }} />
+          </Box>
+          <Typography variant="caption" sx={{ mt: 1, textAlign: "center" }}>
+            Empresa
+          </Typography>
+        </Box>
+
+        {/* Animated Line */}
+        <Box
+          sx={{
+            mx: 1.5,
+            flex: 1,
+            height: 4,
+            minWidth: 24,
+            background: (t) =>
+              `linear-gradient(90deg, ${t.palette.primary.light} 25%, ${t.palette.primary.main} 50%, ${t.palette.primary.light} 75%)`,
+            backgroundSize: "200% 100%",
+            animation: "moveLine 2s linear infinite",
+            borderRadius: 2,
+            "@keyframes moveLine": {
+              "0%": { backgroundPosition: "200% 0" },
+              "100%": { backgroundPosition: "-200% 0" },
+            },
+            alignSelf: "center",
+          }}
+        />
+
+        {/* Connection */}
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <Box
+            sx={{
+              bgcolor: "primary.main",
+              color: "white",
+              borderRadius: "50%",
+              width: 56,
+              height: 56,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              boxShadow: 2,
+              fontSize: 32,
+            }}
+          >
+            <ConnectWithoutContactIcon sx={{ fontSize: 32 }} />
+          </Box>
+          <Typography variant="caption" sx={{ mt: 1, textAlign: "center" }}>
+            ApeForest
+          </Typography>
+        </Box>
+
+        {/* Animated Line */}
+        <Box
+          sx={{
+            mx: 1.5,
+            flex: 1,
+            height: 4,
+            minWidth: 24,
+            background: (t) =>
+              `linear-gradient(90deg, ${t.palette.primary.light} 25%, ${t.palette.primary.main} 50%, ${t.palette.primary.light} 75%)`,
+            backgroundSize: "200% 100%",
+            animation: "moveLine 2s linear infinite",
+            borderRadius: 2,
+            "@keyframes moveLine": {
+              "0%": { backgroundPosition: "200% 0" },
+              "100%": { backgroundPosition: "-200% 0" },
+            },
+            alignSelf: "center",
+          }}
+        />
+
+        {/* Farmer */}
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <Box
+            sx={{
+              bgcolor: "primary.main",
+              color: "white",
+              borderRadius: "50%",
+              width: 56,
+              height: 56,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              boxShadow: 2,
+              fontSize: 32,
+              overflow: "hidden",
+            }}
+          >
+            <FarmerIcon style={{ width: 32, height: 32, display: "block" }} />
+          </Box>
+          <Typography variant="caption" sx={{ mt: 1, textAlign: "center" }}>
+            Fazenda
+          </Typography>
+        </Box>
+
+        {/* Animated Line */}
+        <Box
+          sx={{
+            mx: 1.5,
+            flex: 1,
+            height: 4,
+            minWidth: 24,
+            background: (t) =>
+              `linear-gradient(90deg, ${t.palette.primary.light} 25%, ${t.palette.primary.main} 50%, ${t.palette.primary.light} 75%)`,
+            backgroundSize: "200% 100%",
+            animation: "moveLine 2s linear infinite",
+            borderRadius: 2,
+            "@keyframes moveLine": {
+              "0%": { backgroundPosition: "200% 0" },
+              "100%": { backgroundPosition: "-200% 0" },
+            },
+            alignSelf: "center",
+          }}
+        />
+
+        {/* Trees */}
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <Box
+            sx={{
+              bgcolor: "primary.main",
+              color: "white",
+              borderRadius: "50%",
+              width: 56,
+              height: 56,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              boxShadow: 2,
+              fontSize: 32,
+            }}
+          >
+            <ParkIcon sx={{ fontSize: 32 }} />
+          </Box>
+          <Typography variant="caption" sx={{ mt: 1, textAlign: "center" }}>
+            Árvores
+          </Typography>
+        </Box>
+      </Box>
+    </Box>
     <PlatformOverview />
     <Container maxWidth="xl" sx={{ pt: 8 }}>
       {/* User Profiles - Keeping the original structure */}
@@ -358,6 +596,38 @@ const HowItWorks = () => (
 
       {/* Detailed Monitoring Process */}
       <ScrollTriggeredSection>
+        <Box sx={{ maxWidth: 900, mx: "auto", mt: 8, mb: 4 }}>
+          <Stepper alternativeLabel connector={<AnimatedConnector />}>
+            {steps.map((step, index) => (
+              <Step key={step.label}>
+                <StepLabel
+                  icon={
+                    <Box
+                      sx={{
+                        bgcolor: "primary.main",
+                        color: "white",
+                        borderRadius: "50%",
+                        width: 40,
+                        height: 40,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        boxShadow: 2,
+                        mb: 1,
+                      }}
+                    >
+                      {step.icon}
+                    </Box>
+                  }
+                >
+                  <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                    {step.label}
+                  </Typography>
+                </StepLabel>
+              </Step>
+            ))}
+          </Stepper>
+        </Box>
         <Box
           sx={{
             maxWidth: 1000,

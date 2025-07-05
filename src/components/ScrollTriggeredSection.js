@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Fade } from "@mui/material";
 
-function ScrollTriggeredSection({ children, threshold = 0.3 }) {
+function ScrollTriggeredSection({ children, threshold = 0.1 }) {
   const [isVisible, setIsVisible] = useState(false);
   const [element, setElement] = useState(null);
 
