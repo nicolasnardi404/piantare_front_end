@@ -88,3 +88,17 @@ form button {
 form button:hover {
   background-color: #45a049;
 }
+
+@keyframes slowZoom {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(2);
+  }
+}
+
+.slow-zoom-bg {
+  animation: slowZoom 60s linear infinite alternate;
+  will-change: transform;
+}

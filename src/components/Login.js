@@ -51,6 +51,7 @@ const Login = () => {
     >
       {/* Cerebro Planta background image */}
       <div
+        className="slow-zoom-bg"
         style={{
           position: "fixed",
           inset: 0,
