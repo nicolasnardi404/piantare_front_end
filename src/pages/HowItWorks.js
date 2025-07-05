@@ -594,6 +594,61 @@ const HowItWorks = () => (
         </Box>
       </ScrollTriggeredSection>
 
+      {/* Metodologia Centrada no Agricultor */}
+      <ScrollTriggeredSection>
+        <Box
+          sx={{
+            maxWidth: 900,
+            mx: "auto",
+            my: { xs: 4, md: 6 },
+            p: { xs: 3, md: 5 },
+            background:
+              "linear-gradient(120deg, rgba(255,255,255,0.95) 60%, rgba(200,230,201,0.15) 100%)",
+            borderLeft: "8px solid #388e3c",
+            boxShadow: "0 2px 24px 0 rgba(56,142,60,0.08)",
+            borderRadius: 4,
+            position: "relative",
+            overflow: "hidden",
+          }}
+        >
+          <Typography
+            variant="h4"
+            sx={{
+              color: "primary.main",
+              fontWeight: 700,
+              mb: 2,
+              letterSpacing: "-0.5px",
+              zIndex: 1,
+              position: "relative",
+            }}
+          >
+            Metodologia Centrada no Agricultor
+          </Typography>
+          <Typography
+            color="text.secondary"
+            sx={{
+              fontSize: { xs: "1.1rem", md: "1.2rem" },
+              zIndex: 1,
+              position: "relative",
+            }}
+          >
+            Nossa abordagem respeita o conhecimento, o tempo e a realidade de
+            cada agricultor. Ao invés de impor processos, adaptamos a
+            metodologia para que se encaixe no dia a dia do campo, facilitando o
+            registro, o monitoramento e a conexão com investidores.
+            <br />
+            <br />
+            Assim, o agricultor mantém o protagonismo, desenvolve seus próprios
+            projetos e recebe apoio para transformar sua terra em floresta, com
+            autonomia e valorização do seu trabalho.
+            <br />
+            <br />
+            Reconhecemos que desenvolver e cuidar de uma floresta biodiversa é
+            um grande empenho por si só, e valorizamos cada passo dessa jornada.
+          </Typography>
+        </Box>
+      </ScrollTriggeredSection>
+
       {/* Detailed Monitoring Process */}
       <ScrollTriggeredSection>
         <Box sx={{ maxWidth: 900, mx: "auto", mt: 8, mb: 4 }}>
