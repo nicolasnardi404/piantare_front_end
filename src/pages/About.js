@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import {
   Box,
   Container,
@@ -25,6 +25,9 @@ import HandshakeIcon from "@mui/icons-material/Handshake";
 import LoginIcon from "@mui/icons-material/Login";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import AppBarMenu from "../components/AppBarMenu";
+import Globe from "../components/Globe";
+
+let currentPhi = 0;
 
 const HeroSection = styled(Box)(({ theme }) => ({
   minHeight: "40vh",
@@ -36,6 +39,7 @@ const HeroSection = styled(Box)(({ theme }) => ({
   position: "relative",
   color: "white",
   overflow: "hidden",
+  marginBottom: "-50px",
   "&::before": {
     content: '""',
     position: "absolute",
@@ -105,7 +109,6 @@ const About = () => {
   return (
     <Box>
       <AppBarMenu />
-
       <HeroSection>
         <Container maxWidth="lg">
           <Typography
@@ -117,7 +120,7 @@ const About = () => {
               mt: 8,
             }}
           >
-            Sobre o Piantare
+            Sobre o ApeForest
           </Typography>
           <Typography
             variant="h5"
@@ -132,7 +135,25 @@ const About = () => {
         </Container>
       </HeroSection>
 
-      <Container maxWidth="lg" sx={{ py: 8 }}>
+      <Box
+        sx={{
+          height: "100vh",
+          width: "100vw",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+
+          top: 0,
+          left: 0,
+          m: 0,
+          p: 0,
+          zIndex: 10, // optional, for overlay
+        }}
+      >
+        <Globe />
+      </Box>
+
+      <Container maxWidth="lg" sx={{ py: 8, mt: -10 }}>
         <Grid container spacing={4} justifyContent="center">
           <Grid item xs={12} md={8}>
             <ContentCard>
@@ -149,7 +170,7 @@ const About = () => {
                   paragraph
                   sx={{ maxWidth: "800px", mx: "auto", mb: 3 }}
                 >
-                  O Piantare nasceu da necessidade de criar uma ponte entre
+                  O ApeForest nasceu da necessidade de criar uma ponte entre
                   agricultores comprometidos com a biodiversidade e empresas que
                   desejam apoiar iniciativas sustentáveis. Nossa plataforma
                   facilita essa conexão, promovendo o plantio consciente e a
@@ -245,14 +266,14 @@ const About = () => {
                   spacing={2}
                   sx={{ mt: 4, maxWidth: "300px", mx: "auto" }}
                 >
-                  <IconLink href="mailto:contato@piantare.com" target="_blank">
-                    <EmailIcon /> contato@piantare.com
+                  <IconLink href="mailto:contato@apeforest.com" target="_blank">
+                    <EmailIcon /> contato@apeforest.com
                   </IconLink>
                   <IconLink href="https://wa.me/5511999999999" target="_blank">
                     <WhatsAppIcon /> +55 (11) 99999-9999
                   </IconLink>
                   <IconLink
-                    href="https://instagram.com/piantare"
+                    href="https://instagram.com/apeforest"
                     target="_blank"
                   >
                     <InstagramIcon /> Instagram
