@@ -24,14 +24,14 @@ function Globe() {
       devicePixelRatio: 2,
       width: 600,
       height: 600,
-      phi: 0,
-      theta: 0.3,
+      phi: Math.PI / 2, // 90 degrees to the right
+      theta: 0.0, // tilt downward
       dark: 0,
       diffuse: 0.4,
       mapSamples: 16000,
       mapBrightness: 1.2,
       baseColor: [1, 1, 1],
-      markerColor: [251 / 255, 100 / 255, 21 / 255],
+      markerColor: [76 / 255, 175 / 255, 80 / 255],
       glowColor: [1, 1, 1],
       markers,
       onRender: (state) => {
