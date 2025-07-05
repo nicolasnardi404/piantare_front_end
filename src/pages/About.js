@@ -115,7 +115,6 @@ const About = () => {
             variant="h2"
             sx={{
               fontWeight: "bold",
-              mb: 2,
               textShadow: "2px 2px 4px rgba(0,0,0,0.3)",
               mt: 8,
             }}
@@ -135,7 +134,7 @@ const About = () => {
         </Container>
       </HeroSection>
 
-      <Box
+      {/* <Box
         sx={{
           height: "100vh",
           width: "100vw",
@@ -151,9 +150,9 @@ const About = () => {
         }}
       >
         <Globe />
-      </Box>
+      </Box> */}
 
-      <Container maxWidth="lg" sx={{ py: 8, mt: -10 }}>
+      <Container maxWidth="lg" sx={{ py: 8, mt: 5 }}>
         <Grid container spacing={4} justifyContent="center">
           <Grid item xs={12} md={8}>
             <ContentCard>
