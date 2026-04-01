@@ -1,0 +1,28 @@
+{
+  "hero": {
+    "title": "Plant A Forest",
+    "altText": "Marketplace hero background"
+  },
+  "featuredProject": {
+    "title": "Pilot Project: Tekoá Kuaray Rese",
+    "description": "Windbreak forest for agroecological protection. The planting of a windbreak forest aims to create a natural protection barrier for food crops in the area. In regions like Osório (RS), this strategy is essential for agricultural, ecological, and climate resilience.",
+    "badges": {
+      "trees": "trees",
+      "species": "species",
+      "status": "Planning"
+    },
+    "location": {
+      "name": "Tekoá Kuaray Rese",
+      "address": "Osório, Brazil"
+    }
+  },
+  "contactCard": {
+    "title": "Want to Sponsor This Project?",
+    "description": "Have questions or interested in supporting our reforestation efforts? We'd love to hear from you.",
+    "email": "info@apeforest.net"
+  },
+  "productCard": {
+    "available": "available",
+    "co2PerTree": "CO2"
+  }
+}

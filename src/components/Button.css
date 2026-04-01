@@ -1,0 +1,90 @@
+/* Base Button Styles */
+.button {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  font-family: var(--font-primary);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  letter-spacing: 0.01em;
+  border: 2px solid;
+  -webkit-tap-highlight-color: transparent;
+  display: inline-block;
+  text-align: center;
+  text-decoration: none;
+}
+
+/* Remove default link colors */
+.button:link,
+.button:visited {
+  text-decoration: none;
+}
+
+/* Press Down Effect */
+.button:active {
+  transform: scale(0.95);
+  transition: all 0.1s ease;
+}
+
+/* Focus State */
+.button:focus {
+  outline: none;
+}
+
+.button:focus-visible {
+  outline: 3px solid var(--color-sage-light);
+  outline-offset: 2px;
+}
+
+/* Variant: Sage Dark → Terracotta */
+.button--sage-terra {
+  background-color: var(--color-sage-dark);
+  color: var(--color-white);
+  border-color: var(--color-sage-dark);
+}
+
+.button--sage-terra:hover {
+  background-color: var(--color-terracotta);
+  border-color: var(--color-terracotta);
+  color: var(--color-white);
+}
+
+/* Variant: Sage Light → Sage Dark */
+.button--light-dark {
+  background-color: var(--color-sage-light);
+  color: var(--color-white);
+  border-color: var(--color-sage-light);
+}
+
+.button--light-dark:hover {
+  background-color: var(--color-sage-dark);
+  border-color: var(--color-sage-dark);
+  color: var(--color-white);
+}
+
+/* Variant: Terracotta → Sage Dark */
+.button--terra-dark {
+  background-color: var(--color-terracotta);
+  color: var(--color-white);
+  border-color: var(--color-terracotta);
+}
+
+.button--terra-dark:hover {
+  background-color: var(--color-sage-dark);
+  border-color: var(--color-sage-dark);
+  color: var(--color-white);
+}
+
+/* Variant: Primary Outline */
+.button--outline {
+  background-color: transparent;
+  color: var(--color-sage-dark);
+  border-color: var(--color-sage-dark);
+}
+
+.button--outline:hover {
+  background-color: var(--color-sage-dark);
+  color: var(--color-white);
+  border-color: var(--color-sage-dark);
+}

@@ -1,0 +1,47 @@
+{
+  "hero": {
+    "title": "Cultivando Florestas Juntos Para Mais Biodiversidade em Nosso Planeta",
+    "altText": "Imagem de fundo Como Funciona"
+  },
+  "transparency": {
+    "title": "Transparência e Conexão para Reflorestamento",
+    "paragraph1": "ApeForest é uma plataforma desenvolvida para gerenciar projetos de reflorestamento de forma eficiente e transparente. O sistema conecta agricultores, empresas e especialistas em um ambiente colaborativo para monitoramento e controle de plantios florestais.",
+    "paragraph2": "Ao mapear áreas de plantio, documentar espécies e monitorar o desenvolvimento das plantas, garantimos transparência e dados confiáveis para todos os envolvidos."
+  },
+  "forFarmers": {
+    "title": "Para Agricultores",
+    "subtitle": "Ao participar, os agricultores podem aumentar sua visibilidade, receber apoio local e podem acessar novos recursos financeiros para expandir práticas de reflorestamento. Monitoramento contínuo e documentação transparente valorizam o trabalho de campo e parcerias.",
+    "cards": {
+      "mapAreas": {
+        "title": "Mapeie Suas Áreas",
+        "description": "Registre e gerencie seus locais de plantio de forma simples e intuitiva em nosso mapa interativo."
+      },
+      "documentBiodiversity": {
+        "title": "Documente Sua Biodiversidade",
+        "description": "Registre espécies plantadas, técnicas utilizadas e impacto positivo no ecossistema local."
+      },
+      "receiveSupport": {
+        "title": "Receba Apoio",
+        "description": "Receba propostas de empresas interessadas em apoiar seus projetos de biodiversidade."
+      }
+    }
+  },
+  "forCompanies": {
+    "title": "Para Empresas",
+    "subtitle": "Empresas têm acesso a projetos autênticos, com dados confiáveis e monitoramento contínuo, compensação de CO2 e fortalecimento da reputação sustentável. Apoio direto a iniciativas locais gera impacto mensurável e contribui para um futuro mais verde e resiliente.",
+    "cards": {
+      "findPartners": {
+        "title": "Encontre Parceiros",
+        "description": "Descubra agricultores próximos à sua região que compartilham os mesmos valores de sustentabilidade."
+      },
+      "evaluateProjects": {
+        "title": "Avalie Projetos",
+        "description": "Analise projetos de biodiversidade e seu potencial impacto ambiental em detalhes."
+      },
+      "makeDifference": {
+        "title": "Faça a Diferença",
+        "description": "Estabeleça parcerias duradouras e contribua diretamente para a restauração de ecossistemas."
+      }
+    }
+  }
+}

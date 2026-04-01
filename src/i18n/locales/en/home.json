@@ -1,0 +1,33 @@
+{
+  "hero": {
+    "title": "Plant Today Forest Tomorrow",
+    "exploreMarketplace": "Explore Marketplace",
+    "learnMore": "Learn More"
+  },
+  "impact": {
+    "treeCounter": {
+      "label": "trees to be planted"
+    },
+    "heading": "See the Impact We're Making Together",
+    "description": "Every tree represents a step toward restoring biodiversity, fighting climate change, and building a more sustainable future. Explore all the trees we will plant across our network of farmers and projects.",
+    "exploreProjects": "Explore Our Projects",
+    "whyInvest": {
+      "title": "Why Invest with ApeForest?",
+      "description": "We support biodiversity that produces food and regenerates communities. On degraded lands, native forests restore ecosystems—sustaining wildlife, insects, and soil health. Land restoration becomes economic opportunity. Indigenous communities and small farmers are already the engine of regeneration. We help them do more."
+    },
+    "features": {
+      "biodiversity": {
+        "title": "Native Biodiversity + Food Production",
+        "description": "Every tree represents a step toward restoring biodiversity, fighting climate change, and building a more sustainable future. Explore all the trees we will plant across our network of farmers and projects."
+      },
+      "partnership": {
+        "title": "Direct Partnership with Communities",
+        "description": "Indigenous communities and small farmer cooperatives lead regeneration with their land knowledge and decisions. They build nurseries, grow the trees, manage the land, and capture economic value from the forest they're creating—strengthening both nature and their livelihoods"
+      },
+      "tracking": {
+        "title": "Transparent, Real-Time Impact Tracking",
+        "description": "Every project is mapped and monitored. Track biodiversity recovery, food production, ecosystem health, and community impact outcomes through verified data dashboards—see exactly where your investment creates regeneration"
+      }
+    }
+  }
+}

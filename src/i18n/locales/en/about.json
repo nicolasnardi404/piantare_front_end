@@ -1,0 +1,33 @@
+{
+  "hero": {
+    "title": "Connecting People And Nature For A More Sustainable Future"
+  },
+  "whatIs": {
+    "title": "What is ApeForest?",
+    "paragraph1": "ApeForest is an impact-driven startup that connects small-scale farming communities and indigenous communities working in biodiversity and regenerative agriculture with companies willing to invest in reforestation projects.",
+    "paragraph2": "Through our core platform, we let communities tokenize their ecological assets, enabling them to create an interactive dashboard with detailed maps, access to personalized biodiversity reports on their inventories, and showcase branded page within our platform.",
+    "paragraph3": "Beyond our core platform, we also offer customized development services to create personalized code solutions focused on biodiversity and regenerative agriculture initiatives. Whether companies need specialized tools to track their ecosystems, or features related to their nature goals, our team can build solutions that align with their impact objectives."
+  },
+  "howWeWork": {
+    "title": "How We Work",
+    "cards": {
+      "empowerFarmers": {
+        "title": "Empower Farmers",
+        "description": "Provide opportunities for farmers to implement regenerative practices that improve soil health."
+      },
+      "connectCompanies": {
+        "title": "Connect Companies",
+        "description": "Enable businesses to invest in real environmental impact with transparent tracking and measurable results."
+      },
+      "restoreNature": {
+        "title": "Restore Nature",
+        "description": "Plant trees and restore ecosystems while creating economic value for communities."
+      }
+    }
+  },
+  "contact": {
+    "title": "Contact",
+    "description": "We are always open to hearing your suggestions, answering your questions, or discussing possible partnerships.",
+    "email": "info@apeforest.net"
+  }
+}

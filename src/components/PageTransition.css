@@ -1,0 +1,4 @@
+.page-transition-wrapper {
+  min-height: 100vh;
+  will-change: transform, opacity;
+}

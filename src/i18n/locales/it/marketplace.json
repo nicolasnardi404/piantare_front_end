@@ -1,0 +1,28 @@
+{
+  "hero": {
+    "title": "Pianta Una Foresta",
+    "altText": "Immagine di sfondo del marketplace"
+  },
+  "featuredProject": {
+    "title": "Progetto Pilota: Tekoá Kuaray Rese",
+    "description": "Foresta frangivento per protezione agroecologica. La piantagione di una foresta frangivento mira a creare una barriera di protezione naturale per le colture alimentari nell'area. In regioni come Osório (RS), questa strategia è essenziale per la resilienza agricola, ecologica e climatica.",
+    "badges": {
+      "trees": "alberi",
+      "species": "specie",
+      "status": "Pianificazione"
+    },
+    "location": {
+      "name": "Tekoá Kuaray Rese",
+      "address": "Osório, Brasile"
+    }
+  },
+  "contactCard": {
+    "title": "Vuoi Sponsorizzare Questo Progetto?",
+    "description": "Hai domande o sei interessato a sostenere i nostri sforzi di riforestazione? Ci piacerebbe sentirti.",
+    "email": "info@apeforest.net"
+  },
+  "productCard": {
+    "available": "disponibili",
+    "co2PerTree": "CO2"
+  }
+}

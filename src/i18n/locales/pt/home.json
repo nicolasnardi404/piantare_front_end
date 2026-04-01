@@ -1,0 +1,33 @@
+{
+  "hero": {
+    "title": "Plante Hoje Floresta Amanhã",
+    "exploreMarketplace": "Explorar Marketplace",
+    "learnMore": "Saiba Mais"
+  },
+  "impact": {
+    "treeCounter": {
+      "label": "árvores a serem plantadas"
+    },
+    "heading": "Veja o Impacto Que Estamos Criando Juntos",
+    "description": "Cada árvore representa um passo em direção à restauração da biodiversidade, combate às mudanças climáticas e construção de um futuro mais sustentável. Explore todas as árvores que plantaremos em nossa rede de agricultores e projetos.",
+    "exploreProjects": "Explore Nossos Projetos",
+    "whyInvest": {
+      "title": "Por Que Investir com a ApeForest?",
+      "description": "Apoiamos a biodiversidade que produz alimentos e regenera comunidades. Em terras degradadas, florestas nativas restauram ecossistemas—sustentando vida selvagem, insetos e saúde do solo. A restauração da terra se torna oportunidade econômica. Comunidades indígenas e pequenos agricultores já são o motor da regeneração. Nós os ajudamos a fazer mais."
+    },
+    "features": {
+      "biodiversity": {
+        "title": "Biodiversidade Nativa + Produção de Alimentos",
+        "description": "Cada árvore representa um passo em direção à restauração da biodiversidade, combate às mudanças climáticas e construção de um futuro mais sustentável. Explore todas as árvores que plantaremos em nossa rede de agricultores e projetos."
+      },
+      "partnership": {
+        "title": "Parceria Direta com Comunidades",
+        "description": "Comunidades indígenas e cooperativas de pequenos agricultores lideram a regeneração com seu conhecimento da terra e decisões. Eles constroem viveiros, cultivam as árvores, gerenciam a terra e capturam valor econômico da floresta que estão criando—fortalecendo tanto a natureza quanto seus meios de subsistência"
+      },
+      "tracking": {
+        "title": "Rastreamento de Impacto Transparente e em Tempo Real",
+        "description": "Cada projeto é mapeado e monitorado. Acompanhe a recuperação da biodiversidade, produção de alimentos, saúde do ecossistema e resultados de impacto comunitário através de painéis de dados verificados—veja exatamente onde seu investimento cria regeneração"
+      }
+    }
+  }
+}

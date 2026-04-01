@@ -1,0 +1,33 @@
+{
+  "hero": {
+    "title": "Pianta Oggi Foresta Domani",
+    "exploreMarketplace": "Esplora il Marketplace",
+    "learnMore": "Scopri di Più"
+  },
+  "impact": {
+    "treeCounter": {
+      "label": "alberi da piantare"
+    },
+    "heading": "Guarda l'Impatto Che Stiamo Creando Insieme",
+    "description": "Ogni albero rappresenta un passo verso il ripristino della biodiversità, la lotta al cambiamento climatico e la costruzione di un futuro più sostenibile. Esplora tutti gli alberi che pianteremo attraverso la nostra rete di agricoltori e progetti.",
+    "exploreProjects": "Esplora i Nostri Progetti",
+    "whyInvest": {
+      "title": "Perché Investire con ApeForest?",
+      "description": "Sosteniamo la biodiversità che produce cibo e rigenera le comunità. Su terre degradate, le foreste native ripristinano gli ecosistemi—sostenendo la fauna selvatica, gli insetti e la salute del suolo. Il ripristino della terra diventa opportunità economica. Le comunità indigene e i piccoli agricoltori sono già il motore della rigenerazione. Li aiutiamo a fare di più."
+    },
+    "features": {
+      "biodiversity": {
+        "title": "Biodiversità Nativa + Produzione Alimentare",
+        "description": "Ogni albero rappresenta un passo verso il ripristino della biodiversità, la lotta al cambiamento climatico e la costruzione di un futuro più sostenibile. Esplora tutti gli alberi che pianteremo attraverso la nostra rete di agricoltori e progetti."
+      },
+      "partnership": {
+        "title": "Collaborazione Diretta con le Comunità",
+        "description": "Le comunità indigene e le cooperative di piccoli agricoltori guidano la rigenerazione con la loro conoscenza della terra e le loro decisioni. Costruiscono vivai, coltivano gli alberi, gestiscono la terra e catturano valore economico dalla foresta che stanno creando—rafforzando sia la natura che i loro mezzi di sussistenza"
+      },
+      "tracking": {
+        "title": "Monitoraggio dell'Impatto Trasparente e in Tempo Reale",
+        "description": "Ogni progetto è mappato e monitorato. Traccia il recupero della biodiversità, la produzione alimentare, la salute dell'ecosistema e i risultati dell'impatto sulla comunità attraverso dashboard di dati verificati—vedi esattamente dove il tuo investimento crea rigenerazione"
+      }
+    }
+  }
+}

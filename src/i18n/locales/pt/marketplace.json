@@ -1,0 +1,28 @@
+{
+  "hero": {
+    "title": "Plante Uma Floresta",
+    "altText": "Imagem de fundo do marketplace"
+  },
+  "featuredProject": {
+    "title": "Projeto Piloto: Tekoá Kuaray Rese",
+    "description": "Floresta de quebra-vento para proteção agroecológica. O plantio de uma floresta de quebra-vento visa criar uma barreira de proteção natural para culturas alimentares na área. Em regiões como Osório (RS), esta estratégia é essencial para a resiliência agrícola, ecológica e climática.",
+    "badges": {
+      "trees": "árvores",
+      "species": "espécies",
+      "status": "Planejamento"
+    },
+    "location": {
+      "name": "Tekoá Kuaray Rese",
+      "address": "Osório, Brasil"
+    }
+  },
+  "contactCard": {
+    "title": "Quer Patrocinar Este Projeto?",
+    "description": "Tem perguntas ou está interessado em apoiar nossos esforços de reflorestamento? Adoraríamos ouvir de você.",
+    "email": "info@apeforest.net"
+  },
+  "productCard": {
+    "available": "disponíveis",
+    "co2PerTree": "CO2"
+  }
+}

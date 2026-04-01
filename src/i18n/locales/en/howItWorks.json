@@ -1,0 +1,47 @@
+{
+  "hero": {
+    "title": "Growing Forests Together For More Biodiversity In Our Planet",
+    "altText": "How It Works hero background"
+  },
+  "transparency": {
+    "title": "Transparency and Connection for Reforestation",
+    "paragraph1": "ApeForest is a platform developed to efficiently and transparently manage reforestation projects. The system connects farmers, companies, and experts in a collaborative environment for monitoring and controlling forest plantings.",
+    "paragraph2": "By mapping planting areas, documenting species, and monitoring plant development, we ensure transparency and reliable data for all involved."
+  },
+  "forFarmers": {
+    "title": "For Farmers",
+    "subtitle": "By participating, farmers can increase their visibility, receive local support, and can access new financial resources to expand reforestation practices. Continuous monitoring and transparent documentation value field work and partnerships.",
+    "cards": {
+      "mapAreas": {
+        "title": "Map Your Areas",
+        "description": "Register and manage your planting locations simply and intuitively on our interactive map."
+      },
+      "documentBiodiversity": {
+        "title": "Document Your Biodiversity",
+        "description": "Record planted species, techniques used, and positive impact on the local ecosystem."
+      },
+      "receiveSupport": {
+        "title": "Receive Support",
+        "description": "Receive proposals from companies interested in supporting your biodiversity projects."
+      }
+    }
+  },
+  "forCompanies": {
+    "title": "For Companies",
+    "subtitle": "Companies have access to authentic projects, with reliable data and continuous monitoring, CO2 compensation, and strengthening of sustainable reputation. Direct support to local initiatives generates measurable impact and contributes to a greener and more resilient future.",
+    "cards": {
+      "findPartners": {
+        "title": "Find Partners",
+        "description": "Discover farmers near your region who share the same sustainability values."
+      },
+      "evaluateProjects": {
+        "title": "Evaluate Projects",
+        "description": "Analyze biodiversity projects and their potential environmental impact in detail."
+      },
+      "makeDifference": {
+        "title": "Make a Difference",
+        "description": "Establish lasting partnerships and contribute directly to ecosystem restoration."
+      }
+    }
+  }
+}

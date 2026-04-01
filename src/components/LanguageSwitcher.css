@@ -1,0 +1,119 @@
+.language-switcher {
+  position: relative;
+  display: inline-block;
+}
+
+.language-switcher__button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: var(--color-sage-dark);
+  color: var(--color-offwhite);
+  border: 2px solid var(--color-sage-dark);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  min-width: 70px;
+}
+
+.language-switcher__button:hover {
+  background: var(--color-sage-light);
+  border-color: var(--color-sage-light);
+}
+
+.language-switcher__current {
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.language-switcher__arrow {
+  transition: transform 0.2s ease;
+}
+
+.language-switcher__arrow--open {
+  transform: rotate(180deg);
+}
+
+.language-switcher__dropdown {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  background: var(--color-offwhite);
+  border: 2px solid var(--color-sage-dark);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  overflow: visible;
+  z-index: 1000;
+  min-width: 150px;
+  animation: dropdownFadeIn 0.15s ease;
+}
+
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.language-switcher__option {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: none;
+  background: transparent;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.875rem;
+  color: var(--color-dark-green);
+  cursor: pointer;
+  transition: background 0.15s ease;
+  text-align: left;
+}
+
+
+.language-switcher__option:hover {
+  background: rgba(173, 200, 174, 0.3);
+}
+
+.language-switcher__option--active {
+  background: rgba(173, 200, 174, 0.5);
+  font-weight: 600;
+}
+
+.language-switcher__option-code {
+  font-weight: 700;
+  color: var(--color-sage-dark);
+  min-width: 24px;
+  font-size: 0.875rem;
+}
+
+.language-switcher__option-label {
+  color: var(--color-dark-green);
+  font-weight: 500;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .language-switcher__button {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+    min-width: 60px;
+  }
+
+  .language-switcher__dropdown {
+    min-width: 130px;
+  }
+
+  .language-switcher__option {
+    padding: 0.6rem 0.8rem;
+    font-size: 0.8rem;
+  }
+}

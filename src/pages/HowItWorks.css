@@ -1,0 +1,284 @@
+/* How It Works Page */
+.how-it-works-page {
+  width: 100%;
+}
+
+/* Hero Section */
+.how-it-works-page__hero {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.how-it-works-page__hero-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
+  filter: brightness(0.7);
+}
+
+.how-it-works-page__hero-content {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  padding: var(--spacing-xl);
+  max-width: 900px;
+}
+
+.how-it-works-page__hero-title {
+  font-size: var(--hero-title-size-standard);
+  font-weight: var(--font-weight-bold);
+  color: var(--hero-title-color);
+  text-shadow: var(--hero-title-stroke);
+  line-height: var(--line-height-tight);
+  margin: 0;
+}
+
+/* Transparency and Connection Section */
+.transparency-section {
+  background-color: var(--color-offwhite);
+  padding: var(--spacing-3xl) var(--spacing-xl);
+}
+
+.transparency-section__container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2xl);
+  align-items: center;
+}
+
+.transparency-section__content {
+  flex: 1;
+  text-align: center;
+}
+
+.transparency-section__content h2 {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-dark-green);
+  margin: 0 0 var(--spacing-lg);
+  line-height: var(--line-height-tight);
+}
+
+.transparency-section__content p {
+  font-size: var(--font-size-base);
+  color: #5a5a5a;
+  line-height: var(--line-height-relaxed);
+  margin: 0;
+}
+
+.transparency-section__illustration {
+  width: 120px;
+  flex-shrink: 0;
+}
+
+.transparency-section__illustration img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+/* For Farmers Section */
+.for-farmers-section {
+  background-color: var(--color-offwhite);
+  padding: var(--spacing-3xl) var(--spacing-xl);
+}
+
+.for-farmers-section__title {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-dark-green);
+  text-align: center;
+  margin: 0 0 var(--spacing-md);
+  line-height: var(--line-height-tight);
+}
+
+.for-farmers-section__subtitle {
+  font-size: var(--font-size-base);
+  color: #5a5a5a;
+  text-align: center;
+  line-height: var(--line-height-relaxed);
+  max-width: 900px;
+  margin: 0 auto var(--spacing-2xl);
+}
+
+/* For Companies Section */
+.for-companies-section {
+  background-color: var(--color-offwhite);
+  padding: var(--spacing-3xl) var(--spacing-xl) var(--spacing-4xl);
+}
+
+.for-companies-section__title {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-dark-green);
+  text-align: center;
+  margin: 0 0 var(--spacing-md);
+  line-height: var(--line-height-tight);
+}
+
+.for-companies-section__subtitle {
+  font-size: var(--font-size-base);
+  color: #5a5a5a;
+  text-align: center;
+  line-height: var(--line-height-relaxed);
+  max-width: 900px;
+  margin: 0 auto var(--spacing-2xl);
+}
+
+/* Work Cards Grid */
+.work-cards {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  max-width: 900px;
+  margin: 0 auto;
+  justify-content: center;
+}
+
+/* Individual Work Card - DRY styling */
+.work-card {
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-xl) var(--spacing-lg);
+  color: var(--color-white);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-md);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  min-height: 180px;
+}
+
+.work-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Card color variants */
+.card-sage {
+  background-color: var(--color-sage-dark);
+}
+
+.card-sage-light {
+  background-color: var(--color-sage-light);
+}
+
+.card-terracotta {
+  background-color: var(--color-terracotta);
+}
+
+/* Card Icon */
+.work-card__icon {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.work-card__icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+}
+
+/* Card Title */
+.work-card__title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  margin: 0;
+  line-height: var(--line-height-tight);
+}
+
+/* Card Description */
+.work-card__description {
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-normal);
+  margin: 0;
+  opacity: 0.95;
+}
+
+/* Responsive Design */
+@media (min-width: 768px) {
+  .how-it-works-page__hero {
+    height: 350px;
+  }
+
+  .how-it-works-page__hero-title {
+    font-size: var(--hero-title-size-standard-tablet);
+  }
+
+  .transparency-section {
+    padding: var(--spacing-4xl) var(--spacing-2xl);
+  }
+
+  .transparency-section__container {
+    flex-direction: row;
+    gap: var(--spacing-3xl);
+  }
+
+  .transparency-section__illustration {
+    width: 140px;
+  }
+
+  .transparency-section__content {
+    text-align: left;
+  }
+
+  .for-farmers-section {
+    padding: var(--spacing-4xl) var(--spacing-2xl);
+  }
+
+  .for-companies-section {
+    padding: var(--spacing-4xl) var(--spacing-2xl);
+  }
+
+  .work-cards {
+    flex-direction: row;
+    gap: var(--spacing-lg);
+  }
+
+  .work-card {
+    flex: 1;
+    max-width: 280px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .how-it-works-page__hero {
+    height: 400px;
+  }
+
+  .how-it-works-page__hero-title {
+    font-size: var(--hero-title-size-standard-desktop);
+  }
+
+  .transparency-section {
+    padding: var(--spacing-4xl);
+  }
+
+  .for-farmers-section {
+    padding: var(--spacing-4xl);
+  }
+
+  .for-companies-section {
+    padding: var(--spacing-4xl);
+  }
+
+  .work-card__icon {
+    width: 60px;
+    height: 60px;
+  }
+}

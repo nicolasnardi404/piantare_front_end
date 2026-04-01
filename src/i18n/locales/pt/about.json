@@ -1,0 +1,33 @@
+{
+  "hero": {
+    "title": "Conectando Pessoas e Natureza Para um Futuro Mais Sustentável"
+  },
+  "whatIs": {
+    "title": "O Que é a ApeForest?",
+    "paragraph1": "ApeForest é uma startup de impacto que conecta comunidades agrícolas de pequena escala e comunidades indígenas que trabalham com biodiversidade e agricultura regenerativa com empresas dispostas a investir em projetos de reflorestamento.",
+    "paragraph2": "Através de nossa plataforma principal, permitimos que as comunidades tokenizem seus ativos ecológicos, possibilitando criar um painel interativo com mapas detalhados, acesso a relatórios de biodiversidade personalizados sobre seus inventários e página com marca própria dentro de nossa plataforma.",
+    "paragraph3": "Além de nossa plataforma principal, também oferecemos serviços de desenvolvimento customizado para criar soluções de código personalizadas focadas em iniciativas de biodiversidade e agricultura regenerativa. Seja empresas que precisam de ferramentas especializadas para rastrear seus ecossistemas, ou recursos relacionados aos seus objetivos de natureza, nossa equipe pode construir soluções alinhadas com seus objetivos de impacto."
+  },
+  "howWeWork": {
+    "title": "Como Trabalhamos",
+    "cards": {
+      "empowerFarmers": {
+        "title": "Empoderar Agricultores",
+        "description": "Fornecer oportunidades para os agricultores implementarem práticas regenerativas que melhoram a saúde do solo."
+      },
+      "connectCompanies": {
+        "title": "Conectar Empresas",
+        "description": "Permitir que empresas invistam em impacto ambiental real com rastreamento transparente e resultados mensuráveis."
+      },
+      "restoreNature": {
+        "title": "Restaurar a Natureza",
+        "description": "Plantar árvores e restaurar ecossistemas enquanto cria valor econômico para as comunidades."
+      }
+    }
+  },
+  "contact": {
+    "title": "Contato",
+    "description": "Estamos sempre abertos para ouvir suas sugestões, responder suas perguntas ou discutir possíveis parcerias.",
+    "email": "info@apeforest.net"
+  }
+}

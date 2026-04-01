@@ -1,0 +1,32 @@
+{
+  "header": {
+    "logo": "apeforest",
+    "nav": {
+      "aboutUs": "Chi Siamo",
+      "marketplace": "Marketplace",
+      "howItWorks": "Come Funziona"
+    },
+    "langButton": "LINGUA",
+    "menuToggle": "Attiva/disattiva menu"
+  },
+  "footer": {
+    "logo": "apeforest",
+    "tagline": "Connettere le persone e la natura per un futuro sostenibile",
+    "quickLinks": {
+      "title": "Link Rapidi",
+      "aboutUs": "Chi Siamo",
+      "impact": "Impatto",
+      "marketplace": "Marketplace"
+    },
+    "contact": {
+      "title": "Contatto",
+      "email": "info@apeforest.net"
+    },
+    "copyright": "© 2026 ApeForest – Pianta Oggi Foresta Domani. Tutti i diritti riservati."
+  },
+  "languages": {
+    "en": "English",
+    "pt": "Português",
+    "it": "Italiano"
+  }
+}

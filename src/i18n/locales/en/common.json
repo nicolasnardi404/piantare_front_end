@@ -1,0 +1,32 @@
+{
+  "header": {
+    "logo": "apeforest",
+    "nav": {
+      "aboutUs": "About Us",
+      "marketplace": "Marketplace",
+      "howItWorks": "How It Works"
+    },
+    "langButton": "LANG",
+    "menuToggle": "Toggle menu"
+  },
+  "footer": {
+    "logo": "apeforest",
+    "tagline": "Connecting people and nature for a sustainable future",
+    "quickLinks": {
+      "title": "Quick Links",
+      "aboutUs": "About Us",
+      "impact": "Impact",
+      "marketplace": "Marketplace"
+    },
+    "contact": {
+      "title": "Contact",
+      "email": "info@apeforest.net"
+    },
+    "copyright": "© 2026 ApeForest – Plant Today Forest Tomorrow. All rights reserved."
+  },
+  "languages": {
+    "en": "English",
+    "pt": "Português",
+    "it": "Italiano"
+  }
+}

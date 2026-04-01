@@ -1,0 +1,301 @@
+/* How It Works Section */
+.how-it-works {
+  width: 100%;
+}
+
+/* Hero Section */
+.how-it-works__hero {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.how-it-works__hero-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
+  filter: brightness(0.85);
+}
+
+.how-it-works__hero-content {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  padding: var(--spacing-xl);
+  max-width: 900px;
+}
+
+.how-it-works__hero-title {
+  font-size: var(--hero-title-size-standard);
+  font-weight: var(--font-weight-bold);
+  color: var(--hero-title-color);
+  text-shadow: var(--hero-title-shadow);
+  line-height: var(--line-height-tight);
+  margin: 0;
+  text-shadow: var(--hero-title-stroke);
+}
+
+/* What is ApeForest Section */
+.what-is-apeforest {
+  background-color: var(--color-offwhite);
+  padding: var(--spacing-4xl) var(--spacing-xl);
+}
+
+.what-is-apeforest__container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2xl);
+  align-items: center;
+}
+
+.what-is-apeforest__illustration {
+  width: 140px;
+  flex-shrink: 0;
+}
+
+.what-is-apeforest__illustration img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+.what-is-apeforest__content {
+  flex: 1;
+  text-align: center;
+}
+
+.what-is-apeforest__content h2 {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-dark-green);
+  margin: 0 0 var(--spacing-lg);
+  line-height: var(--line-height-tight);
+}
+
+.what-is-apeforest__content p {
+  font-size: var(--font-size-base);
+  color: #5a5a5a;
+  line-height: var(--line-height-relaxed);
+  margin: 0 0 var(--spacing-md);
+}
+
+.what-is-apeforest__content p:last-child {
+  margin-bottom: 0;
+}
+
+/* Content Section */
+.how-it-works__content {
+  background-color: var(--color-offwhite);
+  padding: var(--spacing-4xl) var(--spacing-xl);
+}
+
+.how-it-works__section-title {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-dark-green);
+  text-align: center;
+  margin: 0 0 var(--spacing-2xl);
+  line-height: var(--line-height-tight);
+}
+
+/* Work Cards Grid */
+.work-cards {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  max-width: 900px;
+  margin: 0 auto;
+  justify-content: center;
+}
+
+/* Individual Work Card - DRY styling */
+.work-card {
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-xl) var(--spacing-lg);
+  color: var(--color-white);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-md);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  min-height: 180px;
+}
+
+.work-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Card color variants */
+.card-sage {
+  background-color: var(--color-sage-dark);
+}
+
+.card-terracotta {
+  background-color: var(--color-terracotta);
+}
+
+/* Card Icon */
+.work-card__icon {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.work-card__icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+}
+
+/* Card Title */
+.work-card__title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  margin: 0;
+  line-height: var(--line-height-tight);
+}
+
+/* Card Description */
+.work-card__description {
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-normal);
+  margin: 0;
+  opacity: 0.95;
+}
+
+/* Contact Section */
+.contact-section {
+  background-color: var(--color-offwhite);
+  padding: var(--spacing-xl) var(--spacing-xl) var(--spacing-3xl);
+}
+
+.contact-card {
+  background-color: var(--color-sage-light);
+  border-radius: var(--border-radius-xl);
+  padding: var(--spacing-2xl) var(--spacing-lg);
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.contact-card__title {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-white);
+  margin: 0 0 var(--spacing-md);
+  line-height: var(--line-height-tight);
+}
+
+.contact-card__description {
+  font-size: var(--font-size-sm);
+  color: var(--color-white);
+  line-height: var(--line-height-normal);
+  margin: 0 0 var(--spacing-md);
+  opacity: 0.95;
+}
+
+.contact-card__email {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-white);
+  text-decoration: none;
+  display: inline-block;
+  transition: opacity 0.3s ease;
+}
+
+.contact-card__email:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
+/* Responsive Design */
+@media (min-width: 768px) {
+  .how-it-works__hero {
+    height: 350px;
+  }
+
+  .how-it-works__hero-title {
+    font-size: var(--hero-title-size-standard-tablet);
+  }
+
+  .what-is-apeforest {
+    padding: var(--spacing-4xl) var(--spacing-2xl);
+  }
+
+  .what-is-apeforest__container {
+    flex-direction: row;
+    gap: var(--spacing-3xl);
+  }
+
+  .what-is-apeforest__illustration {
+    width: 160px;
+  }
+
+  .what-is-apeforest__content {
+    text-align: left;
+  }
+
+  .how-it-works__content {
+    padding: var(--spacing-4xl) var(--spacing-2xl);
+  }
+
+  .work-cards {
+    flex-direction: row;
+    gap: var(--spacing-lg);
+  }
+
+  .work-card {
+    flex: 1;
+    max-width: 280px;
+  }
+
+  .contact-section {
+    padding: var(--spacing-2xl) var(--spacing-2xl) var(--spacing-3xl);
+  }
+
+  .contact-card {
+    padding: var(--spacing-2xl) var(--spacing-2xl);
+  }
+}
+
+@media (min-width: 1024px) {
+  .how-it-works__hero {
+    height: 400px;
+  }
+
+  .how-it-works__hero-title {
+    font-size: var(--hero-title-size-standard-desktop);
+  }
+
+  .what-is-apeforest {
+    padding: var(--spacing-4xl);
+  }
+
+  .how-it-works__content {
+    padding: var(--spacing-4xl);
+  }
+
+  .work-card__icon {
+    width: 60px;
+    height: 60px;
+  }
+
+  .contact-section {
+    padding: var(--spacing-3xl) var(--spacing-4xl) var(--spacing-4xl);
+  }
+}

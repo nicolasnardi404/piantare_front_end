@@ -1,0 +1,47 @@
+{
+  "hero": {
+    "title": "Coltivare Foreste Insieme Per Più Biodiversità Nel Nostro Pianeta",
+    "altText": "Immagine di sfondo Come Funziona"
+  },
+  "transparency": {
+    "title": "Trasparenza e Connessione per la Riforestazione",
+    "paragraph1": "ApeForest è una piattaforma sviluppata per gestire in modo efficiente e trasparente progetti di riforestazione. Il sistema collega agricoltori, aziende ed esperti in un ambiente collaborativo per il monitoraggio e il controllo delle piantagioni forestali.",
+    "paragraph2": "Mappando le aree di piantagione, documentando le specie e monitorando lo sviluppo delle piante, garantiamo trasparenza e dati affidabili per tutti i soggetti coinvolti."
+  },
+  "forFarmers": {
+    "title": "Per gli Agricoltori",
+    "subtitle": "Partecipando, gli agricoltori possono aumentare la loro visibilità, ricevere supporto locale e accedere a nuove risorse finanziarie per espandere le pratiche di riforestazione. Il monitoraggio continuo e la documentazione trasparente valorizzano il lavoro sul campo e le partnership.",
+    "cards": {
+      "mapAreas": {
+        "title": "Mappa le Tue Aree",
+        "description": "Registra e gestisci le tue località di piantagione in modo semplice e intuitivo sulla nostra mappa interattiva."
+      },
+      "documentBiodiversity": {
+        "title": "Documenta la Tua Biodiversità",
+        "description": "Registra le specie piantate, le tecniche utilizzate e l'impatto positivo sull'ecosistema locale."
+      },
+      "receiveSupport": {
+        "title": "Ricevi Supporto",
+        "description": "Ricevi proposte da aziende interessate a sostenere i tuoi progetti di biodiversità."
+      }
+    }
+  },
+  "forCompanies": {
+    "title": "Per le Aziende",
+    "subtitle": "Le aziende hanno accesso a progetti autentici, con dati affidabili e monitoraggio continuo, compensazione di CO2 e rafforzamento della reputazione sostenibile. Il supporto diretto alle iniziative locali genera un impatto misurabile e contribuisce a un futuro più verde e resiliente.",
+    "cards": {
+      "findPartners": {
+        "title": "Trova Partner",
+        "description": "Scopri agricoltori vicini alla tua regione che condividono gli stessi valori di sostenibilità."
+      },
+      "evaluateProjects": {
+        "title": "Valuta i Progetti",
+        "description": "Analizza in dettaglio i progetti di biodiversità e il loro potenziale impatto ambientale."
+      },
+      "makeDifference": {
+        "title": "Fai la Differenza",
+        "description": "Stabilisci partnership durature e contribuisci direttamente al ripristino degli ecosistemi."
+      }
+    }
+  }
+}

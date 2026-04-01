@@ -1,0 +1,77 @@
+.hero {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-image: url('/images/cerebro_planta.webp');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  /* background: rgba(129, 167, 130, 0.45); */
+  z-index: 1;
+}
+
+.hero__content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: 2rem;
+}
+
+.hero__title {
+  font-family: var(--font-primary);
+  font-size: var(--hero-title-size-large);
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--hero-title-color);
+  margin: 0 0 2rem 0;
+  text-shadow: var(--hero-title-stroke);
+}
+
+.hero__actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* Tablet styles */
+@media (max-width: 1024px) {
+  .hero__title {
+    font-size: var(--hero-title-size-large-tablet);
+  }
+}
+
+/* Mobile styles */
+@media (max-width: 640px) {
+  .hero {
+    height: 70vh;
+  }
+
+  .hero__title {
+    font-size: var(--hero-title-size-large-mobile);
+  }
+
+  .hero__actions {
+    flex-direction: column;
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+  }
+
+  .hero__actions button {
+    width: 100%;
+  }
+}

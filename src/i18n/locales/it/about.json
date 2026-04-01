@@ -1,0 +1,33 @@
+{
+  "hero": {
+    "title": "Connettere le Persone e la Natura Per un Futuro Più Sostenibile"
+  },
+  "whatIs": {
+    "title": "Cos'è ApeForest?",
+    "paragraph1": "ApeForest è una startup orientata all'impatto che collega comunità agricole di piccola scala e comunità indigene che lavorano nella biodiversità e nell'agricoltura rigenerativa con aziende disposte a investire in progetti di riforestazione.",
+    "paragraph2": "Attraverso la nostra piattaforma principale, permettiamo alle comunità di tokenizzare i loro asset ecologici, consentendo loro di creare una dashboard interattiva con mappe dettagliate, accesso a report personalizzati sulla biodiversità dei loro inventari e una pagina con marchio all'interno della nostra piattaforma.",
+    "paragraph3": "Oltre alla nostra piattaforma principale, offriamo anche servizi di sviluppo personalizzati per creare soluzioni software su misura focalizzate su iniziative di biodiversità e agricoltura rigenerativa. Che le aziende abbiano bisogno di strumenti specializzati per tracciare i loro ecosistemi o funzionalità relative ai loro obiettivi naturali, il nostro team può costruire soluzioni allineate con i loro obiettivi di impatto."
+  },
+  "howWeWork": {
+    "title": "Come Lavoriamo",
+    "cards": {
+      "empowerFarmers": {
+        "title": "Potenziare gli Agricoltori",
+        "description": "Fornire opportunità agli agricoltori per implementare pratiche rigenerative che migliorano la salute del suolo."
+      },
+      "connectCompanies": {
+        "title": "Connettere le Aziende",
+        "description": "Consentire alle imprese di investire in un reale impatto ambientale con monitoraggio trasparente e risultati misurabili."
+      },
+      "restoreNature": {
+        "title": "Ripristinare la Natura",
+        "description": "Piantare alberi e ripristinare gli ecosistemi creando al contempo valore economico per le comunità."
+      }
+    }
+  },
+  "contact": {
+    "title": "Contatto",
+    "description": "Siamo sempre aperti ad ascoltare i tuoi suggerimenti, rispondere alle tue domande o discutere possibili collaborazioni.",
+    "email": "info@apeforest.net"
+  }
+}
