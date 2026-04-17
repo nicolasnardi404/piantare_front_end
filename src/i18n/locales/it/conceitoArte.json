@@ -1,0 +1,35 @@
+{
+  "hero": {
+    "subtitle": "uno spazio comunitario che lavora con arte e pratiche sostenibili",
+    "location": "Porto Alegre, RS, Brasile"
+  },
+  "description": {
+    "text": "ConceitoArte è uno spazio comunitario che lavora con arte e pratiche sostenibili a Sarandi, uno dei quartieri più colpiti dalle inondazioni del 2024 nel Rio Grande do Sul. La loro micro-foresta Miyawaki è già piantata e sarà utilizzata per convalidare gli strumenti di raccolta dati, monitoraggio e piattaforma di ApeForest."
+  },
+  "stats": {
+    "plantedTrees": "alberi piantati",
+    "species": "specie di alberi",
+    "co2": "tonnellate di co2",
+    "meters": "metri di foresta"
+  },
+  "methodology": {
+    "title": "Metodo di Piantagione",
+    "text": "Il metodo Miyawaki, sviluppato dal botanico giapponese Akira Miyawaki, è una tecnica di riforestazione accelerata che crea foreste native dense, biodiversificate e resilienti in piccole aree e in breve tempo (da 20 a 30 anni, rispetto ai 100 anni per la rigenerazione naturale)."
+  },
+  "resilience": {
+    "title": "Radicato nella resilienza",
+    "text1": "Nel maggio 2024, il Rio Grande do Sul ha vissuto le peggiori inondazioni della sua storia registrata. Oltre 2,3 milioni di persone sono state colpite e Sarandi è stato uno degli ultimi quartieri di Porto Alegre a vedere l'acqua ritirarsi.",
+    "text2": "Quando le acque alluvionali sono finalmente andate via, hanno lasciato dietro di sé terreno danneggiato e una comunità in fase di recupero. Le foreste native aiutano a trattenere l'acqua, stabilizzare il suolo e ridurre l'impatto di future inondazioni — rendendo la riforestazione non solo un atto ambientale ma una strategia di sopravvivenza."
+  },
+  "soil": {
+    "title": "Preparazione del suolo",
+    "text": "L'area è stata preparata utilizzando un escavatore che ha rimosso 50 cm di terreno di riempimento compattato su tutta l'area di 100 m². Il terreno rimosso è stato posizionato lungo i bordi del terreno, formando un confine naturale e creando un bacino di ritenzione idrica. Il compost è stato quindi aggiunto per arricchire il suolo prima della piantagione."
+  },
+  "partners": {
+    "title": "Partner:",
+    "placeholder": "Loghi dei partner in arrivo"
+  },
+  "species": {
+    "title": "Specie"
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "hero": {
+    "subtitle": "a community space working with art and sustainable practices",
+    "location": "Porto Alegre, RS, Brazil"
+  },
+  "description": {
+    "text": "ConceitoArte is a community space working with art and sustainable practices in Sarandi, one of the neighbourhoods most affected by the 2024 Rio Grande do Sul floods. Their Miyawaki micro-forest is already planted and will be use to validate ApeForest's data collection, tracking and platform tools."
+  },
+  "stats": {
+    "plantedTrees": "planted trees",
+    "species": "species of trees",
+    "co2": "tons of co2",
+    "meters": "meters of forest"
+  },
+  "methodology": {
+    "title": "Plantation Method",
+    "text": "The Miyawaki method, developed by Japanese botanist Akira Miyawaki, is an accelerated reforestation technique that creates dense, biodiverse, and resilient native forests in small areas and in a short period of time (20 to 30 years, compared to 100 years for natural regeneration)."
+  },
+  "resilience": {
+    "title": "Rooted in resilience",
+    "text1": "In May 2024, Rio Grande do Sul experienced the worst floods in its recorded history. Over 2.3 million people were affected and Sarandi was one of the last neighbourhoods in Porto Alegre to see the water recede.",
+    "text2": "When the floodwaters finally left, they left behind damaged soil and a community in recovery. Native forests help retain water, stabilise soil and reduce the impact of future flooding — making reforestation not just an environmental act but a survival strategy."
+  },
+  "soil": {
+    "title": "Soil preparation",
+    "text": "The area was prepared using an excavator that removed 50 cm of compacted fill soil across the entire 100 m². The removed soil was placed along the edges of the plot, forming a natural border and creating a water retention basin. Compost was then added to enrich the soil before planting."
+  },
+  "partners": {
+    "title": "Partners:",
+    "placeholder": "Partner logos coming soon"
+  },
+  "species": {
+    "title": "Species"
+  }
+}

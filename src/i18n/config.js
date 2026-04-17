@@ -8,18 +8,21 @@ import homeEN from './locales/en/home.json';
 import aboutEN from './locales/en/about.json';
 import howItWorksEN from './locales/en/howItWorks.json';
 import marketplaceEN from './locales/en/marketplace.json';
+import conceitoArteEN from './locales/en/conceitoArte.json';
 
 import commonPT from './locales/pt/common.json';
 import homePT from './locales/pt/home.json';
 import aboutPT from './locales/pt/about.json';
 import howItWorksPT from './locales/pt/howItWorks.json';
 import marketplacePT from './locales/pt/marketplace.json';
+import conceitoArtePT from './locales/pt/conceitoArte.json';
 
 import commonIT from './locales/it/common.json';
 import homeIT from './locales/it/home.json';
 import aboutIT from './locales/it/about.json';
 import howItWorksIT from './locales/it/howItWorks.json';
 import marketplaceIT from './locales/it/marketplace.json';
+import conceitoArteIT from './locales/it/conceitoArte.json';
 
 const resources = {
   en: {
@@ -28,6 +31,7 @@ const resources = {
     about: aboutEN,
     howItWorks: howItWorksEN,
     marketplace: marketplaceEN,
+    conceitoArte: conceitoArteEN,
   },
   pt: {
     common: commonPT,
@@ -35,6 +39,7 @@ const resources = {
     about: aboutPT,
     howItWorks: howItWorksPT,
     marketplace: marketplacePT,
+    conceitoArte: conceitoArtePT,
   },
   it: {
     common: commonIT,
@@ -42,6 +47,7 @@ const resources = {
     about: aboutIT,
     howItWorks: howItWorksIT,
     marketplace: marketplaceIT,
+    conceitoArte: conceitoArteIT,
   },
 };
 

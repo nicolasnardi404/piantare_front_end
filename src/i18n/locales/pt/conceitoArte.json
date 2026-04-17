@@ -1,0 +1,35 @@
+{
+  "hero": {
+    "subtitle": "um espaço comunitário trabalhando com arte e práticas sustentáveis",
+    "location": "Porto Alegre, RS, Brasil"
+  },
+  "description": {
+    "text": "ConceitoArte é um espaço comunitário trabalhando com arte e práticas sustentáveis em Sarandi, um dos bairros mais afetados pelas enchentes de 2024 no Rio Grande do Sul. Sua microfloresta Miyawaki já está plantada e será usada para validar as ferramentas de coleta de dados, rastreamento e plataforma da ApeForest."
+  },
+  "stats": {
+    "plantedTrees": "árvores plantadas",
+    "species": "espécies de árvores",
+    "co2": "toneladas de co2",
+    "meters": "metros de floresta"
+  },
+  "methodology": {
+    "title": "Método de Plantação",
+    "text": "O método Miyawaki, desenvolvido pelo botânico japonês Akira Miyawaki, é uma técnica acelerada de reflorestamento que cria florestas nativas densas, biodiversas e resilientes em pequenas áreas e em curto período de tempo (20 a 30 anos, comparado a 100 anos para regeneração natural)."
+  },
+  "resilience": {
+    "title": "Enraizado na resiliência",
+    "text1": "Em maio de 2024, o Rio Grande do Sul experimentou as piores enchentes de sua história registrada. Mais de 2,3 milhões de pessoas foram afetadas e Sarandi foi um dos últimos bairros de Porto Alegre a ver a água recuar.",
+    "text2": "Quando as águas das enchentes finalmente se retiraram, deixaram para trás solo danificado e uma comunidade em recuperação. Florestas nativas ajudam a reter água, estabilizar o solo e reduzir o impacto de futuras enchentes — tornando o reflorestamento não apenas um ato ambiental, mas uma estratégia de sobrevivência."
+  },
+  "soil": {
+    "title": "Preparação do solo",
+    "text": "A área foi preparada usando uma escavadeira que removeu 50 cm de solo de aterro compactado em toda a área de 100 m². O solo removido foi colocado nas bordas do terreno, formando uma borda natural e criando uma bacia de retenção de água. Composto foi então adicionado para enriquecer o solo antes do plantio."
+  },
+  "partners": {
+    "title": "Parceiros:",
+    "placeholder": "Logotipos dos parceiros em breve"
+  },
+  "species": {
+    "title": "Espécies"
+  }
+}
