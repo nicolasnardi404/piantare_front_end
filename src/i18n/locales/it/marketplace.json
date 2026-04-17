@@ -24,5 +24,10 @@
   "productCard": {
     "available": "disponibili",
     "co2PerTree": "CO2"
+  },
+  "treeCard": {
+    "keyCharacteristics": "Caratteristiche principali",
+    "ecologicalScores": "Punteggi ecologici",
+    "addToCart": "Aggiungi al Carrello"
   }
 }

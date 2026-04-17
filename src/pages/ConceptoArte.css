@@ -54,13 +54,14 @@
 }
 
 .conceito-arte__hero-title {
-  font-family: 'Fira Mono', monospace;
-  font-size: clamp(2.5rem, 5vw, 3.75rem);
-  font-weight: 700;
-  color: var(--roman-coffee-100, #e9e4d8);
+  font-family: var(--font-primary);
+  font-size: var(--hero-title-size-standard);
+  font-weight: var(--font-weight-bold);
+  color: var(--hero-title-color);
   text-transform: capitalize;
-  line-height: 1.2;
+  line-height: var(--line-height-tight);
   margin-bottom: 1.5rem;
+  text-shadow: var(--hero-title-stroke);
 }
 
 .conceito-arte__hero-subtitle {
@@ -452,40 +453,7 @@
   border: 4px solid var(--lunar-green-200, #d1e1d2);
 }
 
-.conceito-arte__species-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  background-color: rgba(61, 88, 62, 0.7);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.conceito-arte__species-card:hover .conceito-arte__species-overlay {
-  opacity: 1;
-}
-
-.conceito-arte__species-info-btn {
-  background: none;
-  border: none;
-  color: #ffffff;
-  cursor: pointer;
-  padding: 0.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.2s ease;
-}
-
-.conceito-arte__species-info-btn:hover {
-  transform: scale(1.1);
-}
+/* Removed overlay and info button - cards are now clickable directly */
 
 .conceito-arte__species-info {
   text-align: center;
@@ -515,40 +483,73 @@
 }
 
 /* ========================================
-   Modal Styles
+   TreeCard Modal
    ======================================== */
 
-.conceito-arte__modal {
+.conceito-arte__modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  right: 0;
+  bottom: 0;
   background-color: rgba(0, 0, 0, 0.8);
-  display: flex;
-  align-items: center;
-  justify-content: center;
   z-index: 9999;
   overflow-y: auto;
-  padding: 2rem;
+  padding: 2rem 1rem;
 }
 
 .conceito-arte__modal-content {
-  position: relative;
-  max-width: 1400px;
   width: 100%;
-  max-height: 90vh;
-  overflow-y: auto;
-  background-color: var(--roman-coffee-100, #e9e4d8);
-  border-radius: 20px;
-  padding: 2rem;
+  max-width: 950px;
+  margin: 0 auto;
+  position: relative;
+}
+
+/* Modal Navigation Buttons */
+.conceito-arte__modal-nav-btn {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(61, 88, 62, 0.9);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 56px;
+  height: 56px;
+  cursor: pointer;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.conceito-arte__modal-nav-btn:hover {
+  background-color: rgba(75, 110, 76, 0.95);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.conceito-arte__modal-nav-btn:focus {
+  outline: 2px solid #81a782;
+  outline-offset: 4px;
+}
+
+.conceito-arte__modal-nav-btn--prev {
+  left: 2rem;
+}
+
+.conceito-arte__modal-nav-btn--next {
+  right: 2rem;
 }
 
 .conceito-arte__modal-close {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background: var(--lunar-green-700, #3d583e);
+  position: fixed;
+  top: 2rem;
+  right: 2rem;
+  background: #3d583e;
   border: none;
   border-radius: 50%;
   width: 48px;
@@ -559,16 +560,17 @@
   cursor: pointer;
   color: #ffffff;
   transition: background-color 0.3s ease, transform 0.2s ease;
-  z-index: 10;
+  z-index: 10000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
 
 .conceito-arte__modal-close:hover {
-  background-color: var(--lunar-green-600, #4b6e4c);
+  background-color: #4b6e4c;
   transform: scale(1.1);
 }
 
 .conceito-arte__modal-close:focus {
-  outline: 2px solid var(--lunar-green-400, #81a782);
+  outline: 2px solid #81a782;
   outline-offset: 4px;
 }
 
@@ -591,11 +593,19 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (min-width: 768px) {
   .conceito-arte__hero-title {
-    font-size: 2.5rem;
+    font-size: var(--hero-title-size-standard-tablet);
   }
+}
 
+@media (min-width: 1024px) {
+  .conceito-arte__hero-title {
+    font-size: var(--hero-title-size-standard-desktop);
+  }
+}
+
+@media (max-width: 768px) {
   .conceito-arte__hero-subtitle,
   .conceito-arte__hero-location {
     font-size: 1rem;
@@ -634,12 +644,34 @@
     grid-template-columns: 1fr;
   }
 
-  .conceito-arte__modal {
-    padding: 1rem;
+  .conceito-arte__modal-overlay {
+    padding: 1rem 0.5rem;
   }
 
   .conceito-arte__modal-content {
-    padding: 1rem;
+    max-width: 100%;
+  }
+
+  .conceito-arte__modal-close {
+    top: 1rem;
+    right: 1rem;
+    width: 44px;
+    height: 44px;
+    font-size: 1.2rem;
+  }
+
+  .conceito-arte__modal-nav-btn {
+    width: 48px;
+    height: 48px;
+    font-size: 1.5rem;
+  }
+
+  .conceito-arte__modal-nav-btn--prev {
+    left: 0.5rem;
+  }
+
+  .conceito-arte__modal-nav-btn--next {
+    right: 0.5rem;
   }
 }
 
@@ -660,5 +692,42 @@
   .conceito-arte__species-image-wrapper {
     width: 100px;
     height: 100px;
+  }
+
+  .conceito-arte__modal-overlay {
+    padding: 1rem 0;
+    display: block;
+  }
+
+  .conceito-arte__modal-content {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 0 0.5rem;
+  }
+
+  .conceito-arte__modal-close {
+    top: 0.5rem;
+    right: 0.5rem;
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
+  }
+
+  .conceito-arte__modal-nav-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 1.2rem;
+    top: auto;
+    bottom: 1.5rem;
+    transform: none;
+  }
+
+  .conceito-arte__modal-nav-btn--prev {
+    left: 0.5rem;
+  }
+
+  .conceito-arte__modal-nav-btn--next {
+    right: 0.5rem;
   }
 }

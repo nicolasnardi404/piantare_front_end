@@ -1,10 +1,10 @@
 {
   "hero": {
-    "subtitle": "uno spazio comunitario che lavora con arte e pratiche sostenibili",
-    "location": "Porto Alegre, RS, Brasile"
+    "subtitle": "uno spazio comunitario che lavora con l'arte e le pratiche sostenibili",
+    "location": "Porto Alegre, RS, Brasil"
   },
   "description": {
-    "text": "ConceitoArte è uno spazio comunitario che lavora con arte e pratiche sostenibili a Sarandi, uno dei quartieri più colpiti dalle inondazioni del 2024 nel Rio Grande do Sul. La loro micro-foresta Miyawaki è già piantata e sarà utilizzata per convalidare gli strumenti di raccolta dati, monitoraggio e piattaforma di ApeForest."
+    "text": "ConceitoArte è uno spazio comunitario che lavora con l'arte e le pratiche sostenibili a Sarandi, uno dei quartieri più colpiti dalle inondazioni del 2024 nel Rio Grande do Sul. La loro micro-foresta Miyawaki è già stata piantata e sarà utilizzata per validare gli strumenti di raccolta dati, monitoraggio e piattaforma di ApeForest."
   },
   "stats": {
     "plantedTrees": "alberi piantati",
@@ -14,22 +14,1211 @@
   },
   "methodology": {
     "title": "Metodo di Piantagione",
-    "text": "Il metodo Miyawaki, sviluppato dal botanico giapponese Akira Miyawaki, è una tecnica di riforestazione accelerata che crea foreste native dense, biodiversificate e resilienti in piccole aree e in breve tempo (da 20 a 30 anni, rispetto ai 100 anni per la rigenerazione naturale)."
+    "text": "Il metodo Miyawaki, sviluppato dal botanico giapponese Akira Miyawaki, è una tecnica di riforestazione accelerata che crea foreste native dense, biodiversificate e resilienti in piccole aree e in un breve periodo di tempo (20-30 anni, rispetto ai 100 anni per la rigenerazione naturale)."
   },
   "resilience": {
-    "title": "Radicato nella resilienza",
-    "text1": "Nel maggio 2024, il Rio Grande do Sul ha vissuto le peggiori inondazioni della sua storia registrata. Oltre 2,3 milioni di persone sono state colpite e Sarandi è stato uno degli ultimi quartieri di Porto Alegre a vedere l'acqua ritirarsi.",
-    "text2": "Quando le acque alluvionali sono finalmente andate via, hanno lasciato dietro di sé terreno danneggiato e una comunità in fase di recupero. Le foreste native aiutano a trattenere l'acqua, stabilizzare il suolo e ridurre l'impatto di future inondazioni — rendendo la riforestazione non solo un atto ambientale ma una strategia di sopravvivenza."
+    "title": "Radici nella resilienza",
+    "text1": "Nel maggio 2024, il Rio Grande do Sul ha subito le peggiori inondazioni della sua storia documentata. Oltre 2,3 milioni di persone sono state colpite e Sarandi è stato uno degli ultimi quartieri di Porto Alegre a vedere l'acqua ritirarsi.",
+    "text2": "Quando le acque dell'inondazione si sono finalmente ritirate, hanno lasciato un terreno danneggiato e una comunità in fase di recupero. Le foreste native aiutano a trattenere l'acqua, stabilizzare il suolo e ridurre l'impatto di future inondazioni — rendendo la riforestazione non solo un atto ambientale ma una strategia di sopravvivenza."
   },
   "soil": {
-    "title": "Preparazione del suolo",
-    "text": "L'area è stata preparata utilizzando un escavatore che ha rimosso 50 cm di terreno di riempimento compattato su tutta l'area di 100 m². Il terreno rimosso è stato posizionato lungo i bordi del terreno, formando un confine naturale e creando un bacino di ritenzione idrica. Il compost è stato quindi aggiunto per arricchire il suolo prima della piantagione."
+    "title": "Preparazione del terreno",
+    "text": "L'area è stata preparata utilizzando un escavatore che ha rimosso 50 cm di terreno di riempimento compattato su tutti i 100 m². Il terreno rimosso è stato posizionato lungo i bordi del lotto, formando un confine naturale e creando un bacino di ritenzione idrica. È stato poi aggiunto compost per arricchire il suolo prima della piantagione."
   },
   "partners": {
-    "title": "Partner:",
-    "placeholder": "Loghi dei partner in arrivo"
+    "title": "Partner:"
+  },
+  "speciesSection": {
+    "title": "Specie"
   },
   "species": {
-    "title": "Specie"
+    "1": {
+      "commonName": "Dedalheiro",
+      "description": "Un albero aggraziato di foresta secondaria con fiori bianchi vistosi e corteccia medicinale. Altamente apprezzato nella fitoterapia tradizionale. Specie chiave di successione intermedia nelle foreste di galleria.",
+      "keyFeatures": [
+        "Corteccia medicinale",
+        "Fiori bianchi",
+        "Foresta di galleria",
+        "Foraggio per api"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversità",
+          "description": "Attira api, farfalle e colibrì; sostiene la diversità degli insetti del medio strato."
+        },
+        {
+          "label": "Sicurezza Alimentare",
+          "description": "Non commestibile, ma i raccoglitori comunitari apprezzano la corteccia per tè e trattamenti delle ferite."
+        },
+        {
+          "label": "Resilienza Climatica",
+          "description": "Tollera i periodi secchi e i terreni compattati; buon cuscinetto ripariale negli inverni del RS."
+        },
+        {
+          "label": "Sequestro del Carbonio",
+          "description": "Tasso di crescita moderato con legno di media densità; biomassa ragionevole a lungo termine."
+        },
+        {
+          "label": "Ruolo Ecologico",
+          "description": "Riempitivo chiave di media successione; collega gli strati pionieri e climax nella foresta di galleria."
+        },
+        {
+          "label": "Beneficio Comunitario",
+          "description": "Corteccia ampiamente commercializzata per fitoterapia; economicamente significativa per i guaritori locali."
+        }
+      ]
+    },
+    "2": {
+      "commonName": "Timbó",
+      "description": "Leguminosa pioniera a crescita rapida che fissa l'azoto atmosferico e colonizza rapidamente i suoli degradati. Fondamentale per il recupero del suolo nelle fasi iniziali di successione.",
+      "keyFeatures": [
+        "Fissazione di N",
+        "Pioniera",
+        "Recupero del suolo",
+        "Veleno per pesci"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversità",
+          "description": "Attrattività limitata dei frutti ma i fiori sostengono le api generaliste nella successione iniziale."
+        },
+        {
+          "label": "Sicurezza Alimentare",
+          "description": "Semi tossici; non commestibile — storicamente usato come ittiossina per la pesca."
+        },
+        {
+          "label": "Resilienza Climatica",
+          "description": "Estremamente resistente su siti degradati ed esposti; uno dei primi a stabilizzare il terreno nudo."
+        },
+        {
+          "label": "Sequestro del Carbonio",
+          "description": "La crescita rapida offre guadagni precoci di carbonio; la densità del legno è moderata."
+        },
+        {
+          "label": "Ruolo Ecologico",
+          "description": "La fissazione dell'azoto accelera drasticamente il recupero del suolo per le specie successive."
+        },
+        {
+          "label": "Beneficio Comunitario",
+          "description": "Uso tradizionale come veleno per pesci; le comunità vivaistiche possono vendere piantine per contratti di restauro."
+        }
+      ]
+    },
+    "3": {
+      "commonName": "Aroeira vermelha (Pepe rosa)",
+      "description": "Pioniera resiliente con bacche rosso brillante (pepe rosa brasiliano) che attirano gli uccelli. Eccellente per la stabilizzazione delle sponde dei fiumi e il restauro delle aree degradate.",
+      "keyFeatures": [
+        "Pepe rosa",
+        "Cibo per uccelli",
+        "Sponde fluviali",
+        "Commercio di spezie"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversità",
+          "description": "Le bacche rosse attirano oltre 40 specie di uccelli; importante fonte alimentare per corvidi e tordi."
+        },
+        {
+          "label": "Sicurezza Alimentare",
+          "description": "Pepe rosa brasiliano — spezia commerciale con mercato attivo; frutto commestibile con moderazione."
+        },
+        {
+          "label": "Resilienza Climatica",
+          "description": "Tollera siccità, inondazioni e terreni salini; una delle native del RS più resilienti."
+        },
+        {
+          "label": "Sequestro del Carbonio",
+          "description": "Accumulo lento di biomassa; densità del legno moderata ma statura limitata."
+        },
+        {
+          "label": "Ruolo Ecologico",
+          "description": "Colonizzatore rapido dei margini fluviali; eccellente per prevenire l'erosione post-inondazione."
+        },
+        {
+          "label": "Beneficio Comunitario",
+          "description": "La raccolta del pepe rosa crea reddito diretto per i Guarani e i piccoli agricoltori."
+        }
+      ]
+    },
+    "4": {
+      "commonName": "Pata de vaca (Zampa di mucca)",
+      "description": "Pioniera dai fiori a farfalla con fioriture simili alle orchidee, ampiamente utilizzata nella medicina popolare per la gestione del diabete. Tollera terreni poveri e condizioni urbane.",
+      "keyFeatures": [
+        "Medicinale",
+        "Fiori a orchidea",
+        "Tollerante urbana",
+        "Pioniera"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversità",
+          "description": "I grandi fiori bianchi sono una fonte primaria di nettare per falene sfingi e impollinatori notturni."
+        },
+        {
+          "label": "Sicurezza Alimentare",
+          "description": "Le foglie sono usate in tè medicinali; nessun valore alimentare significativo per le comunità."
+        },
+        {
+          "label": "Resilienza Climatica",
+          "description": "Prospera su terreni urbani compattati e poveri di nutrienti; tollera la siccità stagionale."
+        },
+        {
+          "label": "Sequestro del Carbonio",
+          "description": "Tasso di crescita moderato; il legno è leggero e i guadagni di carbonio sono limitati nella breve vita."
+        },
+        {
+          "label": "Ruolo Ecologico",
+          "description": "Pioniera utile ma con radici superficiali; valore di successione inferiore rispetto alle pioniere leguminose."
+        },
+        {
+          "label": "Beneficio Comunitario",
+          "description": "Le foglie sono vendute fresche e secche per la gestione del diabete — alta domanda nei mercati erboristici."
+        }
+      ]
+    },
+    "5": {
+      "commonName": "Guabiroba",
+      "description": "Albero da frutto aromatico che produce frutti dolci e profumati che attirano mammiferi e uccelli. Importante albero per la sovranità alimentare delle comunità Guarani.",
+      "keyFeatures": [
+        "Frutto commestibile",
+        "Calamita per fauna",
+        "Aromatico",
+        "Uso Guarani"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversità",
+          "description": "Frutto consumato da tapiri, pecari, tucani e oltre 30 specie di uccelli."
+        },
+        {
+          "label": "Sicurezza Alimentare",
+          "description": "Frutto aromatico dolce consumato fresco e usato in succhi, marmellate e liquori artigianali."
+        },
+        {
+          "label": "Resilienza Climatica",
+          "description": "Gestisce il gelo del RS e la siccità stagionale; moderatamente resiliente in tutto lo stato."
+        },
+        {
+          "label": "Sequestro del Carbonio",
+          "description": "Legno di media densità e crescita moderata; contributo solido di carbonio nella fascia media."
+        },
+        {
+          "label": "Ruolo Ecologico",
+          "description": "Specie critica di media successione che collega l'habitat aperto alla foresta a canopia chiusa."
+        },
+        {
+          "label": "Beneficio Comunitario",
+          "description": "Centrale nella cultura alimentare Guarani; la raccolta dei frutti genera reddito stagionale per le famiglie."
+        }
+      ]
+    },
+    "6": {
+      "commonName": "Araçá amarelo (Guava gialla nativa)",
+      "description": "Guava nativa a frutto giallo che produce frutti dolci ricchi di vitamine più volte all'anno. Albero del sottobosco altamente produttivo che sostiene uccelli e piccoli mammiferi.",
+      "keyFeatures": [
+        "Frutto giallo",
+        "Multi-raccolta",
+        "Sottobosco",
+        "Alta vitamina C"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversità",
+          "description": "La fruttificazione annuale sostiene uccelli e piccoli mammiferi anche nelle stagioni magre della foresta."
+        },
+        {
+          "label": "Sicurezza Alimentare",
+          "description": "Frutto giallo dolce con vitamina C molto alta; mangiato fresco, in marmellate e bevande fermentate."
+        },
+        {
+          "label": "Resilienza Climatica",
+          "description": "Tollera i geli del RS e la siccità leggera; si adatta bene alle condizioni del margine forestale."
+        },
+        {
+          "label": "Sequestro del Carbonio",
+          "description": "Statura piccola e vita breve limitano l'accumulo di biomassa."
+        },
+        {
+          "label": "Ruolo Ecologico",
+          "description": "Importante strato di sottobosco ma ruolo strutturale limitato nella successione della canopia."
+        },
+        {
+          "label": "Beneficio Comunitario",
+          "description": "Frutto raccolto per uso domestico e vendita su piccola scala nei mercati locali tutto l'anno."
+        }
+      ]
+    },
+    "7": {
+      "commonName": "Ipê Roxo (Lapacho viola)",
+      "description": "Iconico albero climax dai fiori viola e simbolo nazionale del Brasile. Eccezionale valore di legname e carbonio. Fiorisce prima della fogliazione, fornendo nettare cruciale di inizio stagione per le api.",
+      "keyFeatures": [
+        "Simbolo nazionale",
+        "Legname",
+        "Nettare per api",
+        "Canopia"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversità",
+          "description": "La fioritura pre-fogliare fornisce il primo grande flusso di nettare della stagione per api e colibrì."
+        },
+        {
+          "label": "Sicurezza Alimentare",
+          "description": "Nessuna parte commestibile; la corteccia interna ha uso medicinale tradizionale come antinfiammatorio."
+        },
+        {
+          "label": "Resilienza Climatica",
+          "description": "La radice a fittone profonda tollera la siccità; l'abitudine decidua permette la sopravvivenza agli inverni secchi del RS."
+        },
+        {
+          "label": "Sequestro del Carbonio",
+          "description": "Legno duro denso, crescita lenta oltre 80-100 anni accumula biomassa eccezionale."
+        },
+        {
+          "label": "Ruolo Ecologico",
+          "description": "Specie climax dominante della canopia; definisce la struttura e la longevità della Foresta Atlantica matura."
+        },
+        {
+          "label": "Beneficio Comunitario",
+          "description": "Specie di legname premium e icona culturale; piantine in alta domanda per il restauro."
+        }
+      ]
+    },
+    "8": {
+      "commonName": "Louro (Alloro)",
+      "description": "Specie di legname pregiata che produce legno leggero e durevole usato in falegnameria. I piccoli fiori bianchi attirano api e insetti. Importante contributore alla canopia secondaria.",
+      "keyFeatures": [
+        "Legname",
+        "Fiori per api",
+        "Agroforestale",
+        "Canopia"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversità",
+          "description": "I fiori bianchi attirano api generaliste; valore limitato dei frutti per la fauna selvatica."
+        },
+        {
+          "label": "Sicurezza Alimentare",
+          "description": "Nessun uso commestibile significativo; non fa parte dei sistemi alimentari indigeni."
+        },
+        {
+          "label": "Resilienza Climatica",
+          "description": "Si adatta a vari terreni del RS; semi-deciduo permettendo la tolleranza al gelo."
+        },
+        {
+          "label": "Sequestro del Carbonio",
+          "description": "Buona densità del legno e statura alta; significativo accumulo di carbonio a lungo termine."
+        },
+        {
+          "label": "Ruolo Ecologico",
+          "description": "Utile specie di canopia secondaria ma non un'ancora di biodiversità da sola."
+        },
+        {
+          "label": "Beneficio Comunitario",
+          "description": "Legname leggero altamente apprezzato usato in mobili, porte e barche tradizionali."
+        }
+      ]
+    },
+    "9": {
+      "commonName": "Angico vermelho (Angico rosso)",
+      "description": "Albero leguminoso alto che fissa azoto atmosferico producendo legname denso e durevole. Migliora simultaneamente i suoli, sequestra alto carbonio e sostiene la biodiversità della canopia.",
+      "keyFeatures": [
+        "Fissazione di N",
+        "Legname denso",
+        "Corteccia medicinale",
+        "Sequestro di N"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversità",
+          "description": "I fiori attirano api e coleotteri; la canopia supporta orchidee epifite e bromeliacee."
+        },
+        {
+          "label": "Sicurezza Alimentare",
+          "description": "Corteccia usata medicinalmente; semi non commestibili. Nessun valore alimentare per le comunità."
+        },
+        {
+          "label": "Resilienza Climatica",
+          "description": "Radici profonde e fissazione dell'azoto lo aiutano a stabilirsi in terreni degradati e poveri di nutrienti."
+        },
+        {
+          "label": "Sequestro del Carbonio",
+          "description": "Legno molto denso combinato con alta statura lo rende un sequestratorre di carbonio top nel RS."
+        },
+        {
+          "label": "Ruolo Ecologico",
+          "description": "Doppio ruolo come fissatore di N e specie di canopia lo rende eccezionalmente prezioso nella progettazione di restauro."
+        },
+        {
+          "label": "Beneficio Comunitario",
+          "description": "Tannini della corteccia usati nel trattamento del cuoio; legname denso apprezzato per costruzioni pesanti."
+        }
+      ]
+    },
+    "10": {
+      "commonName": "Açoita cavalo",
+      "description": "Albero medio-grande con corteccia fibrosa tradizionalmente usata per la fabbricazione di corde. I fiori attirano numerosi impollinatori. Eccellente specie ripariale che tollera inondazioni periodiche.",
+      "keyFeatures": [
+        "Ripariale",
+        "Impollinatore",
+        "Fibra per corde",
+        "Tollerante alle inondazioni"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversità",
+          "description": "Fiori abbondanti attirano api diverse, vespe e coleotteri in una stagione di fioritura estesa."
+        },
+        {
+          "label": "Sicurezza Alimentare",
+          "description": "Nessuna parte commestibile; la fibra della corteccia usata per cordame ma non per cibo."
+        },
+        {
+          "label": "Resilienza Climatica",
+          "description": "Uno dei pochi alberi medi che tollera sia inondazioni stagionali che periodi secchi nel RS."
+        },
+        {
+          "label": "Sequestro del Carbonio",
+          "description": "Legname di media densità con buona statura; solido contributo di carbonio oltre 50+ anni."
+        },
+        {
+          "label": "Ruolo Ecologico",
+          "description": "Critico per il restauro del corridoio ripariale dopo eventi di inondazione tipo 2024 nel RS."
+        },
+        {
+          "label": "Beneficio Comunitario",
+          "description": "Fibra della corteccia interna usata per corde e tessitura tradizionale; medicina popolare antinfiammatoria."
+        }
+      ]
+    },
+    "11": {
+      "commonName": "Carne de vaca",
+      "description": "Albero del sottobosco di media successione con fiori bianchi profumati ricchi di nettare. La corteccia ha usi medicinali tradizionali. Prezioso per lo sviluppo della biodiversità del sottobosco.",
+      "keyFeatures": [
+        "Fiori profumati",
+        "Sottobosco",
+        "Medicinale",
+        "Ricco di nettare"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversità",
+          "description": "I fiori altamente profumati sono una fonte rara e importante di nettare per le api specialiste."
+        },
+        {
+          "label": "Sicurezza Alimentare",
+          "description": "La corteccia ha uso popolare anti-reumatico; non è una pianta alimentare."
+        },
+        {
+          "label": "Resilienza Climatica",
+          "description": "Gestisce la variabilità dell'umidità stagionale; cresce sia in siti del RS umidi che più secchi."
+        },
+        {
+          "label": "Sequestro del Carbonio",
+          "description": "Statura e densità del legno modeste; ruolo di carbonio limitato ma cumulativo in piantagioni dense."
+        },
+        {
+          "label": "Ruolo Ecologico",
+          "description": "Riempie lo strato critico del sottobosco, fornendo ombra e umidità per l'insediamento delle piantine."
+        },
+        {
+          "label": "Beneficio Comunitario",
+          "description": "Corteccia usata nella medicina tradizionale per dolori articolari; moderato valore di conoscenza locale."
+        }
+      ]
+    },
+    "12": {
+      "commonName": "Araçá vermelho (Guava rossa nativa)",
+      "description": "Guava nativa a frutto rosso — uno degli alberi piccoli più produttivi e importanti per la fauna della Foresta Atlantica. Fruttifica tutto l'anno, sostenendo uccelli, mammiferi e comunità.",
+      "keyFeatures": [
+        "Frutto rosso",
+        "Tutto l'anno",
+        "Cibo per fauna",
+        "Sicurezza alimentare"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversità",
+          "description": "Fruttificazione continua tutto l'anno sostiene uccelli, pipistrelli e piccoli mammiferi anche nella stagione secca."
+        },
+        {
+          "label": "Sicurezza Alimentare",
+          "description": "Frutto abbondante dolce-acidulo mangiato fresco, in marmellate, succhi e vino; raccolti multipli all'anno."
+        },
+        {
+          "label": "Resilienza Climatica",
+          "description": "Resistente alle condizioni del RS incluso gelo leggero; tollera terreni sia umidi che secchi."
+        },
+        {
+          "label": "Sequestro del Carbonio",
+          "description": "Statura piccola simile a un arbusto limita l'accumulo di carbonio nonostante la lunga vita produttiva."
+        },
+        {
+          "label": "Ruolo Ecologico",
+          "description": "Fonte alimentare affidabile sostiene i frugivori tutto l'anno, amplificando la dispersione dei semi nel sito."
+        },
+        {
+          "label": "Beneficio Comunitario",
+          "description": "Pianta alimentare più usata per i Guarani — frutto fresco, bevande e prodotti conservati venduti localmente."
+        }
+      ]
+    },
+    "13": {
+      "commonName": "Canafistula (Cassia gialla)",
+      "description": "Leguminosa dai fiori gialli spettacolari con radici che fissano l'azoto. La canopia densa fornisce eccellente ombra e legname. Uno degli alberi grandi di foresta secondaria più importanti del Brasile meridionale.",
+      "keyFeatures": [
+        "Fiori gialli",
+        "Fissazione di N",
+        "Legname",
+        "Canopia grande"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversità",
+          "description": "Fiori gialli abbondanti sono fonte chiave di nettare nella stagione secca; i baccelli alimentano uccelli granivori."
+        },
+        {
+          "label": "Sicurezza Alimentare",
+          "description": "Nessuna parte commestibile; i baccelli sono ornamentali piuttosto che commestibili."
+        },
+        {
+          "label": "Resilienza Climatica",
+          "description": "Tollera forti piogge estive del RS e geli invernali moderati; resistente su terreni disturbati."
+        },
+        {
+          "label": "Sequestro del Carbonio",
+          "description": "Raggiunge i 25m con legno denso; tra i valori di carbonio più alti degli alberi secondari del RS."
+        },
+        {
+          "label": "Ruolo Ecologico",
+          "description": "Fissazione dell'azoto più canopia alta: rara specie bifunzionale che accelera la successione."
+        },
+        {
+          "label": "Beneficio Comunitario",
+          "description": "Legname apprezzato per costruzioni; crescita abbastanza rapida per rotazione forestale comunitaria."
+        }
+      ]
+    },
+    "14": {
+      "commonName": "Canela (Cannella)",
+      "description": "Albero climax aromatico della famiglia delle lauracee che produce piccoli frutti neri vitali per gli uccelli frugivori. Corteccia usata come spezia nella cucina regionale. Ancora la biodiversità della foresta matura.",
+      "keyFeatures": [
+        "Corteccia aromatica",
+        "Cibo per uccelli",
+        "Climax",
+        "Spezia"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversità",
+          "description": "Piccoli frutti neri ricchi di lipidi sono cibo critico per tucani, cotingas e uccelli migratori."
+        },
+        {
+          "label": "Sicurezza Alimentare",
+          "description": "Corteccia aromatica usata come sostituto della cannella nella cucina regionale; olio di corteccia commercializzato localmente."
+        },
+        {
+          "label": "Resilienza Climatica",
+          "description": "Canopia sempreverde gestisce i geli invernali del RS; tolleranza all'ombra permette la rigenerazione del sottobosco."
+        },
+        {
+          "label": "Sequestro del Carbonio",
+          "description": "Legno denso della famiglia delle lauracee che persiste 60-100 anni accumula solido carbonio a lungo termine."
+        },
+        {
+          "label": "Ruolo Ecologico",
+          "description": "Specie climax dominante nella foresta ombrofila mista; definisce il microclima della foresta matura."
+        },
+        {
+          "label": "Beneficio Comunitario",
+          "description": "Corteccia raccolta per spezie e medicina popolare; legname usato in falegnameria fine."
+        }
+      ]
+    },
+    "15": {
+      "commonName": "Araticum (Mela cannella nativa)",
+      "description": "Mela cannella nativa che produce grandi frutti commestibili altamente nutritivi per comunità e fauna. Particolarmente importante per tapiri e grandi mammiferi. Forte valore di sovranità alimentare per i Guarani.",
+      "keyFeatures": [
+        "Frutto commestibile",
+        "Grandi mammiferi",
+        "Cibo Guarani",
+        "Sottobosco"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversità",
+          "description": "Grandi frutti consumati da tapiri, pecari e scimmie lanose — cibo chiave per la megafauna."
+        },
+        {
+          "label": "Sicurezza Alimentare",
+          "description": "Polpa dolce simile a crema pasticcera mangiata fresca; alto valore calorico e nutrizionale per le comunità."
+        },
+        {
+          "label": "Resilienza Climatica",
+          "description": "Adattato al calore estivo del RS; meno tollerante al gelo ma sopravvive agli inverni tipici del RS."
+        },
+        {
+          "label": "Sequestro del Carbonio",
+          "description": "Statura e densità del legno modeste; contributo di carbonio moderato."
+        },
+        {
+          "label": "Ruolo Ecologico",
+          "description": "La grande dimensione dei semi significa che la dispersione dipende dalla megafauna, rendendolo una specie indicatrice di restauro."
+        },
+        {
+          "label": "Beneficio Comunitario",
+          "description": "Uno dei frutti culturalmente più importanti per i Guarani; commercializzato nelle fiere alimentari indigene."
+        }
+      ]
+    },
+    "16": {
+      "commonName": "Guajuvira",
+      "description": "Albero da legname pregiato con fiori bianchi cremosi che attirano abbondanti impollinatori. Legno usato per mobili e costruzioni. Combina alto valore di legname con supporto agli impollinatori.",
+      "keyFeatures": [
+        "Legname",
+        "Fiori bianchi",
+        "Impollinatore",
+        "Foresta secondaria"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversità",
+          "description": "Fiori bianchi prolifici attirano grandi corporazioni di api; la canopia supporta uccelli che nidificano in cavità."
+        },
+        {
+          "label": "Sicurezza Alimentare",
+          "description": "Nessun valore commestibile significativo; solo specie di legname."
+        },
+        {
+          "label": "Resilienza Climatica",
+          "description": "Tollera vari terreni del RS; semi-deciduo riducendo lo stress da gelo in inverno."
+        },
+        {
+          "label": "Sequestro del Carbonio",
+          "description": "Legno di densità medio-alta in un albero secondario alto; solido sequestro di carbonio."
+        },
+        {
+          "label": "Ruolo Ecologico",
+          "description": "Importante specie strutturale della canopia che accelera la formazione di foresta chiusa in questo sito."
+        },
+        {
+          "label": "Beneficio Comunitario",
+          "description": "Legname di alta qualità per mobili e costruzioni; domanda locale attiva per legno di Guajuvira."
+        }
+      ]
+    },
+    "17": {
+      "commonName": "Caroba (Jacaranda nativa)",
+      "description": "Jacaranda nativa che produce fiori blu-viola ricchi di nettare. Corteccia usata medicinalmente per condizioni della pelle. Fornisce strato di biodiversità di media canopia.",
+      "keyFeatures": [
+        "Fiori blu",
+        "Corteccia medicinale",
+        "Nettare",
+        "Media canopia"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversità",
+          "description": "Fiori tubolari blu sono risorsa specializzata per api dalla lingua lunga e colibrì."
+        },
+        {
+          "label": "Sicurezza Alimentare",
+          "description": "Nessuna parte commestibile; estratto di corteccia usato topicamente solo per condizioni cutanee."
+        },
+        {
+          "label": "Resilienza Climatica",
+          "description": "Tollera geli del RS e piogge variabili; robusto dal margine forestale all'interno."
+        },
+        {
+          "label": "Sequestro del Carbonio",
+          "description": "Legno di media densità; contribuisce carbonio moderato ad altezze di media canopia."
+        },
+        {
+          "label": "Ruolo Ecologico",
+          "description": "Crea complessità visiva e strutturale nello strato medio della foresta; supporta epifite."
+        },
+        {
+          "label": "Beneficio Comunitario",
+          "description": "Decotti di corteccia usati per sifilide e infezioni cutanee nella medicina tradizionale."
+        }
+      ]
+    },
+    "18": {
+      "commonName": "Ipê Amarelo (Lapacho giallo)",
+      "description": "Albero climax dai fiori dorati — il fiore nazionale del Brasile. Fornisce nettare critico di inizio primavera. Legname denso e durevole e accumulo eccezionale di carbonio a lungo termine.",
+      "keyFeatures": [
+        "Fiore nazionale",
+        "Fioritura dorata",
+        "Legname",
+        "Nettare per api"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversità",
+          "description": "Fioritura dorata di massa prima del fogliame è l'evento di api di inizio primavera più importante nella foresta del RS."
+        },
+        {
+          "label": "Sicurezza Alimentare",
+          "description": "Nessuna parte commestibile; la corteccia ha uso antinfiammatorio tradizionale minore."
+        },
+        {
+          "label": "Resilienza Climatica",
+          "description": "La strategia decidua conserva l'umidità; le radici profonde gestiscono siccità del RS e geli invernali."
+        },
+        {
+          "label": "Sequestro del Carbonio",
+          "description": "Legno duro molto denso che si accumula oltre 80-100 anni; accumulo eccezionale di carbonio nel tempo di vita."
+        },
+        {
+          "label": "Ruolo Ecologico",
+          "description": "Ancora climax della canopia; definisce la fisionomia della Foresta Atlantica matura nel Brasile meridionale."
+        },
+        {
+          "label": "Beneficio Comunitario",
+          "description": "Simbolo del fiore nazionale del Brasile; legname premium; alta domanda di piantine per il restauro."
+        }
+      ]
+    },
+    "19": {
+      "commonName": "Pêssego do Mato (Pesca selvatica)",
+      "description": "Pesca selvatica nativa con frutto dolce commestibile amato da uccelli e comunità. Fruttifica prolificamente sostenendo uccelli e piccoli mammiferi tutto l'anno in ambienti ripariali e di foresta secondaria.",
+      "keyFeatures": [
+        "Frutto commestibile",
+        "Cibo per uccelli",
+        "Ripariale",
+        "Sicurezza alimentare"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversità",
+          "description": "Fruttificazione prolifica supporta tordi, tangare e piccoli mammiferi attraverso stagioni estese."
+        },
+        {
+          "label": "Sicurezza Alimentare",
+          "description": "Frutto dolce dal sapore di pesca mangiato fresco e usato in marmellate e distillati artigianali."
+        },
+        {
+          "label": "Resilienza Climatica",
+          "description": "Tollera inondazioni, gelo e siccità stagionale del RS — versatile in tutto lo stato."
+        },
+        {
+          "label": "Sequestro del Carbonio",
+          "description": "Statura piccola e densità del legno moderata; contributo individuale di carbonio limitato."
+        },
+        {
+          "label": "Ruolo Ecologico",
+          "description": "Specialista del sottobosco ripariale; cruciale per il recupero della biodiversità delle sponde fluviali dopo inondazioni."
+        },
+        {
+          "label": "Beneficio Comunitario",
+          "description": "Frutto ampiamente usato nelle cucine domestiche e venduto nei mercati comunitari; facile da propagare."
+        }
+      ]
+    },
+    "20": {
+      "commonName": "Maria preta",
+      "description": "Alto albero di foresta climax con semi alati scuri distintivi. Eccellente legname denso e alto accumulo di carbonio a lungo termine. Una specie importante ma rara della canopia matura.",
+      "keyFeatures": [
+        "Legname denso",
+        "Semi alati",
+        "Rara",
+        "Canopia"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversità",
+          "description": "Semi alati dispersi dal vento; valore alimentare diretto limitato per la fauna ma la canopia supporta epifite."
+        },
+        {
+          "label": "Sicurezza Alimentare",
+          "description": "Nessuna parte commestibile o ampiamente usata medicinalmente; solo specie di legname."
+        },
+        {
+          "label": "Resilienza Climatica",
+          "description": "Stabilita nelle foreste climax del RS; gestisce la variazione stagionale tipica una volta stabilita."
+        },
+        {
+          "label": "Sequestro del Carbonio",
+          "description": "Legno molto denso in un grande albero di canopia che persiste 100 anni; eccellente pozzo di carbonio."
+        },
+        {
+          "label": "Ruolo Ecologico",
+          "description": "Componente climax rara la cui inclusione aumenta la resilienza e l'autenticità della foresta a lungo termine."
+        },
+        {
+          "label": "Beneficio Comunitario",
+          "description": "Legname denso di alto valore; la presenza segnala qualità di foresta matura ai valutatori della conservazione."
+        }
+      ]
+    },
+    "21": {
+      "commonName": "Figueira folha larga (Fico a foglia larga)",
+      "description": "Fico a foglia larga — una vera specie chiave di volta. La fruttificazione continua in tutte le stagioni lo rende forse il singolo albero di biodiversità più importante nell'intera piantagione.",
+      "keyFeatures": [
+        "Specie chiave",
+        "Fruttificazione di massa",
+        "Gigante della canopia",
+        "1200+ sp."
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversità",
+          "description": "I fichi supportano oltre 1.200 specie di vertebrati a livello globale; la fruttificazione continua sostiene la biodiversità tutto l'anno."
+        },
+        {
+          "label": "Sicurezza Alimentare",
+          "description": "Piccoli fichi abbondanti consumati da uccelli, pipistrelli, primati e comunità; lavorati in conserve."
+        },
+        {
+          "label": "Resilienza Climatica",
+          "description": "Sistema radicale esteso stabilizza i suoli; la canopia crea microclima tamponando calore e siccità."
+        },
+        {
+          "label": "Sequestro del Carbonio",
+          "description": "Raggiunge i 30m con tronco massiccio; uno dei più alti accumuli di carbonio nel tempo di vita nella Foresta Atlantica."
+        },
+        {
+          "label": "Ruolo Ecologico",
+          "description": "Chiave di volta assoluta; nessun'altra specie può sostituire il suo ruolo come fonte alimentare continua multi-stagionale."
+        },
+        {
+          "label": "Beneficio Comunitario",
+          "description": "Albero sacro in molte culture indigene; frutto commestibile e legname usato in costruzioni tradizionali."
+        }
+      ]
+    },
+    "22": {
+      "commonName": "Figueira folha miúda (Fico a foglia piccola)",
+      "description": "Fico nativo a foglia più piccola che condivide lo status di specie chiave con il suo parente più grande ad un'altezza di canopia più accessibile. Eccellente complemento in progettazione di piantagione stratificata.",
+      "keyFeatures": [
+        "Specie chiave",
+        "Frutto piccolo",
+        "Fauna selvatica",
+        "Fico nativo"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversità",
+          "description": "Fruttificazione densa sostiene la fauna del sottobosco; importante per uccelli più piccoli incapaci di raggiungere fichi grandi."
+        },
+        {
+          "label": "Sicurezza Alimentare",
+          "description": "Piccoli fichi consumati da uccelli, pipistrelli e comunità; usati in conserve tradizionali."
+        },
+        {
+          "label": "Resilienza Climatica",
+          "description": "Si adatta alla stagionalità del RS; sistema radicale aggressivo gestisce sia periodi umidi che secchi."
+        },
+        {
+          "label": "Sequestro del Carbonio",
+          "description": "Legno denso con vita di 80-100 anni; forte contributo individuale di carbonio a media canopia."
+        },
+        {
+          "label": "Ruolo Ecologico",
+          "description": "Fornisce cibo continuo ad altezza di canopia inferiore, complementando perfettamente il fico a foglia larga."
+        },
+        {
+          "label": "Beneficio Comunitario",
+          "description": "Significato culturale condiviso con tutti i fichi nativi; frutto usato localmente; importante per l'agroforestale."
+        }
+      ]
+    },
+    "23": {
+      "commonName": "Chal chal",
+      "description": "Albero piccolo a fruttificazione prolifica che produce grappoli di bacche rosse estremamente attraenti per gli uccelli. Una delle piante alimentari per uccelli più importanti nelle foreste del Brasile meridionale.",
+      "keyFeatures": [
+        "Grappoli di bacche rosse",
+        "Calamita per uccelli",
+        "Crescita rapida",
+        "Sottobosco"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversità",
+          "description": "Grappoli di bacche rosse dense attirano oltre 50 specie di uccelli; tra i primi 3 alberi per cibo degli uccelli nel RS."
+        },
+        {
+          "label": "Sicurezza Alimentare",
+          "description": "Piccole bacche commestibili e usate in vino artigianale e fermentazione dalle comunità."
+        },
+        {
+          "label": "Resilienza Climatica",
+          "description": "Insediamento rapido su terreni degradati; tollera gelo del RS e allagamento periodico."
+        },
+        {
+          "label": "Sequestro del Carbonio",
+          "description": "Statura piccola e vita breve; ruolo di carbonio locale e cumulativo piuttosto che individuale."
+        },
+        {
+          "label": "Ruolo Ecologico",
+          "description": "Crescita rapida e fruttificazione prolifica ripristinano rapidamente le reti di interazione uccello-pianta nei siti degradati."
+        },
+        {
+          "label": "Beneficio Comunitario",
+          "description": "Bacche usate nel vino popolare; specie a crescita rapida facile da produrre nei vivai comunitari."
+        }
+      ]
+    },
+    "24": {
+      "commonName": "Jaboticaba",
+      "description": "Iconico albero brasiliano che fruttifica sul tronco producendo frutti dolci simili all'uva direttamente sulla corteccia. Fruttifica più volte l'anno, sostenendo impollinatori e frugivori.",
+      "keyFeatures": [
+        "Fruttificazione sul tronco",
+        "Multi-raccolta",
+        "Icona culturale",
+        "Impollinatore"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversità",
+          "description": "Fiori portati sul tronco attirano impollinatori direttamente; frutto consumato da pipistrelli, uccelli e mammiferi."
+        },
+        {
+          "label": "Sicurezza Alimentare",
+          "description": "Frutto dolce dal sapore di uva mangiato fresco, fermentato in vino e liquore; raccolti multipli all'anno."
+        },
+        {
+          "label": "Resilienza Climatica",
+          "description": "Prospera nel clima tropicale-subtropicale del RS; resiliente al calore e siccità moderata."
+        },
+        {
+          "label": "Sequestro del Carbonio",
+          "description": "Tasso di crescita e vita moderati; contributo di carbonio ragionevole per la sua dimensione."
+        },
+        {
+          "label": "Ruolo Ecologico",
+          "description": "Specie del sottobosco con ruolo limitato nella canopia; il maggior valore è nella rete alimentare piuttosto che nella struttura."
+        },
+        {
+          "label": "Beneficio Comunitario",
+          "description": "Icona culturale dell'agroforestale brasiliano; il vino di jaboticaba è un prodotto commercialmente significativo."
+        }
+      ]
+    },
+    "25": {
+      "commonName": "Cocão",
+      "description": "Arbusto-albero pioniere dalle foglie argentate con abbondanti piccoli frutti rossi importanti per gli uccelli. Colonizzatore critico delle praterie degradate della Pampa, abilitando la transizione foresta-savana.",
+      "keyFeatures": [
+        "Foglie argentate",
+        "Frutto rosso",
+        "Pioniere di prateria",
+        "Zona di transizione"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversità",
+          "description": "Piccoli frutti rossi attirano uccelli residenti; fogliame argentato fornisce microhabitat per insetti."
+        },
+        {
+          "label": "Sicurezza Alimentare",
+          "description": "Frutti non comunemente mangiati dalle comunità; valore limitato di sovranità alimentare."
+        },
+        {
+          "label": "Resilienza Climatica",
+          "description": "Pioniere della Pampa degradata aperta — estremamente resistente; sopravvive a esposizione, siccità e terreni poveri."
+        },
+        {
+          "label": "Sequestro del Carbonio",
+          "description": "Statura simile ad arbusto e vita breve limitano severamente l'accumulo di carbonio."
+        },
+        {
+          "label": "Ruolo Ecologico",
+          "description": "Prima specie legnosa a colonizzare prateria degradata della Pampa, permettendo l'inizio della successione forestale."
+        },
+        {
+          "label": "Beneficio Comunitario",
+          "description": "Uso comunitario limitato; il valore risiede nel suo ruolo ecologico piuttosto che nel beneficio umano diretto."
+        }
+      ]
+    },
+    "26": {
+      "commonName": "Branquilho",
+      "description": "Pioniere a crescita rapida che tollera inondazioni e terreni impregnati d'acqua, essenziale per il restauro ripariale. I primi alberi a ristabilire la foresta di galleria e le pianure alluvionali dopo eventi di inondazione.",
+      "keyFeatures": [
+        "Tollerante alle inondazioni",
+        "Corteccia bianca",
+        "Pioniere ripariale",
+        "Crescita rapida"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversità",
+          "description": "Supporta insetti acquatici e uccelli ripariali; valore limitato dei frutti per la fauna selvatica."
+        },
+        {
+          "label": "Sicurezza Alimentare",
+          "description": "Nessun uso commestibile; non fa parte dei sistemi alimentari comunitari."
+        },
+        {
+          "label": "Resilienza Climatica",
+          "description": "Sopravvive all'inondazione completa; la pioniera di resilienza alle inondazioni definitoria del RS dopo eventi tipo 2024."
+        },
+        {
+          "label": "Sequestro del Carbonio",
+          "description": "Densità del legno moderata; la crescita rapida fornisce guadagni precoci di carbonio nei corridoi ripariali."
+        },
+        {
+          "label": "Ruolo Ecologico",
+          "description": "Insostituibile per il restauro delle pianure alluvionali; nient'altro eguaglia la sua tolleranza alle inondazioni nel RS."
+        },
+        {
+          "label": "Beneficio Comunitario",
+          "description": "Uso diretto limitato ma essenziale per proteggere terreni agricoli e terre indigene dalle inondazioni."
+        }
+      ]
+    },
+    "27": {
+      "commonName": "Tucaneiro (Albero del tucano)",
+      "description": "Prende il nome dal tucano — produce frutti aromatici pesantemente consumati da tucani e tangare. Eccellente fonte di nettare per le api. Efficace per ripristinare le comunità di uccelli forestali.",
+      "keyFeatures": [
+        "Cibo per tucani",
+        "Frutto aromatico",
+        "Nettare per api",
+        "Restauro uccelli"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversità",
+          "description": "Frutti aromatici attirano tucani, tangare e tordi — specie indicatrici chiave per il recupero della foresta."
+        },
+        {
+          "label": "Sicurezza Alimentare",
+          "description": "Frutti non significativi per il consumo umano; valore alimentare ecologico supera di gran lunga l'uso comunitario."
+        },
+        {
+          "label": "Resilienza Climatica",
+          "description": "Tollera siccità stagionale del RS e gelo leggero; resistente su terreni degradati."
+        },
+        {
+          "label": "Sequestro del Carbonio",
+          "description": "Statura e densità del legno moderate; contributo di carbonio moderato oltre 30-50 anni."
+        },
+        {
+          "label": "Ruolo Ecologico",
+          "description": "La presenza di tucani che si nutrono qui segnala il ripristino riuscito della comunità di uccelli forestali."
+        },
+        {
+          "label": "Beneficio Comunitario",
+          "description": "Frutto aromatico usato nella medicina popolare; alberi facilmente propagati nei vivai locali."
+        }
+      ]
+    },
+    "28": {
+      "commonName": "Cedro",
+      "description": "Il grande cedro della Foresta Atlantica — maestoso, legname prezioso e il più alto sequestratore individuale di carbonio in questa piantagione. Minacciato dal perforatore dei germogli; le piantagioni miste riducono la vulnerabilità.",
+      "keyFeatures": [
+        "Legname prezioso",
+        "Specie vulnerabile",
+        "Massimo carbonio",
+        "Gigante della canopia"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversità",
+          "description": "Grandi tronchi cavi forniscono nidificazione per rapaci; la canopia supporta comunità epifitiche."
+        },
+        {
+          "label": "Sicurezza Alimentare",
+          "description": "Nessun uso commestibile; la resina ha un'applicazione medicinale tradizionale minore."
+        },
+        {
+          "label": "Resilienza Climatica",
+          "description": "Adattato al clima del RS ma vulnerabile al perforatore dei germogli nelle monoculture; piantagioni miste essenziali."
+        },
+        {
+          "label": "Sequestro del Carbonio",
+          "description": "Raggiunge i 35m con legno aromatico molto denso; massimo valore individuale di carbonio nella piantagione."
+        },
+        {
+          "label": "Ruolo Ecologico",
+          "description": "Gigante della canopia chiave di volta il cui stato minacciato rende ogni individuo piantato critico per la conservazione."
+        },
+        {
+          "label": "Beneficio Comunitario",
+          "description": "Legname da ebanisteria più apprezzato in Sud America; valore economico significativo per la forestale comunitaria."
+        }
+      ]
+    },
+    "29": {
+      "commonName": "Caliandra",
+      "description": "Arbusto pioniere che fissa azoto con spettacolari fiori rosa a piumino. Eccezionale foraggio per colibrì e api. Copre rapidamente il suolo degradato, abilitando la successione.",
+      "keyFeatures": [
+        "Fissazione di N",
+        "Cibo per colibrì",
+        "Fiori rosa",
+        "Controllo dell'erosione"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversità",
+          "description": "Fiori rosa a piumino sono il foraggio primario per colibrì e api sul sito degradato."
+        },
+        {
+          "label": "Sicurezza Alimentare",
+          "description": "Nessuna parte commestibile; il valore è interamente ecologico. I fiori sono ornamentalmente significativi."
+        },
+        {
+          "label": "Resilienza Climatica",
+          "description": "Sistema radicale denso previene l'erosione; la fissazione dell'azoto arricchisce i terreni nudi immediatamente."
+        },
+        {
+          "label": "Sequestro del Carbonio",
+          "description": "Statura arbustiva e vita breve limitano severamente il sequestro individuale di carbonio."
+        },
+        {
+          "label": "Ruolo Ecologico",
+          "description": "Primo fissatore di azoto a stabilizzare il terreno nudo; crea condizioni per tutta la successione successiva."
+        },
+        {
+          "label": "Beneficio Comunitario",
+          "description": "Piantine facilmente vendute dai vivai comunitari; attraente per giardini urbani e restauro."
+        }
+      ]
+    },
+    "30": {
+      "commonName": "Cereja (Ciliegia nativa)",
+      "description": "Ciliegia selvatica nativa che produce ciliegie dolci abbondanti apprezzate da uccelli e comunità. Frutto usato in marmellate, liquori e consumo fresco dalle comunità locali.",
+      "keyFeatures": [
+        "Ciliegia nativa",
+        "Cibo per uccelli",
+        "Frutto comunitario",
+        "Marmellate e liquori"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversità",
+          "description": "Frutti rosso ciliegia attirano tordi, tangare e mammiferi; i fiori supportano api native."
+        },
+        {
+          "label": "Sicurezza Alimentare",
+          "description": "Sapore di ciliegia dolce eccellente fresco; ingrediente principale per marmellate e liquori artigianali."
+        },
+        {
+          "label": "Resilienza Climatica",
+          "description": "Tollera geli del RS e siccità stagionale; resiliente attraverso vari habitat forestali meridionali."
+        },
+        {
+          "label": "Sequestro del Carbonio",
+          "description": "Legno di densità moderata in un albero di taglia media; accumulo di carbonio ragionevole ma non eccezionale."
+        },
+        {
+          "label": "Ruolo Ecologico",
+          "description": "Importante specie secondaria del sottobosco che supporta comunità frugivore tutto l'anno."
+        },
+        {
+          "label": "Beneficio Comunitario",
+          "description": "La produzione di liquore e marmellata di ciliegia è un flusso di reddito attivo per le comunità indigene del RS."
+        }
+      ]
+    },
+    "31": {
+      "commonName": "Goiaba serrana (Feijoa)",
+      "description": "Feijoa nativa delle altitudini che produce frutto aromatico distintivo con polpa bianca dolce. Tollerante al gelo — resilienza climatica eccezionale per gli inverni del Rio Grande do Sul.",
+      "keyFeatures": [
+        "Tollerante al gelo",
+        "Frutto aromatico",
+        "Specie d'altitudine",
+        "Potenziale d'esportazione"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversità",
+          "description": "Petali spessi mangiati dagli uccelli direttamente dal fiore; frutto consumato da più specie."
+        },
+        {
+          "label": "Sicurezza Alimentare",
+          "description": "Polpa altamente aromatica simile alla guava; mangiata fresca o in marmellate premium; mercato di esportazione in crescita."
+        },
+        {
+          "label": "Resilienza Climatica",
+          "description": "Nativa delle altitudini del RS; la specie fruttificante più tollerante al gelo in questa intera piantagione."
+        },
+        {
+          "label": "Sequestro del Carbonio",
+          "description": "Statura piccola arbusto-albero; contributo di carbonio modesto ma la vita dà guadagni cumulativi."
+        },
+        {
+          "label": "Ruolo Ecologico",
+          "description": "Importante nei margini della Foresta Atlantica d'altitudine; ruolo limitato nei contesti di successione di pianura."
+        },
+        {
+          "label": "Beneficio Comunitario",
+          "description": "La feijoa è sempre più esportata e ottiene prezzi premium; forte opportunità commerciale."
+        }
+      ]
+    },
+    "32": {
+      "commonName": "Pitanga (Ciliegia di Suriname)",
+      "description": "La ciliegia di Suriname — uno dei frutti nativi più amati del Brasile. Produce frutto abbondante rosso-nero ricco di vitamine C e A, attirando uccelli e umani allo stesso modo.",
+      "keyFeatures": [
+        "Ricco di vitamine",
+        "Icona culturale",
+        "Cibo per uccelli",
+        "Frutto Guarani"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversità",
+          "description": "Frutto abbondante consumato da molte specie di uccelli; i fiori attirano api native tutto l'anno."
+        },
+        {
+          "label": "Sicurezza Alimentare",
+          "description": "Eccezionale contenuto di vitamina C e A; mangiato fresco, in succhi e dolci congelati; amato in tutto il Brasile."
+        },
+        {
+          "label": "Resilienza Climatica",
+          "description": "Adattato in tutto il RS dalla costa alle altitudini; tollera gelo e siccità moderata."
+        },
+        {
+          "label": "Sequestro del Carbonio",
+          "description": "Statura variabile; ruolo di carbonio limitato ma i 2 individui contribuiscono ancora alla diversità del sito."
+        },
+        {
+          "label": "Ruolo Ecologico",
+          "description": "Importante specie fruttificante del sottobosco; ruolo strutturale limitato nella canopia con piccolo conteggio individuale."
+        },
+        {
+          "label": "Beneficio Comunitario",
+          "description": "Frutto nativo culturalmente più significativo per i Guarani; il succo di pitanga è un prodotto comunitario commerciale."
+        }
+      ]
+    },
+    "33": {
+      "commonName": "Caporroca",
+      "description": "Albero da piccolo a medio che produce abbondanti bacche scure critiche per tangare e tordi. Supporta la dispersione dei semi mediata dagli uccelli, amplificando l'efficacia complessiva del restauro.",
+      "keyFeatures": [
+        "Bacche scure",
+        "Cibo per tangare",
+        "Dispersione dei semi",
+        "Strato medio"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversità",
+          "description": "Le bacche scure sono cibo primario per tangare e tordi — specie moltiplicatrice della dispersione dei semi."
+        },
+        {
+          "label": "Sicurezza Alimentare",
+          "description": "Bacche non mangiate dalle comunità; valore alimentare diretto limitato oltre la fauna selvatica."
+        },
+        {
+          "label": "Resilienza Climatica",
+          "description": "Tollera la variazione stagionale del RS; cresce bene su terreni rocciosi o poveri di nutrienti."
+        },
+        {
+          "label": "Sequestro del Carbonio",
+          "description": "Densità del legno moderata e statura media; contributo individuale di carbonio ragionevole."
+        },
+        {
+          "label": "Ruolo Ecologico",
+          "description": "I semi dispersi dagli uccelli da questo albero viaggiano lontano, seminando nuove aree e amplificando la portata del restauro."
+        },
+        {
+          "label": "Beneficio Comunitario",
+          "description": "Uso diretto limitato; il valore è ecologico. Facile da propagare per le vendite dei vivai comunitari."
+        }
+      ]
+    }
   }
 }

@@ -26,10 +26,1199 @@
     "text": "The area was prepared using an excavator that removed 50 cm of compacted fill soil across the entire 100 m². The removed soil was placed along the edges of the plot, forming a natural border and creating a water retention basin. Compost was then added to enrich the soil before planting."
   },
   "partners": {
-    "title": "Partners:",
-    "placeholder": "Partner logos coming soon"
+    "title": "Partners:"
+  },
+  "speciesSection": {
+    "title": "Species"
   },
   "species": {
-    "title": "Species"
+    "1": {
+      "commonName": "Dedalheiro",
+      "description": "A graceful secondary forest tree with showy white flowers and medicinal bark. Highly valued in traditional phytotherapy. Key mid-succession species in gallery forests.",
+      "keyFeatures": [
+        "Medicinal bark",
+        "White flowers",
+        "Gallery forest",
+        "Bee forage"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversity",
+          "description": "Attracts bees, butterflies and hummingbirds; supports mid-canopy insect diversity."
+        },
+        {
+          "label": "Food Security",
+          "description": "Not edible, but community foragers value bark for tea and wound treatments."
+        },
+        {
+          "label": "Climate Resilience",
+          "description": "Tolerates dry periods and compacted soils; good riparian buffer in RS winters."
+        },
+        {
+          "label": "Carbon Sequestration",
+          "description": "Moderate growth rate with medium-density wood; reasonable long-term biomass."
+        },
+        {
+          "label": "Ecological Role",
+          "description": "Key mid-succession gap-filler; bridges pioneer and climax layers in gallery forest."
+        },
+        {
+          "label": "Community Benefit",
+          "description": "Bark widely traded for phytotherapy; economically significant for local healers."
+        }
+      ]
+    },
+    "2": {
+      "commonName": "Timbó",
+      "description": "Fast-growing nitrogen-fixing pioneer legume that rapidly colonises degraded soils. Critical for soil recovery in early succession stages.",
+      "keyFeatures": [
+        "N-fixation",
+        "Pioneer",
+        "Soil recovery",
+        "Fish poison"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversity",
+          "description": "Limited fruit appeal but flowers support generalist bees in early succession."
+        },
+        {
+          "label": "Food Security",
+          "description": "Toxic seeds; not edible — historically used as ichthyotoxin for fishing."
+        },
+        {
+          "label": "Climate Resilience",
+          "description": "Extremely hardy on degraded, exposed sites; one of the first to stabilise bare soil."
+        },
+        {
+          "label": "Carbon Sequestration",
+          "description": "Fast growth gives early carbon gains; wood density is moderate."
+        },
+        {
+          "label": "Ecological Role",
+          "description": "Nitrogen fixation dramatically accelerates soil recovery for following species."
+        },
+        {
+          "label": "Community Benefit",
+          "description": "Traditional fish-poison use; nursery communities can sell seedlings for restoration contracts."
+        }
+      ]
+    },
+    "3": {
+      "commonName": "Aroeira vermelha",
+      "description": "Resilient pioneer with bright red berries (Brazilian pink pepper) attracting birds. Excellent for riverbank stabilisation and degraded area restoration.",
+      "keyFeatures": [
+        "Pink pepper",
+        "Bird food",
+        "Riverbank",
+        "Spice trade"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversity",
+          "description": "Red berries attract over 40 bird species; important corvid and thrush food source."
+        },
+        {
+          "label": "Food Security",
+          "description": "Brazilian pink pepper — commercial spice with active market; fruit edible in moderation."
+        },
+        {
+          "label": "Climate Resilience",
+          "description": "Tolerates drought, flooding, and saline soils; one of the most resilient RS natives."
+        },
+        {
+          "label": "Carbon Sequestration",
+          "description": "Slow biomass accumulation; moderate wood density but limited stature."
+        },
+        {
+          "label": "Ecological Role",
+          "description": "Rapid coloniser of river margins; excellent for preventing erosion post-flood."
+        },
+        {
+          "label": "Community Benefit",
+          "description": "Pink pepper harvest creates direct income for Guarani and small-scale farmers."
+        }
+      ]
+    },
+    "4": {
+      "commonName": "Pata de vaca",
+      "description": "A butterfly-flowered pioneer with orchid-like blooms, widely used in folk medicine for diabetes management. Tolerates poor soils and urban conditions.",
+      "keyFeatures": [
+        "Medicinal",
+        "Orchid flowers",
+        "Urban tolerant",
+        "Pioneer"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversity",
+          "description": "Large white flowers are prime nectar source for hawk-moths and nocturnal pollinators."
+        },
+        {
+          "label": "Food Security",
+          "description": "Leaves used in medicinal teas; no significant edible food value for communities."
+        },
+        {
+          "label": "Climate Resilience",
+          "description": "Thrives on compacted, nutrient-poor urban soils; tolerates seasonal drought."
+        },
+        {
+          "label": "Carbon Sequestration",
+          "description": "Moderate growth rate; wood is light and carbon gains are limited in short lifespan."
+        },
+        {
+          "label": "Ecological Role",
+          "description": "Useful pioneer but shallow-rooted; succession value lower than legume pioneers."
+        },
+        {
+          "label": "Community Benefit",
+          "description": "Leaves sold fresh and dried for diabetes management — high demand in herbal markets."
+        }
+      ]
+    },
+    "5": {
+      "commonName": "Guabiroba",
+      "description": "Aromatic fruiting tree producing sweet fragrant fruits that attract mammals and birds. Important food sovereignty tree for Guarani communities.",
+      "keyFeatures": [
+        "Edible fruit",
+        "Wildlife magnet",
+        "Aromatic",
+        "Guarani use"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversity",
+          "description": "Fruit consumed by tapirs, peccaries, toucans, and over 30 bird species."
+        },
+        {
+          "label": "Food Security",
+          "description": "Sweet aromatic fruit eaten fresh and used in juices, jams and artisanal liqueurs."
+        },
+        {
+          "label": "Climate Resilience",
+          "description": "Handles RS frost and seasonal drought; moderately resilient across the state."
+        },
+        {
+          "label": "Carbon Sequestration",
+          "description": "Medium-density wood and moderate growth; solid mid-range carbon contribution."
+        },
+        {
+          "label": "Ecological Role",
+          "description": "Critical mid-succession species bridging open habitat and closed-canopy forest."
+        },
+        {
+          "label": "Community Benefit",
+          "description": "Central to Guarani food culture; fruit harvest generates seasonal income for families."
+        }
+      ]
+    },
+    "6": {
+      "commonName": "Araçá amarelo",
+      "description": "Yellow-fruited native guava producing sweet vitamin-rich fruit multiple times a year. Highly productive understory tree supporting birds and small mammals.",
+      "keyFeatures": [
+        "Yellow fruit",
+        "Multi-harvest",
+        "Understory",
+        "High vitamin C"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversity",
+          "description": "Year-round fruiting sustains birds and small mammals even in forest lean seasons."
+        },
+        {
+          "label": "Food Security",
+          "description": "Sweet yellow fruit with very high vitamin C; eaten fresh, in jams and fermented drinks."
+        },
+        {
+          "label": "Climate Resilience",
+          "description": "Tolerates RS frosts and light drought; adapts well to forest edge conditions."
+        },
+        {
+          "label": "Carbon Sequestration",
+          "description": "Small stature and short lifespan limit biomass accumulation."
+        },
+        {
+          "label": "Ecological Role",
+          "description": "Important understorey layer but limited structural role in canopy succession."
+        },
+        {
+          "label": "Community Benefit",
+          "description": "Fruit harvested for home use and small-scale sale at local markets year-round."
+        }
+      ]
+    },
+    "7": {
+      "commonName": "Ipê Roxo",
+      "description": "Iconic purple-flowering climax tree and national symbol of Brazil. Exceptional timber and carbon value. Flowers before leafing, providing crucial early-season nectar for bees.",
+      "keyFeatures": [
+        "National symbol",
+        "Timber",
+        "Bee nectar",
+        "Canopy"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversity",
+          "description": "Pre-leaf flowering provides the first major nectar flush of the season for bees and hummingbirds."
+        },
+        {
+          "label": "Food Security",
+          "description": "No edible parts; inner bark has traditional medicinal use as anti-inflammatory."
+        },
+        {
+          "label": "Climate Resilience",
+          "description": "Deep taproot tolerates drought; deciduous habit allows survival of RS dry winters."
+        },
+        {
+          "label": "Carbon Sequestration",
+          "description": "Dense hardwood, slow growth over 80–100 years accumulates exceptional biomass."
+        },
+        {
+          "label": "Ecological Role",
+          "description": "Dominant canopy climax species; defines mature Atlantic Forest structure and longevity."
+        },
+        {
+          "label": "Community Benefit",
+          "description": "Premium timber species and cultural icon; seedlings in high demand for restoration."
+        }
+      ]
+    },
+    "8": {
+      "commonName": "Louro",
+      "description": "Valuable timber species producing lightweight durable wood used in carpentry. Small white flowers attract bees and insects. Important secondary canopy contributor.",
+      "keyFeatures": [
+        "Timber",
+        "Bee flowers",
+        "Agroforestry",
+        "Canopy"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversity",
+          "description": "White flowers attract generalist bees; limited fruit value for wildlife."
+        },
+        {
+          "label": "Food Security",
+          "description": "No significant edible use; not part of indigenous food systems."
+        },
+        {
+          "label": "Climate Resilience",
+          "description": "Adapts to varied RS soils; semi-deciduous allowing frost tolerance."
+        },
+        {
+          "label": "Carbon Sequestration",
+          "description": "Good wood density and tall stature; significant long-term carbon storage."
+        },
+        {
+          "label": "Ecological Role",
+          "description": "Useful secondary canopy species but not a biodiversity anchor on its own."
+        },
+        {
+          "label": "Community Benefit",
+          "description": "Highly valued lightweight timber used in furniture, doors and traditional boats."
+        }
+      ]
+    },
+    "9": {
+      "commonName": "Angico vermelho",
+      "description": "Tall leguminous tree fixing atmospheric nitrogen while producing dense durable timber. Simultaneously improves soils, sequesters high carbon, and supports canopy biodiversity.",
+      "keyFeatures": [
+        "N-fixation",
+        "Dense timber",
+        "Medicinal bark",
+        "N sequestration"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversity",
+          "description": "Flowers attract bees and beetles; canopy supports epiphytic orchids and bromeliads."
+        },
+        {
+          "label": "Food Security",
+          "description": "Bark used medicinally; seeds not edible. No food value for communities."
+        },
+        {
+          "label": "Climate Resilience",
+          "description": "Deep roots and nitrogen fixation help it establish in degraded, nutrient-poor soils."
+        },
+        {
+          "label": "Carbon Sequestration",
+          "description": "Very dense wood combined with tall stature makes it a top carbon sequesterer in RS."
+        },
+        {
+          "label": "Ecological Role",
+          "description": "Dual role as N-fixer and canopy species makes it exceptionally valuable in restoration design."
+        },
+        {
+          "label": "Community Benefit",
+          "description": "Bark tannins used in leather treatment; dense timber valued for heavy construction."
+        }
+      ]
+    },
+    "10": {
+      "commonName": "Açoita cavalo",
+      "description": "Medium-to-large tree with fibrous bark traditionally used for rope-making. Flowers attract numerous pollinators. Excellent riparian species tolerating periodic flooding.",
+      "keyFeatures": [
+        "Riparian",
+        "Pollinator",
+        "Rope fibre",
+        "Flood tolerant"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversity",
+          "description": "Abundant flowers attract diverse bees, wasps and beetles across an extended bloom season."
+        },
+        {
+          "label": "Food Security",
+          "description": "No edible parts; bark fibre used for cordage but not food."
+        },
+        {
+          "label": "Climate Resilience",
+          "description": "One of few medium trees that tolerates both seasonal flooding and dry spells in RS."
+        },
+        {
+          "label": "Carbon Sequestration",
+          "description": "Medium density timber with good stature; solid carbon contribution over 50+ years."
+        },
+        {
+          "label": "Ecological Role",
+          "description": "Critical for riparian corridor restoration after 2024-type flood events in RS."
+        },
+        {
+          "label": "Community Benefit",
+          "description": "Inner bark fibre used for rope and traditional weaving; anti-inflammatory folk medicine."
+        }
+      ]
+    },
+    "11": {
+      "commonName": "Carne de vaca",
+      "description": "Mid-succession understory tree with fragrant white flowers rich in nectar. Bark has traditional medicinal uses. Valuable for understorey biodiversity development.",
+      "keyFeatures": [
+        "Fragrant flowers",
+        "Understory",
+        "Medicinal",
+        "Nectar rich"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversity",
+          "description": "Highly fragrant flowers are a rare and important nectar source for specialist bees."
+        },
+        {
+          "label": "Food Security",
+          "description": "Bark has folk anti-rheumatic use; not a food plant."
+        },
+        {
+          "label": "Climate Resilience",
+          "description": "Handles seasonal moisture variability; grows in both humid and drier RS sites."
+        },
+        {
+          "label": "Carbon Sequestration",
+          "description": "Modest stature and wood density; carbon role is limited but cumulative in dense plantings."
+        },
+        {
+          "label": "Ecological Role",
+          "description": "Fills critical understorey layer, providing shade and humidity for seedling establishment."
+        },
+        {
+          "label": "Community Benefit",
+          "description": "Bark used in traditional medicine for joint pain; moderate local knowledge value."
+        }
+      ]
+    },
+    "12": {
+      "commonName": "Araçá vermelho",
+      "description": "Red-fruited native guava — one of the most productive and wildlife-important small trees in the Atlantic Forest. Fruits year-round, supporting birds, mammals and communities.",
+      "keyFeatures": [
+        "Red fruit",
+        "Year-round",
+        "Wildlife food",
+        "Food security"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversity",
+          "description": "Continuous year-round fruiting supports birds, bats and small mammals even in dry season."
+        },
+        {
+          "label": "Food Security",
+          "description": "Abundant sweet-tart fruit eaten fresh, in jams, juices and wine; multiple harvests yearly."
+        },
+        {
+          "label": "Climate Resilience",
+          "description": "Hardy across RS conditions including light frost; tolerates both wet and dry soils."
+        },
+        {
+          "label": "Carbon Sequestration",
+          "description": "Small shrub-like stature limits carbon storage despite long productive lifespan."
+        },
+        {
+          "label": "Ecological Role",
+          "description": "Reliable food source sustains frugivores year-round, amplifying seed dispersal across the site."
+        },
+        {
+          "label": "Community Benefit",
+          "description": "Highest-use food plant for Guarani — fresh fruit, beverages and preserved goods sold locally."
+        }
+      ]
+    },
+    "13": {
+      "commonName": "Canafistula",
+      "description": "Spectacular yellow-flowering legume with nitrogen-fixing roots. Dense canopy provides excellent shade and timber. One of the most important large secondary forest trees in southern Brazil.",
+      "keyFeatures": [
+        "Yellow flowers",
+        "N-fixation",
+        "Timber",
+        "Large canopy"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversity",
+          "description": "Abundant yellow flowers are key dry-season nectar source; pods feed seed-eating birds."
+        },
+        {
+          "label": "Food Security",
+          "description": "No edible parts; pods are ornamental rather than edible."
+        },
+        {
+          "label": "Climate Resilience",
+          "description": "Tolerates heavy RS summer rains and moderate winter frosts; hardy on disturbed soils."
+        },
+        {
+          "label": "Carbon Sequestration",
+          "description": "Reaches 25m with dense wood; among the highest carbon values of secondary RS trees."
+        },
+        {
+          "label": "Ecological Role",
+          "description": "Nitrogen fixation plus tall canopy: rare dual-function species accelerating succession."
+        },
+        {
+          "label": "Community Benefit",
+          "description": "Valued timber for construction; fast enough growth for community forestry rotation."
+        }
+      ]
+    },
+    "14": {
+      "commonName": "Canela",
+      "description": "Aromatic laurel-family climax tree producing small black fruits vital for frugivorous birds. Bark used as spice in regional cuisine. Anchors mature forest biodiversity.",
+      "keyFeatures": [
+        "Aromatic bark",
+        "Bird food",
+        "Climax",
+        "Spice"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversity",
+          "description": "Small lipid-rich black fruits are critical food for toucans, cotingas and migratory birds."
+        },
+        {
+          "label": "Food Security",
+          "description": "Aromatic bark used as cinnamon substitute in regional cooking; bark oil traded locally."
+        },
+        {
+          "label": "Climate Resilience",
+          "description": "Evergreen canopy handles RS winter frosts; shade tolerance enables understorey regeneration."
+        },
+        {
+          "label": "Carbon Sequestration",
+          "description": "Dense laurel-family wood persisting 60–100 years accumulates solid long-term carbon."
+        },
+        {
+          "label": "Ecological Role",
+          "description": "Dominant climax species in mixed ombrophilous forest; defines mature forest microclimate."
+        },
+        {
+          "label": "Community Benefit",
+          "description": "Bark harvested for spice and folk medicine; timber used in fine carpentry."
+        }
+      ]
+    },
+    "15": {
+      "commonName": "Araticum",
+      "description": "Native custard-apple bearing large edible fruit highly nutritious for communities and wildlife. Particularly important for tapirs and large mammals. Strong food sovereignty value for Guarani.",
+      "keyFeatures": [
+        "Edible fruit",
+        "Large mammals",
+        "Guarani food",
+        "Understory"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversity",
+          "description": "Large fruits consumed by tapirs, peccaries and woolly monkeys — key megafauna food."
+        },
+        {
+          "label": "Food Security",
+          "description": "Custard-like sweet flesh eaten fresh; high caloric and nutritional value for communities."
+        },
+        {
+          "label": "Climate Resilience",
+          "description": "Adapted to RS summer heat; less frost-tolerant but survives typical RS winters."
+        },
+        {
+          "label": "Carbon Sequestration",
+          "description": "Modest stature and wood density; carbon contribution is moderate."
+        },
+        {
+          "label": "Ecological Role",
+          "description": "Large seed size means dispersal depends on megafauna, making it a restoration indicator species."
+        },
+        {
+          "label": "Community Benefit",
+          "description": "One of the most culturally important fruits for Guarani; traded at indigenous food fairs."
+        }
+      ]
+    },
+    "16": {
+      "commonName": "Guajuvira",
+      "description": "Valued timber tree with creamy white flowers attracting abundant pollinators. Wood used for furniture and construction. Combines high timber value with pollinator support.",
+      "keyFeatures": [
+        "Timber",
+        "White flowers",
+        "Pollinator",
+        "Secondary forest"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversity",
+          "description": "Prolific white flowers attract large bee guilds; canopy supports cavity-nesting birds."
+        },
+        {
+          "label": "Food Security",
+          "description": "No significant edible value; timber species only."
+        },
+        {
+          "label": "Climate Resilience",
+          "description": "Tolerates varied RS soils; semi-deciduous reducing frost stress in winter."
+        },
+        {
+          "label": "Carbon Sequestration",
+          "description": "Moderate-to-high density wood in a tall secondary tree; solid carbon sequestration."
+        },
+        {
+          "label": "Ecological Role",
+          "description": "Important structural canopy species accelerating closed-forest formation at this site."
+        },
+        {
+          "label": "Community Benefit",
+          "description": "High-quality furniture and construction timber; active local demand for Guajuvira wood."
+        }
+      ]
+    },
+    "17": {
+      "commonName": "Caroba",
+      "description": "Native jacaranda producing blue-purple flowers rich in nectar. Bark used medicinally for skin conditions. Provides mid-canopy biodiversity layer.",
+      "keyFeatures": [
+        "Blue flowers",
+        "Medicinal bark",
+        "Nectar",
+        "Mid-canopy"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversity",
+          "description": "Blue tubular flowers are specialist resource for long-tongued bees and hummingbirds."
+        },
+        {
+          "label": "Food Security",
+          "description": "No edible parts; bark extract used topically for skin conditions only."
+        },
+        {
+          "label": "Climate Resilience",
+          "description": "Tolerates RS frosts and variable rainfall; robust across forest edge to interior."
+        },
+        {
+          "label": "Carbon Sequestration",
+          "description": "Medium-density wood; contributes moderate carbon at mid-canopy heights."
+        },
+        {
+          "label": "Ecological Role",
+          "description": "Creates visual and structural complexity in the forest mid-layer; supports epiphytes."
+        },
+        {
+          "label": "Community Benefit",
+          "description": "Bark decoctions used for syphilis and skin infections in traditional medicine."
+        }
+      ]
+    },
+    "18": {
+      "commonName": "Ipê Amarelo",
+      "description": "Golden-flowering climax tree — Brazil's national flower. Provides critical early-spring nectar. Dense durable timber and exceptional long-term carbon storage.",
+      "keyFeatures": [
+        "National flower",
+        "Golden bloom",
+        "Timber",
+        "Bee nectar"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversity",
+          "description": "Mass golden flowering before leaf flush is the most important early-spring bee event in RS forest."
+        },
+        {
+          "label": "Food Security",
+          "description": "No edible parts; bark has minor traditional anti-inflammatory use."
+        },
+        {
+          "label": "Climate Resilience",
+          "description": "Deciduous strategy conserves moisture; deep roots handle RS drought and winter frosts."
+        },
+        {
+          "label": "Carbon Sequestration",
+          "description": "Very dense hardwood accumulating over 80–100 years; exceptional lifetime carbon storage."
+        },
+        {
+          "label": "Ecological Role",
+          "description": "Canopy climax anchor; defines mature Atlantic Forest physiognomy in southern Brazil."
+        },
+        {
+          "label": "Community Benefit",
+          "description": "Brazil's national flower symbol; premium timber; high seedling demand for restoration."
+        }
+      ]
+    },
+    "19": {
+      "commonName": "Pêssego do Mato",
+      "description": "Native wild peach with sweet edible fruit beloved by birds and communities. Prolific fruiter supporting birds and small mammals year-round in riparian and secondary forest environments.",
+      "keyFeatures": [
+        "Edible fruit",
+        "Bird food",
+        "Riparian",
+        "Food security"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversity",
+          "description": "Prolific fruiting supports thrushes, tanagers and small mammals across extended seasons."
+        },
+        {
+          "label": "Food Security",
+          "description": "Sweet peach-flavoured fruit eaten fresh and used in jams and artisanal spirits."
+        },
+        {
+          "label": "Climate Resilience",
+          "description": "Tolerates RS flooding, frost and seasonal drought — versatile across the state."
+        },
+        {
+          "label": "Carbon Sequestration",
+          "description": "Small stature and moderate wood density; limited individual carbon contribution."
+        },
+        {
+          "label": "Ecological Role",
+          "description": "Riparian understorey specialist; crucial for riverbank biodiversity recovery after floods."
+        },
+        {
+          "label": "Community Benefit",
+          "description": "Fruit widely used in home kitchens and sold at community markets; easy to propagate."
+        }
+      ]
+    },
+    "20": {
+      "commonName": "Maria preta",
+      "description": "Tall climax forest tree with distinctive dark-winged seeds. Excellent dense timber and high long-term carbon storage. An important but uncommon mature canopy species.",
+      "keyFeatures": [
+        "Dense timber",
+        "Winged seeds",
+        "Rare",
+        "Canopy"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversity",
+          "description": "Winged seeds dispersed by wind; limited direct wildlife food value but canopy supports epiphytes."
+        },
+        {
+          "label": "Food Security",
+          "description": "No edible or widely used medicinal parts; timber species only."
+        },
+        {
+          "label": "Climate Resilience",
+          "description": "Established in RS climax forests; handles typical seasonal variation once established."
+        },
+        {
+          "label": "Carbon Sequestration",
+          "description": "Very dense wood in a large canopy tree persisting 100 years; excellent carbon sink."
+        },
+        {
+          "label": "Ecological Role",
+          "description": "Rare climax component whose inclusion increases long-term forest resilience and authenticity."
+        },
+        {
+          "label": "Community Benefit",
+          "description": "High-value dense timber; presence signals mature forest quality to conservation assessors."
+        }
+      ]
+    },
+    "21": {
+      "commonName": "Figueira folha larga",
+      "description": "Large-leaved fig tree — a true keystone species. Continuous fruiting across all seasons makes it perhaps the single most important biodiversity tree in the entire planting.",
+      "keyFeatures": [
+        "Keystone species",
+        "Mass fruiting",
+        "Canopy giant",
+        "1200+ spp."
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversity",
+          "description": "Figs support over 1,200 vertebrate species globally; continuous fruiting sustains year-round biodiversity."
+        },
+        {
+          "label": "Food Security",
+          "description": "Abundant small figs consumed by birds, bats, primates and communities; processed into preserves."
+        },
+        {
+          "label": "Climate Resilience",
+          "description": "Extensive root system stabilises soils; canopy creates microclimate buffering heat and drought."
+        },
+        {
+          "label": "Carbon Sequestration",
+          "description": "Reaches 30m with massive trunk; one of the highest lifetime carbon stores in the Atlantic Forest."
+        },
+        {
+          "label": "Ecological Role",
+          "description": "Absolute keystone; no other species can substitute its role as continuous multi-season food source."
+        },
+        {
+          "label": "Community Benefit",
+          "description": "Sacred tree in many indigenous cultures; fruit edible and timber used in traditional construction."
+        }
+      ]
+    },
+    "22": {
+      "commonName": "Figueira folha miúda",
+      "description": "Smaller-leaved native fig sharing keystone status with its larger relative at a more accessible canopy height. Excellent complement in layered planting design.",
+      "keyFeatures": [
+        "Keystone species",
+        "Small fruit",
+        "Wildlife",
+        "Native fig"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversity",
+          "description": "Dense fruiting sustains understorey wildlife; important for smaller birds unable to reach large figs."
+        },
+        {
+          "label": "Food Security",
+          "description": "Small figs consumed by birds, bats and communities; used in traditional preserves."
+        },
+        {
+          "label": "Climate Resilience",
+          "description": "Adapts to RS seasonality; aggressive root system handles both wet and dry periods."
+        },
+        {
+          "label": "Carbon Sequestration",
+          "description": "Dense wood with 80–100yr lifespan; strong individual carbon contribution at mid-canopy."
+        },
+        {
+          "label": "Ecological Role",
+          "description": "Provides continuous food at lower canopy height, complementing the large-leaved fig perfectly."
+        },
+        {
+          "label": "Community Benefit",
+          "description": "Cultural significance shared with all native figs; fruit used locally; important for agroforestry."
+        }
+      ]
+    },
+    "23": {
+      "commonName": "Chal chal",
+      "description": "Prolific-fruiting small tree producing clusters of red berries extremely attractive to birds. One of the most important bird-food plants in southern Brazilian forests.",
+      "keyFeatures": [
+        "Red berry clusters",
+        "Bird magnet",
+        "Fast growing",
+        "Understorey"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversity",
+          "description": "Dense red berry clusters attract over 50 bird species; among top 3 bird-food trees in RS."
+        },
+        {
+          "label": "Food Security",
+          "description": "Small berries edible and used in artisanal wine and fermentation by communities."
+        },
+        {
+          "label": "Climate Resilience",
+          "description": "Fast establishment on degraded soils; tolerates RS frost and periodic waterlogging."
+        },
+        {
+          "label": "Carbon Sequestration",
+          "description": "Small stature and short lifespan; carbon role is local and cumulative rather than individual."
+        },
+        {
+          "label": "Ecological Role",
+          "description": "Fast growth and prolific fruiting rapidly restores bird-plant interaction networks at degraded sites."
+        },
+        {
+          "label": "Community Benefit",
+          "description": "Berries used in folk wine; fast-growing species easy to produce in community nurseries."
+        }
+      ]
+    },
+    "24": {
+      "commonName": "Jaboticaba",
+      "description": "Iconic Brazilian trunk-fruiting tree producing sweet grape-like fruits directly on the bark. Fruits multiple times a year, supporting pollinators and frugivores.",
+      "keyFeatures": [
+        "Trunk fruiting",
+        "Multi-harvest",
+        "Cultural icon",
+        "Pollinator"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversity",
+          "description": "Trunk-borne flowers attract pollinators directly; fruit consumed by bats, birds and mammals."
+        },
+        {
+          "label": "Food Security",
+          "description": "Sweet grape-flavoured fruit eaten fresh, fermented into wine and liqueur; multiple harvests yearly."
+        },
+        {
+          "label": "Climate Resilience",
+          "description": "Thrives in tropical-subtropical RS climate; resilient to heat and moderate drought."
+        },
+        {
+          "label": "Carbon Sequestration",
+          "description": "Moderate growth rate and lifespan; reasonable carbon contribution for its size."
+        },
+        {
+          "label": "Ecological Role",
+          "description": "Understorey species with limited canopy role; most value is food network rather than structure."
+        },
+        {
+          "label": "Community Benefit",
+          "description": "Cultural icon of Brazilian agroforestry; jaboticaba wine is a commercially significant product."
+        }
+      ]
+    },
+    "25": {
+      "commonName": "Cocão",
+      "description": "Silver-leafed pioneer shrub-tree with abundant small red fruits important for birds. Critical coloniser of degraded Pampa grasslands, enabling forest-savanna transition.",
+      "keyFeatures": [
+        "Silver leaves",
+        "Red fruit",
+        "Grassland pioneer",
+        "Transition zone"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversity",
+          "description": "Small red fruits attract resident birds; silver foliage provides microhabitat for insects."
+        },
+        {
+          "label": "Food Security",
+          "description": "Fruits not commonly eaten by communities; limited food sovereignty value."
+        },
+        {
+          "label": "Climate Resilience",
+          "description": "Pioneer of open degraded Pampa — extremely tough; survives exposure, drought and poor soils."
+        },
+        {
+          "label": "Carbon Sequestration",
+          "description": "Shrub-like stature and short lifespan severely limit carbon accumulation."
+        },
+        {
+          "label": "Ecological Role",
+          "description": "First woody species to colonise degraded Pampa grassland, enabling forest succession to begin."
+        },
+        {
+          "label": "Community Benefit",
+          "description": "Limited community use; value lies in its ecological role rather than direct human benefit."
+        }
+      ]
+    },
+    "26": {
+      "commonName": "Branquilho",
+      "description": "Fast-growing pioneer tolerating flooding and waterlogged soils, essential for riparian restoration. The first trees to re-establish gallery forest and floodplains after flood events.",
+      "keyFeatures": [
+        "Flood tolerant",
+        "White bark",
+        "Riparian pioneer",
+        "Fast growth"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversity",
+          "description": "Supports aquatic insects and riparian birds; limited fruit value for wildlife."
+        },
+        {
+          "label": "Food Security",
+          "description": "No edible use; not part of community food systems."
+        },
+        {
+          "label": "Climate Resilience",
+          "description": "Survives complete inundation; the defining RS flood-resilience pioneer after 2024-type events."
+        },
+        {
+          "label": "Carbon Sequestration",
+          "description": "Moderate wood density; fast growth provides early carbon gains in riparian corridors."
+        },
+        {
+          "label": "Ecological Role",
+          "description": "Irreplaceable for floodplain restoration; nothing else matches its flood tolerance in RS."
+        },
+        {
+          "label": "Community Benefit",
+          "description": "Limited direct use but essential for protecting farmland and indigenous land from floods."
+        }
+      ]
+    },
+    "27": {
+      "commonName": "Tucaneiro",
+      "description": "Named after the toucan — produces aromatic fruits heavily consumed by toucans and tanagers. Excellent nectar source for bees. Effective for restoring forest-bird communities.",
+      "keyFeatures": [
+        "Toucan food",
+        "Aromatic fruit",
+        "Bee nectar",
+        "Bird restoration"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversity",
+          "description": "Aromatic fruits attract toucans, tanagers and thrushes — key indicator species for forest recovery."
+        },
+        {
+          "label": "Food Security",
+          "description": "Fruits not significant for human consumption; ecological food value far exceeds community use."
+        },
+        {
+          "label": "Climate Resilience",
+          "description": "Tolerates RS seasonal drought and light frost; hardy on degraded soils."
+        },
+        {
+          "label": "Carbon Sequestration",
+          "description": "Moderate stature and wood density; moderate carbon contribution over 30–50yr."
+        },
+        {
+          "label": "Ecological Role",
+          "description": "Presence of toucans feeding here signals successful restoration of forest bird community."
+        },
+        {
+          "label": "Community Benefit",
+          "description": "Aromatic fruit used in folk medicine; trees easily propagated in local nurseries."
+        }
+      ]
+    },
+    "28": {
+      "commonName": "Cedro",
+      "description": "The great Atlantic Forest cedar — majestic, valuable timber and the highest individual carbon sequesterer in this planting. Threatened by shoot borer; mixed plantings reduce vulnerability.",
+      "keyFeatures": [
+        "Precious timber",
+        "Vulnerable sp.",
+        "Highest carbon",
+        "Canopy giant"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversity",
+          "description": "Large hollow trunks provide nesting for raptors; canopy supports epiphytic communities."
+        },
+        {
+          "label": "Food Security",
+          "description": "No edible use; resin has minor traditional medicinal application."
+        },
+        {
+          "label": "Climate Resilience",
+          "description": "Adapted to RS climate but vulnerable to shoot borer in monocultures; mixed plantings essential."
+        },
+        {
+          "label": "Carbon Sequestration",
+          "description": "Reaches 35m with very dense aromatic wood; highest individual carbon value in the planting."
+        },
+        {
+          "label": "Ecological Role",
+          "description": "Keystone canopy giant whose threatened status makes each planted individual conservation critical."
+        },
+        {
+          "label": "Community Benefit",
+          "description": "Most prized cabinet timber in South America; significant economic value for community forestry."
+        }
+      ]
+    },
+    "29": {
+      "commonName": "Caliandra",
+      "description": "Nitrogen-fixing pioneer shrub with spectacular pink powder-puff flowers. Outstanding hummingbird and bee forage. Rapidly covers degraded soil, enabling succession.",
+      "keyFeatures": [
+        "N-fixation",
+        "Hummingbird food",
+        "Pink flowers",
+        "Erosion control"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversity",
+          "description": "Pink powder-puff flowers are primary hummingbird and bee forage on the degraded site."
+        },
+        {
+          "label": "Food Security",
+          "description": "No edible parts; value is entirely ecological. Flowers are ornamentally significant."
+        },
+        {
+          "label": "Climate Resilience",
+          "description": "Dense root system prevents erosion; nitrogen fixation enriches bare soils immediately."
+        },
+        {
+          "label": "Carbon Sequestration",
+          "description": "Shrub stature and short lifespan severely limit individual carbon sequestration."
+        },
+        {
+          "label": "Ecological Role",
+          "description": "First nitrogen-fixer to stabilise bare soil; creates conditions for all subsequent succession."
+        },
+        {
+          "label": "Community Benefit",
+          "description": "Seedlings easily sold by community nurseries; attractive for urban gardens and restoration."
+        }
+      ]
+    },
+    "30": {
+      "commonName": "Cereja",
+      "description": "Native wild cherry producing abundant sweet cherries relished by birds and communities. Fruit used in jams, liqueurs and fresh consumption by local communities.",
+      "keyFeatures": [
+        "Native cherry",
+        "Bird food",
+        "Community fruit",
+        "Jams & liqueurs"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversity",
+          "description": "Cherry-red fruits attract thrushes, tanagers and mammals; flowers support native bees."
+        },
+        {
+          "label": "Food Security",
+          "description": "Sweet cherry flavour excellent fresh; prime ingredient for artisanal jams and liqueurs."
+        },
+        {
+          "label": "Climate Resilience",
+          "description": "Tolerates RS frosts and seasonal drought; resilient across varied southern forest habitats."
+        },
+        {
+          "label": "Carbon Sequestration",
+          "description": "Moderate-density wood in a mid-sized tree; reasonable but not outstanding carbon storage."
+        },
+        {
+          "label": "Ecological Role",
+          "description": "Important secondary understorey species supporting frugivore communities year-round."
+        },
+        {
+          "label": "Community Benefit",
+          "description": "Cherry liqueur and jam production is an active income stream for RS indigenous communities."
+        }
+      ]
+    },
+    "31": {
+      "commonName": "Goiaba serrana",
+      "description": "Highland native feijoa producing distinctive aromatic fruit with sweet white flesh. Frost-tolerant — exceptional climate resilience for Rio Grande do Sul winters.",
+      "keyFeatures": [
+        "Frost tolerant",
+        "Aromatic fruit",
+        "Highland species",
+        "Export potential"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversity",
+          "description": "Thick petals eaten by birds directly off the flower; fruit consumed by multiple species."
+        },
+        {
+          "label": "Food Security",
+          "description": "Highly aromatic guava-like flesh; eaten fresh or in premium jams; growing export market."
+        },
+        {
+          "label": "Climate Resilience",
+          "description": "Native to RS highlands; the most frost-tolerant fruiting species in this entire planting."
+        },
+        {
+          "label": "Carbon Sequestration",
+          "description": "Small shrub-tree stature; carbon contribution modest but lifespan gives cumulative gains."
+        },
+        {
+          "label": "Ecological Role",
+          "description": "Important in highland Atlantic Forest edges; limited role in lowland succession contexts."
+        },
+        {
+          "label": "Community Benefit",
+          "description": "Feijoa is increasingly exported and fetches premium prices; strong commercial opportunity."
+        }
+      ]
+    },
+    "32": {
+      "commonName": "Pitanga",
+      "description": "The Surinam cherry — one of Brazil's most beloved native fruits. Produces abundant red-to-black fruit rich in vitamins C and A, attracting birds and humans alike.",
+      "keyFeatures": [
+        "Vitamin rich",
+        "Cultural icon",
+        "Bird food",
+        "Guarani fruit"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversity",
+          "description": "Abundant fruit consumed by many bird species; flowers attract native bees year-round."
+        },
+        {
+          "label": "Food Security",
+          "description": "Exceptional vitamin C and A content; eaten fresh, in juices and frozen treats; beloved across Brazil."
+        },
+        {
+          "label": "Climate Resilience",
+          "description": "Adapted across RS from coast to highlands; tolerates frost and moderate drought."
+        },
+        {
+          "label": "Carbon Sequestration",
+          "description": "Variable stature; carbon role limited but the 2 individuals still contribute to site diversity."
+        },
+        {
+          "label": "Ecological Role",
+          "description": "Important understorey fruiting species; limited canopy structure role at small individual count."
+        },
+        {
+          "label": "Community Benefit",
+          "description": "Most culturally significant native fruit for Guarani; pitanga juice is a commercial community product."
+        }
+      ]
+    },
+    "33": {
+      "commonName": "Caporroca",
+      "description": "Small to medium tree producing abundant dark berries critical for tanagers and thrushes. Supports bird-mediated seed dispersal, amplifying overall restoration effectiveness.",
+      "keyFeatures": [
+        "Dark berries",
+        "Tanager food",
+        "Seed dispersal",
+        "Mid-layer"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversity",
+          "description": "Dark berries are primary food for tanagers and thrushes — seed dispersal multiplier species."
+        },
+        {
+          "label": "Food Security",
+          "description": "Berries not eaten by communities; limited direct food value beyond wildlife."
+        },
+        {
+          "label": "Climate Resilience",
+          "description": "Tolerates RS seasonal variation; grows well on rocky or nutrient-poor soils."
+        },
+        {
+          "label": "Carbon Sequestration",
+          "description": "Moderate wood density and mid-sized stature; reasonable individual carbon contribution."
+        },
+        {
+          "label": "Ecological Role",
+          "description": "Bird-dispersed seeds from this tree travel far, seeding new areas and amplifying restoration reach."
+        },
+        {
+          "label": "Community Benefit",
+          "description": "Limited direct use; value is ecological. Easy to propagate for community nursery sales."
+        }
+      ]
+    }
   }
 }

@@ -4,32 +4,1221 @@
     "location": "Porto Alegre, RS, Brasil"
   },
   "description": {
-    "text": "ConceitoArte é um espaço comunitário trabalhando com arte e práticas sustentáveis em Sarandi, um dos bairros mais afetados pelas enchentes de 2024 no Rio Grande do Sul. Sua microfloresta Miyawaki já está plantada e será usada para validar as ferramentas de coleta de dados, rastreamento e plataforma da ApeForest."
+    "text": "ConceitoArte é um espaço comunitário trabalhando com arte e práticas sustentáveis em Sarandi, um dos bairros mais afetados pelas enchentes de 2024 no Rio Grande do Sul. Sua microfloresta Miyawaki já foi plantada e será usada para validar as ferramentas de coleta de dados, monitoramento e plataforma da ApeForest."
   },
   "stats": {
     "plantedTrees": "árvores plantadas",
     "species": "espécies de árvores",
-    "co2": "toneladas de co2",
+    "co2": "toneladas de CO2",
     "meters": "metros de floresta"
   },
   "methodology": {
-    "title": "Método de Plantação",
-    "text": "O método Miyawaki, desenvolvido pelo botânico japonês Akira Miyawaki, é uma técnica acelerada de reflorestamento que cria florestas nativas densas, biodiversas e resilientes em pequenas áreas e em curto período de tempo (20 a 30 anos, comparado a 100 anos para regeneração natural)."
+    "title": "Método de plantio",
+    "text": "O método Miyawaki, desenvolvido pelo botânico japonês Akira Miyawaki, é uma técnica de reflorestamento acelerado que cria florestas nativas densas, biodiversas e resilientes em pequenas áreas e em curto período de tempo (20 a 30 anos, comparado aos 100 anos da regeneração natural)."
   },
   "resilience": {
-    "title": "Enraizado na resiliência",
-    "text1": "Em maio de 2024, o Rio Grande do Sul experimentou as piores enchentes de sua história registrada. Mais de 2,3 milhões de pessoas foram afetadas e Sarandi foi um dos últimos bairros de Porto Alegre a ver a água recuar.",
-    "text2": "Quando as águas das enchentes finalmente se retiraram, deixaram para trás solo danificado e uma comunidade em recuperação. Florestas nativas ajudam a reter água, estabilizar o solo e reduzir o impacto de futuras enchentes — tornando o reflorestamento não apenas um ato ambiental, mas uma estratégia de sobrevivência."
+    "title": "Enraizada na resiliência",
+    "text1": "Em maio de 2024, o Rio Grande do Sul vivenciou as piores enchentes de sua história registrada. Mais de 2,3 milhões de pessoas foram afetadas e Sarandi foi um dos últimos bairros de Porto Alegre a ver as águas recuarem.",
+    "text2": "Quando as águas finalmente baixaram, deixaram para trás solo danificado e uma comunidade em recuperação. Florestas nativas ajudam a reter água, estabilizar o solo e reduzir o impacto de futuras inundações — tornando o reflorestamento não apenas um ato ambiental, mas uma estratégia de sobrevivência."
   },
   "soil": {
     "title": "Preparação do solo",
-    "text": "A área foi preparada usando uma escavadeira que removeu 50 cm de solo de aterro compactado em toda a área de 100 m². O solo removido foi colocado nas bordas do terreno, formando uma borda natural e criando uma bacia de retenção de água. Composto foi então adicionado para enriquecer o solo antes do plantio."
+    "text": "A área foi preparada utilizando uma escavadeira que removeu 50 cm de solo de aterro compactado em toda a extensão de 100 m². O solo removido foi colocado nas bordas do terreno, formando uma borda natural e criando uma bacia de retenção de água. Composto foi então adicionado para enriquecer o solo antes do plantio."
   },
   "partners": {
-    "title": "Parceiros:",
-    "placeholder": "Logotipos dos parceiros em breve"
+    "title": "Parceiros:"
+  },
+  "speciesSection": {
+    "title": "Espécies"
   },
   "species": {
-    "title": "Espécies"
+    "1": {
+      "commonName": "Dedalheiro",
+      "description": "Árvore graciosa de floresta secundária com flores brancas vistosas e casca medicinal. Altamente valorizada na fitoterapia tradicional. Espécie-chave de sucessão intermediária em matas ciliares.",
+      "keyFeatures": [
+        "Casca medicinal",
+        "Flores brancas",
+        "Mata ciliar",
+        "Forrageamento de abelhas"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversidade",
+          "description": "Atrai abelhas, borboletas e beija-flores; sustenta diversidade de insetos do sub-bosque."
+        },
+        {
+          "label": "Segurança alimentar",
+          "description": "Não é comestível, mas coletores comunitários valorizam a casca para chás e tratamento de feridas."
+        },
+        {
+          "label": "Resiliência climática",
+          "description": "Tolera períodos secos e solos compactados; boa barreira ripária nos invernos do RS."
+        },
+        {
+          "label": "Sequestro de carbono",
+          "description": "Taxa de crescimento moderada com madeira de densidade média; biomassa razoável a longo prazo."
+        },
+        {
+          "label": "Papel ecológico",
+          "description": "Preenchedor chave de clareiras na sucessão intermediária; faz ponte entre camadas pioneiras e clímaces em matas ciliares."
+        },
+        {
+          "label": "Benefício comunitário",
+          "description": "Casca amplamente comercializada para fitoterapia; economicamente significativa para curadores locais."
+        }
+      ]
+    },
+    "2": {
+      "commonName": "Timbó",
+      "description": "Leguminosa pioneira de crescimento rápido que fixa nitrogênio e coloniza rapidamente solos degradados. Crítica para recuperação de solo em estágios iniciais de sucessão.",
+      "keyFeatures": [
+        "Fixação de N",
+        "Pioneira",
+        "Recuperação de solo",
+        "Veneno de peixe"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversidade",
+          "description": "Apelo frutífero limitado, mas flores sustentam abelhas generalistas na sucessão inicial."
+        },
+        {
+          "label": "Segurança alimentar",
+          "description": "Sementes tóxicas; não comestível — historicamente usada como ictiotoxina para pesca."
+        },
+        {
+          "label": "Resiliência climática",
+          "description": "Extremamente resistente em sítios degradados e expostos; uma das primeiras a estabilizar solo nu."
+        },
+        {
+          "label": "Sequestro de carbono",
+          "description": "Crescimento rápido gera ganhos iniciais de carbono; densidade da madeira é moderada."
+        },
+        {
+          "label": "Papel ecológico",
+          "description": "Fixação de nitrogênio acelera dramaticamente a recuperação do solo para espécies seguintes."
+        },
+        {
+          "label": "Benefício comunitário",
+          "description": "Uso tradicional como veneno de peixe; comunidades de viveiros podem vender mudas para contratos de restauração."
+        }
+      ]
+    },
+    "3": {
+      "commonName": "Aroeira vermelha",
+      "description": "Pioneira resiliente com frutos vermelhos brilhantes (pimenta-rosa brasileira) atraindo pássaros. Excelente para estabilização de margens de rios e restauração de áreas degradadas.",
+      "keyFeatures": [
+        "Pimenta-rosa",
+        "Alimento de pássaros",
+        "Margem de rio",
+        "Comércio de especiarias"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversidade",
+          "description": "Frutos vermelhos atraem mais de 40 espécies de aves; importante fonte de alimento para corvídeos e tordos."
+        },
+        {
+          "label": "Segurança alimentar",
+          "description": "Pimenta-rosa brasileira — especiaria comercial com mercado ativo; fruto comestível com moderação."
+        },
+        {
+          "label": "Resiliência climática",
+          "description": "Tolera seca, inundação e solos salinos; uma das nativas do RS mais resilientes."
+        },
+        {
+          "label": "Sequestro de carbono",
+          "description": "Acúmulo lento de biomassa; densidade de madeira moderada mas estatura limitada."
+        },
+        {
+          "label": "Papel ecológico",
+          "description": "Colonizadora rápida de margens de rios; excelente para prevenir erosão pós-enchente."
+        },
+        {
+          "label": "Benefício comunitário",
+          "description": "Colheita de pimenta-rosa cria renda direta para Guarani e pequenos agricultores."
+        }
+      ]
+    },
+    "4": {
+      "commonName": "Pata de vaca",
+      "description": "Pioneira de flores em forma de borboleta com flores semelhantes a orquídeas, amplamente usada na medicina popular para controle de diabetes. Tolera solos pobres e condições urbanas.",
+      "keyFeatures": [
+        "Medicinal",
+        "Flores de orquídea",
+        "Tolerante urbano",
+        "Pioneira"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversidade",
+          "description": "Grandes flores brancas são fonte primária de néctar para mariposas e polinizadores noturnos."
+        },
+        {
+          "label": "Segurança alimentar",
+          "description": "Folhas usadas em chás medicinais; sem valor alimentício significativo para comunidades."
+        },
+        {
+          "label": "Resiliência climática",
+          "description": "Prospera em solos urbanos compactados e pobres em nutrientes; tolera seca sazonal."
+        },
+        {
+          "label": "Sequestro de carbono",
+          "description": "Taxa de crescimento moderada; madeira é leve e ganhos de carbono são limitados na vida útil curta."
+        },
+        {
+          "label": "Papel ecológico",
+          "description": "Pioneira útil mas de raízes rasas; valor de sucessão menor que pioneiras leguminosas."
+        },
+        {
+          "label": "Benefício comunitário",
+          "description": "Folhas vendidas frescas e secas para controle de diabetes — alta demanda em mercados de ervas."
+        }
+      ]
+    },
+    "5": {
+      "commonName": "Guabiroba",
+      "description": "Árvore frutífera aromática produzindo frutos doces e fragrantes que atraem mamíferos e pássaros. Importante árvore de soberania alimentar para comunidades Guarani.",
+      "keyFeatures": [
+        "Fruto comestível",
+        "Ímã de fauna",
+        "Aromático",
+        "Uso Guarani"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversidade",
+          "description": "Fruto consumido por antas, catetos, tucanos e mais de 30 espécies de aves."
+        },
+        {
+          "label": "Segurança alimentar",
+          "description": "Fruto aromático doce comido fresco e usado em sucos, geleias e licores artesanais."
+        },
+        {
+          "label": "Resiliência climática",
+          "description": "Suporta geadas do RS e seca sazonal; moderadamente resiliente em todo o estado."
+        },
+        {
+          "label": "Sequestro de carbono",
+          "description": "Madeira de densidade média e crescimento moderado; contribuição sólida de carbono na faixa intermediária."
+        },
+        {
+          "label": "Papel ecológico",
+          "description": "Espécie crítica de sucessão intermediária fazendo ponte entre habitat aberto e floresta de dossel fechado."
+        },
+        {
+          "label": "Benefício comunitário",
+          "description": "Central na cultura alimentar Guarani; colheita de frutos gera renda sazonal para famílias."
+        }
+      ]
+    },
+    "6": {
+      "commonName": "Araçá amarelo",
+      "description": "Goiaba nativa de fruto amarelo produzindo frutos doces ricos em vitaminas várias vezes ao ano. Árvore de sub-bosque altamente produtiva sustentando pássaros e pequenos mamíferos.",
+      "keyFeatures": [
+        "Fruto amarelo",
+        "Múltiplas colheitas",
+        "Sub-bosque",
+        "Alta vitamina C"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversidade",
+          "description": "Frutificação durante todo o ano sustenta pássaros e pequenos mamíferos mesmo nas estações magras da floresta."
+        },
+        {
+          "label": "Segurança alimentar",
+          "description": "Fruto amarelo doce com vitamina C muito alta; comido fresco, em geleias e bebidas fermentadas."
+        },
+        {
+          "label": "Resiliência climática",
+          "description": "Tolera geadas do RS e seca leve; adapta-se bem a condições de borda de floresta."
+        },
+        {
+          "label": "Sequestro de carbono",
+          "description": "Estatura pequena e vida útil curta limitam acúmulo de biomassa."
+        },
+        {
+          "label": "Papel ecológico",
+          "description": "Camada de sub-bosque importante mas papel estrutural limitado na sucessão do dossel."
+        },
+        {
+          "label": "Benefício comunitário",
+          "description": "Fruto colhido para uso doméstico e venda em pequena escala em mercados locais durante todo o ano."
+        }
+      ]
+    },
+    "7": {
+      "commonName": "Ipê Roxo",
+      "description": "Árvore clímax icônica de flores roxas e símbolo nacional do Brasil. Excepcional valor de madeira e carbono. Floresce antes de folhear, fornecendo néctar crucial de início de estação para abelhas.",
+      "keyFeatures": [
+        "Símbolo nacional",
+        "Madeira",
+        "Néctar de abelha",
+        "Dossel"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversidade",
+          "description": "Floração pré-folhas fornece o primeiro grande fluxo de néctar da estação para abelhas e beija-flores."
+        },
+        {
+          "label": "Segurança alimentar",
+          "description": "Sem partes comestíveis; casca interna tem uso medicinal tradicional como anti-inflamatório."
+        },
+        {
+          "label": "Resiliência climática",
+          "description": "Raiz pivotante profunda tolera seca; hábito decíduo permite sobrevivência dos invernos secos do RS."
+        },
+        {
+          "label": "Sequestro de carbono",
+          "description": "Madeira densa de lei, crescimento lento ao longo de 80–100 anos acumula biomassa excepcional."
+        },
+        {
+          "label": "Papel ecológico",
+          "description": "Espécie clímax dominante do dossel; define estrutura e longevidade da Mata Atlântica madura."
+        },
+        {
+          "label": "Benefício comunitário",
+          "description": "Espécie madeireira premium e ícone cultural; mudas em alta demanda para restauração."
+        }
+      ]
+    },
+    "8": {
+      "commonName": "Louro",
+      "description": "Espécie madeireira valiosa produzindo madeira leve e durável usada em carpintaria. Pequenas flores brancas atraem abelhas e insetos. Importante contribuidor de dossel secundário.",
+      "keyFeatures": [
+        "Madeira",
+        "Flores de abelha",
+        "Agrofloresta",
+        "Dossel"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversidade",
+          "description": "Flores brancas atraem abelhas generalistas; valor frutífero limitado para fauna."
+        },
+        {
+          "label": "Segurança alimentar",
+          "description": "Sem uso comestível significativo; não faz parte dos sistemas alimentares indígenas."
+        },
+        {
+          "label": "Resiliência climática",
+          "description": "Adapta-se a solos variados do RS; semi-decídua permitindo tolerância a geadas."
+        },
+        {
+          "label": "Sequestro de carbono",
+          "description": "Boa densidade de madeira e estatura alta; armazenamento significativo de carbono a longo prazo."
+        },
+        {
+          "label": "Papel ecológico",
+          "description": "Espécie útil de dossel secundário mas não é âncora de biodiversidade por si só."
+        },
+        {
+          "label": "Benefício comunitário",
+          "description": "Madeira leve altamente valorizada usada em móveis, portas e barcos tradicionais."
+        }
+      ]
+    },
+    "9": {
+      "commonName": "Angico vermelho",
+      "description": "Árvore leguminosa alta fixando nitrogênio atmosférico enquanto produz madeira densa e durável. Simultaneamente melhora solos, sequestra alto carbono e sustenta biodiversidade do dossel.",
+      "keyFeatures": [
+        "Fixação de N",
+        "Madeira densa",
+        "Casca medicinal",
+        "Sequestro de N"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversidade",
+          "description": "Flores atraem abelhas e besouros; dossel sustenta orquídeas epífitas e bromélias."
+        },
+        {
+          "label": "Segurança alimentar",
+          "description": "Casca usada medicinalmente; sementes não comestíveis. Sem valor alimentício para comunidades."
+        },
+        {
+          "label": "Resiliência climática",
+          "description": "Raízes profundas e fixação de nitrogênio ajudam estabelecimento em solos degradados e pobres em nutrientes."
+        },
+        {
+          "label": "Sequestro de carbono",
+          "description": "Madeira muito densa combinada com estatura alta a torna uma das melhores sequestradores de carbono no RS."
+        },
+        {
+          "label": "Papel ecológico",
+          "description": "Papel duplo como fixadora de N e espécie de dossel a torna excepcionalmente valiosa no design de restauração."
+        },
+        {
+          "label": "Benefício comunitário",
+          "description": "Taninos da casca usados no tratamento de couro; madeira densa valorizada para construção pesada."
+        }
+      ]
+    },
+    "10": {
+      "commonName": "Açoita cavalo",
+      "description": "Árvore de médio a grande porte com casca fibrosa tradicionalmente usada para fabricação de cordas. Flores atraem numerosos polinizadores. Excelente espécie ripária tolerando inundações periódicas.",
+      "keyFeatures": [
+        "Ripária",
+        "Polinizador",
+        "Fibra de corda",
+        "Tolerante a inundações"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversidade",
+          "description": "Flores abundantes atraem diversas abelhas, vespas e besouros ao longo de uma extensa temporada de floração."
+        },
+        {
+          "label": "Segurança alimentar",
+          "description": "Sem partes comestíveis; fibra da casca usada para cordoaria mas não para alimentação."
+        },
+        {
+          "label": "Resiliência climática",
+          "description": "Uma das poucas árvores médias que tolera tanto inundação sazonal quanto períodos secos no RS."
+        },
+        {
+          "label": "Sequestro de carbono",
+          "description": "Madeira de densidade média com boa estatura; contribuição sólida de carbono ao longo de 50+ anos."
+        },
+        {
+          "label": "Papel ecológico",
+          "description": "Crítica para restauração de corredor ripário após eventos de enchente tipo 2024 no RS."
+        },
+        {
+          "label": "Benefício comunitário",
+          "description": "Fibra da casca interna usada para corda e tecelagem tradicional; medicina popular anti-inflamatória."
+        }
+      ]
+    },
+    "11": {
+      "commonName": "Carne de vaca",
+      "description": "Árvore de sub-bosque de sucessão intermediária com flores brancas fragrantes ricas em néctar. Casca tem usos medicinais tradicionais. Valiosa para desenvolvimento de biodiversidade de sub-bosque.",
+      "keyFeatures": [
+        "Flores fragrantes",
+        "Sub-bosque",
+        "Medicinal",
+        "Rica em néctar"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversidade",
+          "description": "Flores altamente fragrantes são uma fonte rara e importante de néctar para abelhas especialistas."
+        },
+        {
+          "label": "Segurança alimentar",
+          "description": "Casca tem uso popular anti-reumático; não é planta alimentícia."
+        },
+        {
+          "label": "Resiliência climática",
+          "description": "Lida com variabilidade sazonal de umidade; cresce tanto em sítios úmidos quanto mais secos do RS."
+        },
+        {
+          "label": "Sequestro de carbono",
+          "description": "Estatura modesta e densidade de madeira; papel de carbono é limitado mas cumulativo em plantios densos."
+        },
+        {
+          "label": "Papel ecológico",
+          "description": "Preenche camada crítica de sub-bosque, fornecendo sombra e umidade para estabelecimento de mudas."
+        },
+        {
+          "label": "Benefício comunitário",
+          "description": "Casca usada na medicina tradicional para dor nas articulações; valor moderado de conhecimento local."
+        }
+      ]
+    },
+    "12": {
+      "commonName": "Araçá vermelho",
+      "description": "Goiaba nativa de fruto vermelho — uma das árvores pequenas mais produtivas e importantes para fauna na Mata Atlântica. Frutifica durante todo o ano, sustentando pássaros, mamíferos e comunidades.",
+      "keyFeatures": [
+        "Fruto vermelho",
+        "Durante todo o ano",
+        "Alimento de fauna",
+        "Segurança alimentar"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversidade",
+          "description": "Frutificação contínua durante todo o ano sustenta pássaros, morcegos e pequenos mamíferos mesmo na estação seca."
+        },
+        {
+          "label": "Segurança alimentar",
+          "description": "Fruto abundante doce-azedo comido fresco, em geleias, sucos e vinho; múltiplas colheitas anuais."
+        },
+        {
+          "label": "Resiliência climática",
+          "description": "Resistente em condições do RS incluindo geada leve; tolera tanto solos úmidos quanto secos."
+        },
+        {
+          "label": "Sequestro de carbono",
+          "description": "Estatura pequena tipo arbusto limita armazenamento de carbono apesar da longa vida produtiva."
+        },
+        {
+          "label": "Papel ecológico",
+          "description": "Fonte confiável de alimento sustenta frugívoros durante todo o ano, amplificando dispersão de sementes no sítio."
+        },
+        {
+          "label": "Benefício comunitário",
+          "description": "Planta alimentícia de maior uso para Guarani — frutos frescos, bebidas e produtos preservados vendidos localmente."
+        }
+      ]
+    },
+    "13": {
+      "commonName": "Canafistula",
+      "description": "Espetacular leguminosa de flores amarelas com raízes fixadoras de nitrogênio. Dossel denso fornece excelente sombra e madeira. Uma das árvores grandes de floresta secundária mais importantes do sul do Brasil.",
+      "keyFeatures": [
+        "Flores amarelas",
+        "Fixação de N",
+        "Madeira",
+        "Grande dossel"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversidade",
+          "description": "Flores amarelas abundantes são fonte chave de néctar na estação seca; vagens alimentam pássaros granívoros."
+        },
+        {
+          "label": "Segurança alimentar",
+          "description": "Sem partes comestíveis; vagens são ornamentais em vez de comestíveis."
+        },
+        {
+          "label": "Resiliência climática",
+          "description": "Tolera chuvas pesadas de verão do RS e geadas moderadas de inverno; resistente em solos perturbados."
+        },
+        {
+          "label": "Sequestro de carbono",
+          "description": "Atinge 25m com madeira densa; entre os maiores valores de carbono de árvores secundárias do RS."
+        },
+        {
+          "label": "Papel ecológico",
+          "description": "Fixação de nitrogênio mais dossel alto: espécie rara de função dupla acelerando sucessão."
+        },
+        {
+          "label": "Benefício comunitário",
+          "description": "Madeira valorizada para construção; crescimento rápido suficiente para rotação de silvicultura comunitária."
+        }
+      ]
+    },
+    "14": {
+      "commonName": "Canela",
+      "description": "Árvore clímax aromática da família das lauráceas produzindo pequenos frutos negros vitais para aves frugívoras. Casca usada como especiaria na culinária regional. Ancora biodiversidade de floresta madura.",
+      "keyFeatures": [
+        "Casca aromática",
+        "Alimento de pássaro",
+        "Clímax",
+        "Especiaria"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversidade",
+          "description": "Pequenos frutos negros ricos em lipídios são alimento crítico para tucanos, cotingas e aves migratórias."
+        },
+        {
+          "label": "Segurança alimentar",
+          "description": "Casca aromática usada como substituto da canela na culinária regional; óleo da casca comercializado localmente."
+        },
+        {
+          "label": "Resiliência climática",
+          "description": "Dossel perene lida com geadas de inverno do RS; tolerância à sombra permite regeneração de sub-bosque."
+        },
+        {
+          "label": "Sequestro de carbono",
+          "description": "Madeira densa da família das lauráceas persistindo 60–100 anos acumula carbono sólido a longo prazo."
+        },
+        {
+          "label": "Papel ecológico",
+          "description": "Espécie clímax dominante em floresta ombrófila mista; define microclima de floresta madura."
+        },
+        {
+          "label": "Benefício comunitário",
+          "description": "Casca colhida para especiaria e medicina popular; madeira usada em carpintaria fina."
+        }
+      ]
+    },
+    "15": {
+      "commonName": "Araticum",
+      "description": "Pinha nativa portando fruto grande comestível altamente nutritivo para comunidades e fauna. Particularmente importante para antas e grandes mamíferos. Forte valor de soberania alimentar para Guarani.",
+      "keyFeatures": [
+        "Fruto comestível",
+        "Grandes mamíferos",
+        "Alimento Guarani",
+        "Sub-bosque"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversidade",
+          "description": "Frutos grandes consumidos por antas, catetos e macacos-barrigudos — alimento chave da megafauna."
+        },
+        {
+          "label": "Segurança alimentar",
+          "description": "Polpa doce tipo creme comida fresca; alto valor calórico e nutricional para comunidades."
+        },
+        {
+          "label": "Resiliência climática",
+          "description": "Adaptada ao calor de verão do RS; menos tolerante a geadas mas sobrevive invernos típicos do RS."
+        },
+        {
+          "label": "Sequestro de carbono",
+          "description": "Estatura modesta e densidade de madeira; contribuição de carbono é moderada."
+        },
+        {
+          "label": "Papel ecológico",
+          "description": "Tamanho grande de semente significa que dispersão depende de megafauna, tornando-a espécie indicadora de restauração."
+        },
+        {
+          "label": "Benefício comunitário",
+          "description": "Um dos frutos culturalmente mais importantes para Guarani; comercializado em feiras de alimentos indígenas."
+        }
+      ]
+    },
+    "16": {
+      "commonName": "Guajuvira",
+      "description": "Árvore madeireira valorizada com flores branco-creme atraindo abundantes polinizadores. Madeira usada para móveis e construção. Combina alto valor madeireiro com suporte de polinizadores.",
+      "keyFeatures": [
+        "Madeira",
+        "Flores brancas",
+        "Polinizador",
+        "Floresta secundária"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversidade",
+          "description": "Flores brancas prolíficas atraem grandes guildas de abelhas; dossel sustenta aves que nidificam em cavidades."
+        },
+        {
+          "label": "Segurança alimentar",
+          "description": "Sem valor comestível significativo; apenas espécie madeireira."
+        },
+        {
+          "label": "Resiliência climática",
+          "description": "Tolera solos variados do RS; semi-decídua reduzindo estresse de geada no inverno."
+        },
+        {
+          "label": "Sequestro de carbono",
+          "description": "Madeira de densidade moderada a alta em árvore secundária alta; sólido sequestro de carbono."
+        },
+        {
+          "label": "Papel ecológico",
+          "description": "Importante espécie estrutural de dossel acelerando formação de floresta fechada neste sítio."
+        },
+        {
+          "label": "Benefício comunitário",
+          "description": "Madeira de alta qualidade para móveis e construção; demanda local ativa por madeira de Guajuvira."
+        }
+      ]
+    },
+    "17": {
+      "commonName": "Caroba",
+      "description": "Jacarandá nativo produzindo flores azul-roxas ricas em néctar. Casca usada medicinalmente para condições de pele. Fornece camada de biodiversidade de meio-dossel.",
+      "keyFeatures": [
+        "Flores azuis",
+        "Casca medicinal",
+        "Néctar",
+        "Meio-dossel"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversidade",
+          "description": "Flores tubulares azuis são recurso especialista para abelhas de língua longa e beija-flores."
+        },
+        {
+          "label": "Segurança alimentar",
+          "description": "Sem partes comestíveis; extrato de casca usado topicamente apenas para condições de pele."
+        },
+        {
+          "label": "Resiliência climática",
+          "description": "Tolera geadas do RS e pluviosidade variável; robusta de borda de floresta a interior."
+        },
+        {
+          "label": "Sequestro de carbono",
+          "description": "Madeira de densidade média; contribui carbono moderado em alturas de meio-dossel."
+        },
+        {
+          "label": "Papel ecológico",
+          "description": "Cria complexidade visual e estrutural na camada média da floresta; sustenta epífitas."
+        },
+        {
+          "label": "Benefício comunitário",
+          "description": "Decocções de casca usadas para sífilis e infecções de pele na medicina tradicional."
+        }
+      ]
+    },
+    "18": {
+      "commonName": "Ipê Amarelo",
+      "description": "Árvore clímax de flores douradas — a flor nacional do Brasil. Fornece néctar crítico de início de primavera. Madeira densa e durável e armazenamento excepcional de carbono a longo prazo.",
+      "keyFeatures": [
+        "Flor nacional",
+        "Floração dourada",
+        "Madeira",
+        "Néctar de abelha"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversidade",
+          "description": "Floração dourada em massa antes do fluxo de folhas é o evento de abelhas mais importante do início de primavera na floresta do RS."
+        },
+        {
+          "label": "Segurança alimentar",
+          "description": "Sem partes comestíveis; casca tem uso anti-inflamatório tradicional menor."
+        },
+        {
+          "label": "Resiliência climática",
+          "description": "Estratégia decídua conserva umidade; raízes profundas lidam com seca e geadas de inverno do RS."
+        },
+        {
+          "label": "Sequestro de carbono",
+          "description": "Madeira de lei muito densa acumulando ao longo de 80–100 anos; armazenamento excepcional de carbono ao longo da vida."
+        },
+        {
+          "label": "Papel ecológico",
+          "description": "Âncora clímax do dossel; define fisionomia da Mata Atlântica madura no sul do Brasil."
+        },
+        {
+          "label": "Benefício comunitário",
+          "description": "Símbolo da flor nacional do Brasil; madeira premium; alta demanda de mudas para restauração."
+        }
+      ]
+    },
+    "19": {
+      "commonName": "Pêssego do Mato",
+      "description": "Pêssego silvestre nativo com fruto comestível doce amado por pássaros e comunidades. Frutificador prolífico sustentando pássaros e pequenos mamíferos durante todo o ano em ambientes ripários e de floresta secundária.",
+      "keyFeatures": [
+        "Fruto comestível",
+        "Alimento de pássaro",
+        "Ripária",
+        "Segurança alimentar"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversidade",
+          "description": "Frutificação prolífica sustenta tordos, saíras e pequenos mamíferos ao longo de estações estendidas."
+        },
+        {
+          "label": "Segurança alimentar",
+          "description": "Fruto doce sabor de pêssego comido fresco e usado em geleias e destilados artesanais."
+        },
+        {
+          "label": "Resiliência climática",
+          "description": "Tolera inundação, geada e seca sazonal do RS — versátil em todo o estado."
+        },
+        {
+          "label": "Sequestro de carbono",
+          "description": "Estatura pequena e densidade de madeira moderada; contribuição individual de carbono limitada."
+        },
+        {
+          "label": "Papel ecológico",
+          "description": "Especialista de sub-bosque ripário; crucial para recuperação de biodiversidade de margem de rio após enchentes."
+        },
+        {
+          "label": "Benefício comunitário",
+          "description": "Fruto amplamente usado em cozinhas domésticas e vendido em mercados comunitários; fácil de propagar."
+        }
+      ]
+    },
+    "20": {
+      "commonName": "Maria preta",
+      "description": "Árvore alta de floresta clímax com sementes aladas escuras distintas. Excelente madeira densa e alto armazenamento de carbono a longo prazo. Uma importante mas incomum espécie de dossel maduro.",
+      "keyFeatures": [
+        "Madeira densa",
+        "Sementes aladas",
+        "Rara",
+        "Dossel"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversidade",
+          "description": "Sementes aladas dispersas pelo vento; valor alimentar direto limitado para fauna mas dossel sustenta epífitas."
+        },
+        {
+          "label": "Segurança alimentar",
+          "description": "Sem partes comestíveis ou medicinais amplamente usadas; apenas espécie madeireira."
+        },
+        {
+          "label": "Resiliência climática",
+          "description": "Estabelecida em florestas clímax do RS; lida com variação sazonal típica uma vez estabelecida."
+        },
+        {
+          "label": "Sequestro de carbono",
+          "description": "Madeira muito densa em grande árvore de dossel persistindo 100 anos; excelente sumidouro de carbono."
+        },
+        {
+          "label": "Papel ecológico",
+          "description": "Componente clímax raro cuja inclusão aumenta resiliência e autenticidade da floresta a longo prazo."
+        },
+        {
+          "label": "Benefício comunitário",
+          "description": "Madeira densa de alto valor; presença sinaliza qualidade de floresta madura para avaliadores de conservação."
+        }
+      ]
+    },
+    "21": {
+      "commonName": "Figueira folha larga",
+      "description": "Figueira de folhas largas — uma verdadeira espécie-chave. Frutificação contínua ao longo de todas as estações a torna talvez a árvore de biodiversidade individualmente mais importante de todo o plantio.",
+      "keyFeatures": [
+        "Espécie-chave",
+        "Frutificação em massa",
+        "Gigante de dossel",
+        "1200+ spp."
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversidade",
+          "description": "Figos sustentam mais de 1.200 espécies de vertebrados globalmente; frutificação contínua sustenta biodiversidade durante todo o ano."
+        },
+        {
+          "label": "Segurança alimentar",
+          "description": "Figos pequenos abundantes consumidos por pássaros, morcegos, primatas e comunidades; processados em conservas."
+        },
+        {
+          "label": "Resiliência climática",
+          "description": "Sistema radicular extenso estabiliza solos; dossel cria microclima amortecendo calor e seca."
+        },
+        {
+          "label": "Sequestro de carbono",
+          "description": "Atinge 30m com tronco massivo; um dos maiores armazenamentos de carbono ao longo da vida na Mata Atlântica."
+        },
+        {
+          "label": "Papel ecológico",
+          "description": "Espécie-chave absoluta; nenhuma outra espécie pode substituir seu papel como fonte contínua de alimento multi-sazonal."
+        },
+        {
+          "label": "Benefício comunitário",
+          "description": "Árvore sagrada em muitas culturas indígenas; fruto comestível e madeira usada em construção tradicional."
+        }
+      ]
+    },
+    "22": {
+      "commonName": "Figueira folha miúda",
+      "description": "Figueira nativa de folhas menores compartilhando status de espécie-chave com sua parente maior em altura de dossel mais acessível. Excelente complemento em design de plantio em camadas.",
+      "keyFeatures": [
+        "Espécie-chave",
+        "Fruto pequeno",
+        "Fauna",
+        "Figueira nativa"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversidade",
+          "description": "Frutificação densa sustenta fauna de sub-bosque; importante para pássaros menores incapazes de alcançar figos grandes."
+        },
+        {
+          "label": "Segurança alimentar",
+          "description": "Figos pequenos consumidos por pássaros, morcegos e comunidades; usados em conservas tradicionais."
+        },
+        {
+          "label": "Resiliência climática",
+          "description": "Adapta-se à sazonalidade do RS; sistema radicular agressivo lida tanto com períodos úmidos quanto secos."
+        },
+        {
+          "label": "Sequestro de carbono",
+          "description": "Madeira densa com vida útil de 80–100 anos; forte contribuição individual de carbono no meio-dossel."
+        },
+        {
+          "label": "Papel ecológico",
+          "description": "Fornece alimento contínuo em altura de dossel mais baixa, complementando perfeitamente a figueira de folha larga."
+        },
+        {
+          "label": "Benefício comunitário",
+          "description": "Significado cultural compartilhado com todas as figueiras nativas; fruto usado localmente; importante para agrofloresta."
+        }
+      ]
+    },
+    "23": {
+      "commonName": "Chal chal",
+      "description": "Árvore pequena de frutificação prolífica produzindo cachos de frutos vermelhos extremamente atraentes para pássaros. Uma das plantas alimentícias de pássaros mais importantes em florestas do sul do Brasil.",
+      "keyFeatures": [
+        "Cachos de frutos vermelhos",
+        "Ímã de pássaros",
+        "Crescimento rápido",
+        "Sub-bosque"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversidade",
+          "description": "Cachos densos de frutos vermelhos atraem mais de 50 espécies de aves; entre as 3 melhores árvores alimentícias de pássaros no RS."
+        },
+        {
+          "label": "Segurança alimentar",
+          "description": "Frutos pequenos comestíveis e usados em vinho artesanal e fermentação por comunidades."
+        },
+        {
+          "label": "Resiliência climática",
+          "description": "Estabelecimento rápido em solos degradados; tolera geadas do RS e encharcamento periódico."
+        },
+        {
+          "label": "Sequestro de carbono",
+          "description": "Estatura pequena e vida útil curta; papel de carbono é local e cumulativo em vez de individual."
+        },
+        {
+          "label": "Papel ecológico",
+          "description": "Crescimento rápido e frutificação prolífica restauram rapidamente redes de interação pássaro-planta em sítios degradados."
+        },
+        {
+          "label": "Benefício comunitário",
+          "description": "Frutos usados em vinho popular; espécie de crescimento rápido fácil de produzir em viveiros comunitários."
+        }
+      ]
+    },
+    "24": {
+      "commonName": "Jaboticaba",
+      "description": "Icônica árvore brasileira de frutificação no tronco produzindo frutos doces tipo uva diretamente na casca. Frutifica várias vezes ao ano, sustentando polinizadores e frugívoros.",
+      "keyFeatures": [
+        "Frutificação no tronco",
+        "Múltiplas colheitas",
+        "Ícone cultural",
+        "Polinizador"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversidade",
+          "description": "Flores portadas no tronco atraem polinizadores diretamente; fruto consumido por morcegos, pássaros e mamíferos."
+        },
+        {
+          "label": "Segurança alimentar",
+          "description": "Fruto doce sabor de uva comido fresco, fermentado em vinho e licor; múltiplas colheitas anuais."
+        },
+        {
+          "label": "Resiliência climática",
+          "description": "Prospera no clima tropical-subtropical do RS; resiliente ao calor e seca moderada."
+        },
+        {
+          "label": "Sequestro de carbono",
+          "description": "Taxa de crescimento moderada e vida útil; contribuição razoável de carbono para seu tamanho."
+        },
+        {
+          "label": "Papel ecológico",
+          "description": "Espécie de sub-bosque com papel limitado de dossel; maior valor é rede alimentar em vez de estrutura."
+        },
+        {
+          "label": "Benefício comunitário",
+          "description": "Ícone cultural da agrofloresta brasileira; vinho de jaboticaba é produto comercialmente significativo."
+        }
+      ]
+    },
+    "25": {
+      "commonName": "Cocão",
+      "description": "Arbusto-árvore pioneiro de folhas prateadas com abundantes pequenos frutos vermelhos importantes para pássaros. Colonizador crítico de pastagens Pampa degradadas, permitindo transição floresta-savana.",
+      "keyFeatures": [
+        "Folhas prateadas",
+        "Fruto vermelho",
+        "Pioneira de pastagem",
+        "Zona de transição"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversidade",
+          "description": "Pequenos frutos vermelhos atraem pássaros residentes; folhagem prateada fornece micro-habitat para insetos."
+        },
+        {
+          "label": "Segurança alimentar",
+          "description": "Frutos não comumente comidos por comunidades; valor limitado de soberania alimentar."
+        },
+        {
+          "label": "Resiliência climática",
+          "description": "Pioneira de Pampa degradado aberto — extremamente resistente; sobrevive exposição, seca e solos pobres."
+        },
+        {
+          "label": "Sequestro de carbono",
+          "description": "Estatura tipo arbusto e vida útil curta limitam severamente acúmulo de carbono."
+        },
+        {
+          "label": "Papel ecológico",
+          "description": "Primeira espécie lenhosa a colonizar pastagem Pampa degradada, permitindo que sucessão florestal comece."
+        },
+        {
+          "label": "Benefício comunitário",
+          "description": "Uso comunitário limitado; valor reside em seu papel ecológico em vez de benefício humano direto."
+        }
+      ]
+    },
+    "26": {
+      "commonName": "Branquilho",
+      "description": "Pioneira de crescimento rápido tolerando inundação e solos encharcados, essencial para restauração ripária. As primeiras árvores a reestabelecer mata ciliar e planícies de inundação após eventos de enchente.",
+      "keyFeatures": [
+        "Tolerante a inundações",
+        "Casca branca",
+        "Pioneira ripária",
+        "Crescimento rápido"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversidade",
+          "description": "Sustenta insetos aquáticos e pássaros ripários; valor frutífero limitado para fauna."
+        },
+        {
+          "label": "Segurança alimentar",
+          "description": "Sem uso comestível; não faz parte dos sistemas alimentares comunitários."
+        },
+        {
+          "label": "Resiliência climática",
+          "description": "Sobrevive inundação completa; a pioneira definitiva de resiliência a enchentes do RS após eventos tipo 2024."
+        },
+        {
+          "label": "Sequestro de carbono",
+          "description": "Densidade de madeira moderada; crescimento rápido fornece ganhos iniciais de carbono em corredores ripários."
+        },
+        {
+          "label": "Papel ecológico",
+          "description": "Insubstituível para restauração de planície de inundação; nada mais iguala sua tolerância a inundações no RS."
+        },
+        {
+          "label": "Benefício comunitário",
+          "description": "Uso direto limitado mas essencial para proteger terras agrícolas e indígenas de enchentes."
+        }
+      ]
+    },
+    "27": {
+      "commonName": "Tucaneiro",
+      "description": "Nomeada em homenagem ao tucano — produz frutos aromáticos intensamente consumidos por tucanos e saíras. Excelente fonte de néctar para abelhas. Eficaz para restaurar comunidades de pássaros de floresta.",
+      "keyFeatures": [
+        "Alimento de tucano",
+        "Fruto aromático",
+        "Néctar de abelha",
+        "Restauração de pássaros"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversidade",
+          "description": "Frutos aromáticos atraem tucanos, saíras e tordos — espécies indicadoras chave para recuperação florestal."
+        },
+        {
+          "label": "Segurança alimentar",
+          "description": "Frutos não significativos para consumo humano; valor alimentar ecológico supera amplamente uso comunitário."
+        },
+        {
+          "label": "Resiliência climática",
+          "description": "Tolera seca sazonal e geada leve do RS; resistente em solos degradados."
+        },
+        {
+          "label": "Sequestro de carbono",
+          "description": "Estatura moderada e densidade de madeira; contribuição moderada de carbono ao longo de 30–50 anos."
+        },
+        {
+          "label": "Papel ecológico",
+          "description": "Presença de tucanos se alimentando aqui sinaliza restauração bem-sucedida da comunidade de aves florestais."
+        },
+        {
+          "label": "Benefício comunitário",
+          "description": "Fruto aromático usado em medicina popular; árvores facilmente propagadas em viveiros locais."
+        }
+      ]
+    },
+    "28": {
+      "commonName": "Cedro",
+      "description": "O grande cedro da Mata Atlântica — majestoso, madeira valiosa e o maior sequestrador individual de carbono deste plantio. Ameaçado por broca-do-cedro; plantios mistos reduzem vulnerabilidade.",
+      "keyFeatures": [
+        "Madeira preciosa",
+        "Espécie vulnerável",
+        "Maior carbono",
+        "Gigante de dossel"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversidade",
+          "description": "Troncos grandes ocos fornecem nidificação para rapinantes; dossel sustenta comunidades epifíticas."
+        },
+        {
+          "label": "Segurança alimentar",
+          "description": "Sem uso comestível; resina tem aplicação medicinal tradicional menor."
+        },
+        {
+          "label": "Resiliência climática",
+          "description": "Adaptada ao clima do RS mas vulnerável à broca-do-cedro em monoculturas; plantios mistos essenciais."
+        },
+        {
+          "label": "Sequestro de carbono",
+          "description": "Atinge 35m com madeira aromática muito densa; maior valor individual de carbono no plantio."
+        },
+        {
+          "label": "Papel ecológico",
+          "description": "Gigante de dossel chave cujo status ameaçado torna cada indivíduo plantado crítico para conservação."
+        },
+        {
+          "label": "Benefício comunitário",
+          "description": "Madeira de marcenaria mais preciosa da América do Sul; valor econômico significativo para silvicultura comunitária."
+        }
+      ]
+    },
+    "29": {
+      "commonName": "Caliandra",
+      "description": "Arbusto pioneiro fixador de nitrogênio com flores espetaculares rosa tipo pompom. Excepcional forrageamento de beija-flores e abelhas. Cobre rapidamente solo degradado, permitindo sucessão.",
+      "keyFeatures": [
+        "Fixação de N",
+        "Alimento de beija-flor",
+        "Flores rosas",
+        "Controle de erosão"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversidade",
+          "description": "Flores rosa pompom são forrageamento primário de beija-flores e abelhas no sítio degradado."
+        },
+        {
+          "label": "Segurança alimentar",
+          "description": "Sem partes comestíveis; valor é inteiramente ecológico. Flores são ornamentalmente significativas."
+        },
+        {
+          "label": "Resiliência climática",
+          "description": "Sistema radicular denso previne erosão; fixação de nitrogênio enriquece solos nus imediatamente."
+        },
+        {
+          "label": "Sequestro de carbono",
+          "description": "Estatura de arbusto e vida útil curta limitam severamente sequestro individual de carbono."
+        },
+        {
+          "label": "Papel ecológico",
+          "description": "Primeira fixadora de nitrogênio a estabilizar solo nu; cria condições para toda sucessão subsequente."
+        },
+        {
+          "label": "Benefício comunitário",
+          "description": "Mudas facilmente vendidas por viveiros comunitários; atraente para jardins urbanos e restauração."
+        }
+      ]
+    },
+    "30": {
+      "commonName": "Cereja",
+      "description": "Cereja silvestre nativa produzindo cerejas doces abundantes apreciadas por pássaros e comunidades. Fruto usado em geleias, licores e consumo fresco por comunidades locais.",
+      "keyFeatures": [
+        "Cereja nativa",
+        "Alimento de pássaro",
+        "Fruto comunitário",
+        "Geleias e licores"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversidade",
+          "description": "Frutos vermelho-cereja atraem tordos, saíras e mamíferos; flores sustentam abelhas nativas."
+        },
+        {
+          "label": "Segurança alimentar",
+          "description": "Sabor doce de cereja excelente fresco; ingrediente principal para geleias e licores artesanais."
+        },
+        {
+          "label": "Resiliência climática",
+          "description": "Tolera geadas e seca sazonal do RS; resiliente em habitats florestais variados do sul."
+        },
+        {
+          "label": "Sequestro de carbono",
+          "description": "Madeira de densidade moderada em árvore de tamanho médio; armazenamento de carbono razoável mas não excepcional."
+        },
+        {
+          "label": "Papel ecológico",
+          "description": "Importante espécie secundária de sub-bosque sustentando comunidades frugívoras durante todo o ano."
+        },
+        {
+          "label": "Benefício comunitário",
+          "description": "Produção de licor e geleia de cereja é fluxo de renda ativo para comunidades indígenas do RS."
+        }
+      ]
+    },
+    "31": {
+      "commonName": "Goiaba serrana",
+      "description": "Feijoa nativa de terras altas produzindo fruto aromático distintivo com polpa branca doce. Tolerante a geadas — resiliência climática excepcional para invernos do Rio Grande do Sul.",
+      "keyFeatures": [
+        "Tolerante a geadas",
+        "Fruto aromático",
+        "Espécie de terras altas",
+        "Potencial de exportação"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversidade",
+          "description": "Pétalas grossas comidas por pássaros diretamente da flor; fruto consumido por múltiplas espécies."
+        },
+        {
+          "label": "Segurança alimentar",
+          "description": "Polpa altamente aromática tipo goiaba; comida fresca ou em geleias premium; mercado de exportação crescente."
+        },
+        {
+          "label": "Resiliência climática",
+          "description": "Nativa das terras altas do RS; a espécie frutífera mais tolerante a geadas de todo este plantio."
+        },
+        {
+          "label": "Sequestro de carbono",
+          "description": "Estatura pequena de arbusto-árvore; contribuição de carbono modesta mas vida útil dá ganhos cumulativos."
+        },
+        {
+          "label": "Papel ecológico",
+          "description": "Importante em bordas de Mata Atlântica de altitude; papel limitado em contextos de sucessão de baixada."
+        },
+        {
+          "label": "Benefício comunitário",
+          "description": "Feijoa é cada vez mais exportada e obtém preços premium; forte oportunidade comercial."
+        }
+      ]
+    },
+    "32": {
+      "commonName": "Pitanga",
+      "description": "A cereja-do-Suriname — um dos frutos nativos mais amados do Brasil. Produz fruto abundante vermelho-a-preto rico em vitaminas C e A, atraindo pássaros e humanos igualmente.",
+      "keyFeatures": [
+        "Rica em vitaminas",
+        "Ícone cultural",
+        "Alimento de pássaro",
+        "Fruto Guarani"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversidade",
+          "description": "Fruto abundante consumido por muitas espécies de aves; flores atraem abelhas nativas durante todo o ano."
+        },
+        {
+          "label": "Segurança alimentar",
+          "description": "Conteúdo excepcional de vitamina C e A; comida fresca, em sucos e sobremesas congeladas; amada em todo o Brasil."
+        },
+        {
+          "label": "Resiliência climática",
+          "description": "Adaptada em todo RS da costa às terras altas; tolera geada e seca moderada."
+        },
+        {
+          "label": "Sequestro de carbono",
+          "description": "Estatura variável; papel de carbono limitado mas os 2 indivíduos ainda contribuem para diversidade do sítio."
+        },
+        {
+          "label": "Papel ecológico",
+          "description": "Importante espécie frutífera de sub-bosque; papel estrutural de dossel limitado em contagem individual pequena."
+        },
+        {
+          "label": "Benefício comunitário",
+          "description": "Fruto nativo culturalmente mais significativo para Guarani; suco de pitanga é produto comunitário comercial."
+        }
+      ]
+    },
+    "33": {
+      "commonName": "Caporroca",
+      "description": "Árvore pequena a média produzindo frutos escuros abundantes críticos para saíras e tordos. Sustenta dispersão de sementes mediada por pássaros, amplificando eficácia geral de restauração.",
+      "keyFeatures": [
+        "Frutos escuros",
+        "Alimento de saíra",
+        "Dispersão de sementes",
+        "Camada média"
+      ],
+      "ecologicalScores": [
+        {
+          "label": "Biodiversidade",
+          "description": "Frutos escuros são alimento primário para saíras e tordos — espécie multiplicadora de dispersão de sementes."
+        },
+        {
+          "label": "Segurança alimentar",
+          "description": "Frutos não comidos por comunidades; valor alimentar direto limitado além da fauna."
+        },
+        {
+          "label": "Resiliência climática",
+          "description": "Tolera variação sazonal do RS; cresce bem em solos rochosos ou pobres em nutrientes."
+        },
+        {
+          "label": "Sequestro de carbono",
+          "description": "Densidade de madeira moderada e estatura média; contribuição individual razoável de carbono."
+        },
+        {
+          "label": "Papel ecológico",
+          "description": "Sementes dispersas por pássaros desta árvore viajam longe, semeando novas áreas e amplificando alcance de restauração."
+        },
+        {
+          "label": "Benefício comunitário",
+          "description": "Uso direto limitado; valor é ecológico. Fácil de propagar para vendas de viveiro comunitário."
+        }
+      ]
+    }
   }
 }

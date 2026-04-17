@@ -24,5 +24,10 @@
   "productCard": {
     "available": "available",
     "co2PerTree": "CO2"
+  },
+  "treeCard": {
+    "keyCharacteristics": "Key characteristics",
+    "ecologicalScores": "Ecological scores",
+    "addToCart": "Add to Cart"
   }
 }

@@ -1,0 +1,481 @@
+[
+  {
+    "name": "Dedalheiro",
+    "scientificName": "Lafoensia pacari",
+    "quantity": 10,
+    "role": "secondary",
+    "image": {
+      "original": "species-images/original/lafoensia-pacari.jpg",
+      "optimized": "species-images/optimized/lafoensia-pacari.jpg",
+      "credit": "iNaturalist / CC",
+      "photographer": "(c) Mauricio Mercadante, some rights reserved (CC BY-NC-SA)",
+      "source": "iNaturalist",
+      "taxonId": 347879,
+      "webgl": "species-images/webgl/lafoensia-pacari.webp"
+    }
+  },
+  {
+    "name": "Timbó",
+    "scientificName": "Ateleia glazioviana",
+    "quantity": 8,
+    "role": "pioneer",
+    "image": null
+  },
+  {
+    "name": "Aroeira vermelha",
+    "scientificName": "Schinus terebinthifolia",
+    "quantity": 8,
+    "role": "pioneer",
+    "image": {
+      "original": "species-images/original/schinus-terebinthifolia.jpg",
+      "optimized": "species-images/optimized/schinus-terebinthifolia.jpg",
+      "credit": "iNaturalist / CC",
+      "photographer": "(c) Mary Keim, some rights reserved (CC BY-NC-SA)",
+      "source": "iNaturalist",
+      "taxonId": 130872,
+      "webgl": "species-images/webgl/schinus-terebinthifolia.webp"
+    }
+  },
+  {
+    "name": "Pata de vaca",
+    "scientificName": "Bauhinia forficata",
+    "quantity": 8,
+    "role": "pioneer",
+    "image": {
+      "original": "species-images/original/bauhinia-forficata.jpg",
+      "optimized": "species-images/optimized/bauhinia-forficata.jpg",
+      "credit": "iNaturalist / CC",
+      "photographer": "(c) Pablo Fraire, some rights reserved (CC BY-NC), uploaded by Pablo Fraire",
+      "source": "iNaturalist",
+      "taxonId": 139568,
+      "webgl": "species-images/webgl/bauhinia-forficata.webp"
+    }
+  },
+  {
+    "name": "Guabiroba",
+    "scientificName": "Campomanesia xanthocarpa",
+    "quantity": 12,
+    "role": "secondary",
+    "image": {
+      "original": "species-images/original/campomanesia-xanthocarpa.jpg",
+      "optimized": "species-images/optimized/campomanesia-xanthocarpa.jpg",
+      "credit": "iNaturalist / CC",
+      "photographer": "(c) Eliara Solange Müller, some rights reserved (CC BY-NC), uploaded by Eliara Solange Müller",
+      "source": "iNaturalist",
+      "taxonId": 560913,
+      "webgl": "species-images/webgl/campomanesia-xanthocarpa.webp"
+    }
+  },
+  {
+    "name": "Araçá amarelo",
+    "scientificName": "Psidium cattleyanum var. lucidum",
+    "quantity": 8,
+    "role": "secondary",
+    "image": {
+      "original": "species-images/original/psidium-cattleyanum-var-lucidum.jpg",
+      "optimized": "species-images/optimized/psidium-cattleyanum-var-lucidum.jpg",
+      "credit": "iNaturalist / CC",
+      "photographer": "(c) George Roatan, all rights reserved, uploaded by George Roatan",
+      "source": "iNaturalist",
+      "taxonId": 278242,
+      "webgl": "species-images/webgl/psidium-cattleyanum-var-lucidum.webp"
+    }
+  },
+  {
+    "name": "Ipê Roxo",
+    "scientificName": "Handroanthus heptaphyllus",
+    "quantity": 10,
+    "role": "climax",
+    "image": {
+      "original": "species-images/original/handroanthus-heptaphyllus.jpg",
+      "optimized": "species-images/optimized/handroanthus-heptaphyllus.jpg",
+      "credit": "iNaturalist / CC",
+      "photographer": "(c) Marcelo, all rights reserved, uploaded by Marcelo",
+      "source": "iNaturalist",
+      "taxonId": 808333,
+      "webgl": "species-images/webgl/handroanthus-heptaphyllus.webp"
+    }
+  },
+  {
+    "name": "Louro",
+    "scientificName": "Cordia trichotoma",
+    "quantity": 6,
+    "role": "secondary",
+    "image": {
+      "original": "species-images/original/cordia-trichotoma.jpg",
+      "optimized": "species-images/optimized/cordia-trichotoma.jpg",
+      "credit": "iNaturalist / CC",
+      "photographer": "(c) Flávio Mendes, some rights reserved (CC BY-NC), uploaded by Flávio Mendes",
+      "source": "iNaturalist",
+      "taxonId": 578804,
+      "webgl": "species-images/webgl/cordia-trichotoma.webp"
+    }
+  },
+  {
+    "name": "Angico vermelho",
+    "scientificName": "Parapiptadenia rigida",
+    "quantity": 6,
+    "role": "secondary",
+    "image": {
+      "original": "species-images/original/parapiptadenia-rigida.jpg",
+      "optimized": "species-images/optimized/parapiptadenia-rigida.jpg",
+      "credit": "iNaturalist / CC",
+      "photographer": "no rights reserved, uploaded by Sebastián Gómez Barboza Silveira",
+      "source": "iNaturalist",
+      "taxonId": 563297,
+      "webgl": "species-images/webgl/parapiptadenia-rigida.webp"
+    }
+  },
+  {
+    "name": "Açoita cavalo",
+    "scientificName": "Luehea divaricata",
+    "quantity": 10,
+    "role": "secondary",
+    "image": {
+      "original": "species-images/original/luehea-divaricata.jpg",
+      "optimized": "species-images/optimized/luehea-divaricata.jpg",
+      "credit": "iNaturalist / CC",
+      "photographer": "(c) siempreverde, some rights reserved (CC BY-NC)",
+      "source": "iNaturalist",
+      "taxonId": 135403,
+      "webgl": "species-images/webgl/luehea-divaricata.webp"
+    }
+  },
+  {
+    "name": "Carne de vaca",
+    "scientificName": "Styrax leprosus",
+    "quantity": 10,
+    "role": "secondary",
+    "image": {
+      "original": "species-images/original/styrax-leprosus.jpg",
+      "optimized": "species-images/optimized/styrax-leprosus.jpg",
+      "credit": "iNaturalist / CC",
+      "photographer": "(c) Matías Zarucki, some rights reserved (CC BY-NC), uploaded by Matías Zarucki",
+      "source": "iNaturalist",
+      "taxonId": 1085683,
+      "webgl": "species-images/webgl/styrax-leprosus.webp"
+    }
+  },
+  {
+    "name": "Araçá vermelho",
+    "scientificName": "Psidium cattleyanum",
+    "quantity": 16,
+    "role": "secondary",
+    "image": {
+      "original": "species-images/original/psidium-cattleyanum.jpg",
+      "optimized": "species-images/optimized/psidium-cattleyanum.jpg",
+      "credit": "iNaturalist / CC",
+      "photographer": "(c) George Roatan, all rights reserved, uploaded by George Roatan",
+      "source": "iNaturalist",
+      "taxonId": 278242,
+      "webgl": "species-images/webgl/psidium-cattleyanum.webp"
+    }
+  },
+  {
+    "name": "Canafistula",
+    "scientificName": "Peltophorum dubium",
+    "quantity": 6,
+    "role": "secondary",
+    "image": {
+      "original": "species-images/original/peltophorum-dubium.jpg",
+      "optimized": "species-images/optimized/peltophorum-dubium.jpg",
+      "credit": "iNaturalist / CC",
+      "photographer": "(c) Eric Fischer Rempe, some rights reserved (CC BY-NC), uploaded by Eric Fischer Rempe",
+      "source": "iNaturalist",
+      "taxonId": 290016,
+      "webgl": "species-images/webgl/peltophorum-dubium.webp"
+    }
+  },
+  {
+    "name": "Canela",
+    "scientificName": "Nectandra megapotamica",
+    "quantity": 16,
+    "role": "climax",
+    "image": {
+      "original": "species-images/original/nectandra-megapotamica.jpg",
+      "optimized": "species-images/optimized/nectandra-megapotamica.jpg",
+      "credit": "iNaturalist / CC",
+      "photographer": "(c) Tomás Tamagno, some rights reserved (CC BY), uploaded by Tomás Tamagno",
+      "source": "iNaturalist",
+      "taxonId": 910345,
+      "webgl": "species-images/webgl/nectandra-megapotamica.webp"
+    }
+  },
+  {
+    "name": "Araticum",
+    "scientificName": "Annona cacans",
+    "quantity": 14,
+    "role": "secondary",
+    "image": {
+      "original": "species-images/original/annona-cacans.jpg",
+      "optimized": "species-images/optimized/annona-cacans.jpg",
+      "credit": "iNaturalist / CC",
+      "photographer": "(c) Andreas Berger, some rights reserved (CC BY-NC), uploaded by Andreas Berger",
+      "source": "iNaturalist",
+      "taxonId": 563846,
+      "webgl": "species-images/webgl/annona-cacans.webp"
+    }
+  },
+  {
+    "name": "Guajuvira",
+    "scientificName": "Cordia americana",
+    "quantity": 16,
+    "role": "secondary",
+    "image": {
+      "original": "species-images/original/cordia-americana.jpg",
+      "optimized": "species-images/optimized/cordia-americana.jpg",
+      "credit": "iNaturalist / CC",
+      "photographer": "(c) Florencia Grattarola, some rights reserved (CC BY), uploaded by Florencia Grattarola",
+      "source": "iNaturalist",
+      "taxonId": 769364,
+      "webgl": "species-images/webgl/cordia-americana.webp"
+    }
+  },
+  {
+    "name": "Caroba",
+    "scientificName": "Jacaranda micrantha",
+    "quantity": 16,
+    "role": "secondary",
+    "image": {
+      "original": "species-images/original/jacaranda-micrantha.jpg",
+      "optimized": "species-images/optimized/jacaranda-micrantha.jpg",
+      "credit": "iNaturalist / CC",
+      "photographer": "(c) Gabriel Celedon, some rights reserved (CC BY-NC), uploaded by Gabriel Celedon",
+      "source": "iNaturalist",
+      "taxonId": 910621,
+      "webgl": "species-images/webgl/jacaranda-micrantha.webp"
+    }
+  },
+  {
+    "name": "Ipê Amarelo",
+    "scientificName": "Handroanthus albus",
+    "quantity": 10,
+    "role": "climax",
+    "image": {
+      "original": "species-images/original/handroanthus-albus.jpg",
+      "optimized": "species-images/optimized/handroanthus-albus.jpg",
+      "credit": "iNaturalist / CC",
+      "photographer": "(c) Frederico Acaz Sonntag, some rights reserved (CC BY-NC), uploaded by Frederico Acaz Sonntag",
+      "source": "iNaturalist",
+      "taxonId": 733298,
+      "webgl": "species-images/webgl/handroanthus-albus.webp"
+    }
+  },
+  {
+    "name": "Pêssego do Mato",
+    "scientificName": "Eugenia uruguayensis",
+    "quantity": 16,
+    "role": "secondary",
+    "image": {
+      "original": "species-images/original/eugenia-uruguayensis.jpg",
+      "optimized": "species-images/optimized/eugenia-uruguayensis.jpg",
+      "credit": "iNaturalist / CC",
+      "photographer": "(c) Germán Gil, all rights reserved, uploaded by Germán Gil",
+      "source": "iNaturalist",
+      "taxonId": 966265,
+      "webgl": "species-images/webgl/eugenia-uruguayensis.webp"
+    }
+  },
+  {
+    "name": "Maria preta",
+    "scientificName": "Diatenopteryx sorbifolia",
+    "quantity": 5,
+    "role": "climax",
+    "image": {
+      "original": "species-images/original/diatenopteryx-sorbifolia.jpg",
+      "optimized": "species-images/optimized/diatenopteryx-sorbifolia.jpg",
+      "credit": "iNaturalist / CC",
+      "photographer": "(c) Fabrício Mil Homens Riella, some rights reserved (CC BY), uploaded by Fabrício Mil Homens Riella",
+      "source": "iNaturalist",
+      "taxonId": 1078995,
+      "webgl": "species-images/webgl/diatenopteryx-sorbifolia.webp"
+    }
+  },
+  {
+    "name": "Figueira folha larga",
+    "scientificName": "Ficus luschnathiana",
+    "quantity": 10,
+    "role": "climax",
+    "image": {
+      "original": "species-images/original/ficus-luschnathiana.jpg",
+      "optimized": "species-images/optimized/ficus-luschnathiana.jpg",
+      "credit": "iNaturalist / CC",
+      "photographer": "(c) Horacio Sirolli, some rights reserved (CC BY-NC), uploaded by Horacio Sirolli",
+      "source": "iNaturalist",
+      "taxonId": 543681,
+      "webgl": "species-images/webgl/ficus-luschnathiana.webp"
+    }
+  },
+  {
+    "name": "Figueira folha miúda",
+    "scientificName": "Ficus cestrifolia",
+    "quantity": 10,
+    "role": "climax",
+    "image": {
+      "original": "species-images/original/ficus-cestrifolia.jpg",
+      "optimized": "species-images/optimized/ficus-cestrifolia.jpg",
+      "credit": "iNaturalist / CC",
+      "photographer": "(c) Kauê Werner, all rights reserved, uploaded by Kauê Werner",
+      "source": "iNaturalist",
+      "taxonId": 538142,
+      "webgl": "species-images/webgl/ficus-cestrifolia.webp"
+    }
+  },
+  {
+    "name": "Chal chal",
+    "scientificName": "Allophylus edulis",
+    "quantity": 10,
+    "role": "secondary",
+    "image": {
+      "original": "species-images/original/allophylus-edulis.jpg",
+      "optimized": "species-images/optimized/allophylus-edulis.jpg",
+      "credit": "iNaturalist / CC",
+      "photographer": "(c) Tomás Carranza Perales, some rights reserved (CC BY), uploaded by Tomás Carranza Perales",
+      "source": "iNaturalist",
+      "taxonId": 460752,
+      "webgl": "species-images/webgl/allophylus-edulis.webp"
+    }
+  },
+  {
+    "name": "Jaboticaba",
+    "scientificName": "Plinia cauliflora",
+    "quantity": 10,
+    "role": "secondary",
+    "image": {
+      "original": "species-images/original/plinia-cauliflora.jpg",
+      "optimized": "species-images/optimized/plinia-cauliflora.jpg",
+      "credit": "iNaturalist / CC",
+      "photographer": "(c) Diego Monsores, some rights reserved (CC BY-NC), uploaded by Diego Monsores",
+      "source": "iNaturalist",
+      "taxonId": 84779,
+      "webgl": "species-images/webgl/plinia-cauliflora.webp"
+    }
+  },
+  {
+    "name": "Cocão",
+    "scientificName": "Erythroxylum argentinum",
+    "quantity": 10,
+    "role": "pioneer",
+    "image": {
+      "original": "species-images/original/erythroxylum-argentinum.jpg",
+      "optimized": "species-images/optimized/erythroxylum-argentinum.jpg",
+      "credit": "iNaturalist / CC",
+      "photographer": "(c) Liu Idárraga Orozco, some rights reserved (CC BY-NC), uploaded by Liu Idárraga Orozco",
+      "source": "iNaturalist",
+      "taxonId": 807226,
+      "webgl": "species-images/webgl/erythroxylum-argentinum.webp"
+    }
+  },
+  {
+    "name": "Branquilho",
+    "scientificName": "Sebastiania commersoniana",
+    "quantity": 8,
+    "role": "pioneer",
+    "image": {
+      "original": "species-images/original/sebastiania-commersoniana.jpg",
+      "optimized": "species-images/optimized/sebastiania-commersoniana.jpg",
+      "credit": "iNaturalist / CC",
+      "photographer": "(c) Cecilia Trujillo, some rights reserved (CC BY-NC), uploaded by Cecilia Trujillo",
+      "source": "iNaturalist",
+      "taxonId": 891981,
+      "webgl": "species-images/webgl/sebastiania-commersoniana.webp"
+    }
+  },
+  {
+    "name": "Tucaneiro",
+    "scientificName": "Cytharexylum montevidense",
+    "quantity": 8,
+    "role": "secondary",
+    "image": null
+  },
+  {
+    "name": "Cedro",
+    "scientificName": "Cedrela fissilis",
+    "quantity": 5,
+    "role": "climax",
+    "image": {
+      "original": "species-images/original/cedrela-fissilis.jpg",
+      "optimized": "species-images/optimized/cedrela-fissilis.jpg",
+      "credit": "iNaturalist / CC",
+      "photographer": "(c) Marinês Eiterer, some rights reserved (CC BY-NC), uploaded by Marinês Eiterer",
+      "source": "iNaturalist",
+      "taxonId": 135399,
+      "webgl": "species-images/webgl/cedrela-fissilis.webp"
+    }
+  },
+  {
+    "name": "Caliandra",
+    "scientificName": "Calliandra brevipes",
+    "quantity": 10,
+    "role": "pioneer",
+    "image": {
+      "original": "species-images/original/calliandra-brevipes.jpg",
+      "optimized": "species-images/optimized/calliandra-brevipes.jpg",
+      "credit": "iNaturalist / CC",
+      "photographer": "(c) Tony Rodd, some rights reserved (CC BY-NC-SA)",
+      "source": "iNaturalist",
+      "taxonId": 400277,
+      "webgl": "species-images/webgl/calliandra-brevipes.webp"
+    }
+  },
+  {
+    "name": "Cereja",
+    "scientificName": "Eugenia involucrata",
+    "quantity": 6,
+    "role": "secondary",
+    "image": {
+      "original": "species-images/original/eugenia-involucrata.jpg",
+      "optimized": "species-images/optimized/eugenia-involucrata.jpg",
+      "credit": "iNaturalist / CC",
+      "photographer": "(c) Alec McClay, some rights reserved (CC BY), uploaded by Alec McClay",
+      "source": "iNaturalist",
+      "taxonId": 560900,
+      "webgl": "species-images/webgl/eugenia-involucrata.webp"
+    }
+  },
+  {
+    "name": "Goiaba serrana",
+    "scientificName": "Acca sellowiana",
+    "quantity": 8,
+    "role": "secondary",
+    "image": {
+      "original": "species-images/original/acca-sellowiana.jpg",
+      "optimized": "species-images/optimized/acca-sellowiana.jpg",
+      "credit": "iNaturalist / CC",
+      "photographer": "(c) Alejandro Lopez, some rights reserved (CC BY-NC-SA), uploaded by Alejandro Lopez",
+      "source": "iNaturalist",
+      "taxonId": 1341071,
+      "webgl": "species-images/webgl/acca-sellowiana.webp"
+    }
+  },
+  {
+    "name": "Pitanga",
+    "scientificName": "Eugenia uniflora",
+    "quantity": 2,
+    "role": "secondary",
+    "image": {
+      "original": "species-images/original/eugenia-uniflora.jpg",
+      "optimized": "species-images/optimized/eugenia-uniflora.jpg",
+      "credit": "iNaturalist / CC",
+      "photographer": "(c) avocstac, some rights reserved (CC BY-NC)",
+      "source": "iNaturalist",
+      "taxonId": 83642,
+      "webgl": "species-images/webgl/eugenia-uniflora.webp"
+    }
+  },
+  {
+    "name": "Caporroca",
+    "scientificName": "Myrsine umbellata",
+    "quantity": 10,
+    "role": "secondary",
+    "image": {
+      "original": "species-images/original/myrsine-umbellata.jpg",
+      "optimized": "species-images/optimized/myrsine-umbellata.jpg",
+      "credit": "iNaturalist / CC",
+      "photographer": "(c) Davi da Cunha Morales, all rights reserved, uploaded by Davi da Cunha Morales",
+      "source": "iNaturalist",
+      "taxonId": 866669,
+      "webgl": "species-images/webgl/myrsine-umbellata.webp"
+    }
+  }
+]

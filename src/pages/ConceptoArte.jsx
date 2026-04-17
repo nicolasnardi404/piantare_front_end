@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import './ConceptoArte.css';
 import TreeCard from '../components/TreeCard';
-import { getAllSpecies } from '../utils/speciesData';
+import { getAllTranslatedSpecies } from '../utils/translatedSpeciesData';
 
 /**
  * ConceptoArte Page
@@ -14,33 +15,63 @@ import { getAllSpecies } from '../utils/speciesData';
 const ConceptoArte = () => {
   const { t } = useTranslation('conceitoArte');
   const [selectedSpecies, setSelectedSpecies] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
-  const allSpecies = getAllSpecies();
+  const allSpecies = getAllTranslatedSpecies(t);
 
   const handleSpeciesClick = (species) => {
+    const index = allSpecies.findIndex(s => s.id === species.id);
+    setCurrentIndex(index);
     setSelectedSpecies(species);
-    setIsModalOpen(true);
-    document.body.style.overflow = 'hidden'; // Prevent scroll when modal is open
   };
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
+  const handleCloseCard = () => {
     setSelectedSpecies(null);
-    document.body.style.overflow = 'auto'; // Restore scroll
   };
 
-  // Handle ESC key to close modal
-  const handleKeyDown = (e) => {
-    if (e.key === 'Escape' && isModalOpen) {
-      handleCloseModal();
+  const handlePrevious = () => {
+    const newIndex = currentIndex > 0 ? currentIndex - 1 : allSpecies.length - 1;
+    setCurrentIndex(newIndex);
+    setSelectedSpecies(allSpecies[newIndex]);
+  };
+
+  const handleNext = () => {
+    const newIndex = currentIndex < allSpecies.length - 1 ? currentIndex + 1 : 0;
+    setCurrentIndex(newIndex);
+    setSelectedSpecies(allSpecies[newIndex]);
+  };
+
+  // Handle keyboard navigation and prevent body scroll
+  useEffect(() => {
+    if (selectedSpecies) {
+      // Prevent body scroll when modal is open
+      document.body.style.overflow = 'hidden';
+
+      // Scroll modal to top when opening or changing species
+      const modalOverlay = document.querySelector('.conceito-arte__modal-overlay');
+      if (modalOverlay) {
+        modalOverlay.scrollTop = 0;
+      }
+
+      // Handle keyboard navigation
+      const handleKeyDown = (e) => {
+        if (e.key === 'Escape') {
+          setSelectedSpecies(null);
+        } else if (e.key === 'ArrowLeft') {
+          handlePrevious();
+        } else if (e.key === 'ArrowRight') {
+          handleNext();
+        }
+      };
+
+      document.addEventListener('keydown', handleKeyDown);
+
+      return () => {
+        document.body.style.overflow = 'unset';
+        document.removeEventListener('keydown', handleKeyDown);
+      };
     }
-  };
-
-  // Add event listener for ESC key
-  if (typeof window !== 'undefined') {
-    window.addEventListener('keydown', handleKeyDown);
-  }
+  }, [selectedSpecies, currentIndex]);
 
   return (
     <div className="conceito-arte">
@@ -173,7 +204,7 @@ const ConceptoArte = () => {
       {/* Species Section */}
       <section className="conceito-arte__species">
         <div className="conceito-arte__species-container">
-          <h2 className="conceito-arte__species-title">{t('species.title')}</h2>
+          <h2 className="conceito-arte__species-title">{t('speciesSection.title')}</h2>
           <div className="conceito-arte__species-grid">
             {allSpecies.map((species, index) => (
               <div
@@ -199,23 +230,6 @@ const ConceptoArte = () => {
                       e.target.src = '/images/species/placeholder.jpg';
                     }}
                   />
-                  <div className="conceito-arte__species-overlay">
-                    <button
-                      className="conceito-arte__species-info-btn"
-                      aria-label="More information"
-                    >
-                      <svg
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
-                        <path d="M12 16V12M12 8H12.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                      </svg>
-                    </button>
-                  </div>
                 </div>
                 <div className="conceito-arte__species-info">
                   <h3 className="conceito-arte__species-name">{species.commonName}</h3>
@@ -228,40 +242,43 @@ const ConceptoArte = () => {
         </div>
       </section>
 
-      {/* Full-screen Modal for TreeCard */}
-      {isModalOpen && selectedSpecies && (
+      {/* Modal rendered via Portal to document.body */}
+      {selectedSpecies && createPortal(
         <div
-          className="conceito-arte__modal"
-          onClick={handleCloseModal}
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="species-modal-title"
+          className="conceito-arte__modal-overlay"
+          onClick={handleCloseCard}
         >
           <div
             className="conceito-arte__modal-content"
             onClick={(e) => e.stopPropagation()}
           >
+            {/* Close Button */}
             <button
               className="conceito-arte__modal-close"
-              onClick={handleCloseModal}
+              onClick={handleCloseCard}
               aria-label="Close modal"
             >
-              <svg
-                width="32"
-                height="32"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M18 6L6 18M6 6L18 18"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+              ✕
             </button>
+
+            {/* Previous Arrow */}
+            <button
+              className="conceito-arte__modal-nav-btn conceito-arte__modal-nav-btn--prev"
+              onClick={handlePrevious}
+              aria-label="Previous species"
+            >
+              ‹
+            </button>
+
+            {/* Next Arrow */}
+            <button
+              className="conceito-arte__modal-nav-btn conceito-arte__modal-nav-btn--next"
+              onClick={handleNext}
+              aria-label="Next species"
+            >
+              ›
+            </button>
+
             <TreeCard
               {...selectedSpecies}
               onAddToCart={() => {
@@ -269,7 +286,8 @@ const ConceptoArte = () => {
               }}
             />
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

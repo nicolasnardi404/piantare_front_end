@@ -41,7 +41,7 @@ const TreeCard = ({
   pricing = {},
   onAddToCart,
 }) => {
-  const { t } = useTranslation('marketplace');
+  const { t } = useTranslation('marketplace', { keyPrefix: 'treeCard' });
 
   return (
     <div className="tree-card">
@@ -50,47 +50,48 @@ const TreeCard = ({
 
         {/* Left Column - Image */}
         <div className="tree-card__image-section">
-          <img
-            src={imageUrl}
-            alt={commonName}
-            className="tree-card__image"
-          />
+          <div className="tree-card__image-wrapper">
+            <img
+              src={imageUrl}
+              alt={commonName}
+              className="tree-card__image"
+            />
+            {/* Header under image */}
+            <div className="tree-card__header">
+              <h2 className="tree-card__title">{commonName}</h2>
+              <p className="tree-card__scientific-name">{scientificName}</p>
+            </div>
+
+            {/* Characteristics Badges */}
+            {characteristics && Object.keys(characteristics).length > 0 && (
+              <div className="tree-card__characteristics">
+                {characteristics.height && (
+                  <span className="tree-card__badge tree-card__badge--characteristic">
+                    {characteristics.height}
+                  </span>
+                )}
+                {characteristics.co2 && (
+                  <span className="tree-card__badge tree-card__badge--characteristic">
+                    {characteristics.co2}
+                  </span>
+                )}
+                {characteristics.lifespan && (
+                  <span className="tree-card__badge tree-card__badge--characteristic">
+                    {characteristics.lifespan}
+                  </span>
+                )}
+                {characteristics.origin && (
+                  <span className="tree-card__badge tree-card__badge--characteristic">
+                    {characteristics.origin}
+                  </span>
+                )}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Right Column - Content */}
         <div className="tree-card__content">
-
-          {/* Header */}
-          <div className="tree-card__header">
-            <h2 className="tree-card__title">{commonName}</h2>
-            <p className="tree-card__scientific-name">{scientificName}</p>
-          </div>
-
-          {/* Characteristics Badges */}
-          {characteristics && Object.keys(characteristics).length > 0 && (
-            <div className="tree-card__characteristics">
-              {characteristics.height && (
-                <span className="tree-card__badge tree-card__badge--characteristic">
-                  {characteristics.height}
-                </span>
-              )}
-              {characteristics.co2 && (
-                <span className="tree-card__badge tree-card__badge--characteristic">
-                  {characteristics.co2}
-                </span>
-              )}
-              {characteristics.lifespan && (
-                <span className="tree-card__badge tree-card__badge--characteristic">
-                  {characteristics.lifespan}
-                </span>
-              )}
-              {characteristics.origin && (
-                <span className="tree-card__badge tree-card__badge--characteristic">
-                  {characteristics.origin}
-                </span>
-              )}
-            </div>
-          )}
 
           {/* Description */}
           {description && (
@@ -100,7 +101,7 @@ const TreeCard = ({
           {/* Key Features */}
           {keyFeatures.length > 0 && (
             <div className="tree-card__section">
-              <h3 className="tree-card__section-title">Key characteristics</h3>
+              <h3 className="tree-card__section-title">{t('keyCharacteristics')}</h3>
               <div className="tree-card__features">
                 {keyFeatures.map((feature, index) => (
                   <span key={index} className="tree-card__badge tree-card__badge--feature">
@@ -114,7 +115,7 @@ const TreeCard = ({
           {/* Ecological Scores */}
           {ecologicalScores.length > 0 && (
             <div className="tree-card__section">
-              <h3 className="tree-card__section-title">Ecological scores</h3>
+              <h3 className="tree-card__section-title">{t('ecologicalScores')}</h3>
               <div className="tree-card__scores">
                 {ecologicalScores.map((score, index) => (
                   <div key={index} className="tree-card__score-card">
@@ -130,30 +131,8 @@ const TreeCard = ({
           )}
 
           {/* Availability & Purchase Section */}
-          {(availability.needed || availability.available || pricing.pricePerTree) && (
+          {pricing.pricePerTree && (
             <div className="tree-card__purchase-section">
-
-              {/* Availability Info */}
-              <div className="tree-card__availability">
-                {availability.needed !== undefined && (
-                  <div className="tree-card__availability-item">
-                    <div className="tree-card__availability-circle">
-                      <span className="tree-card__availability-number">{availability.needed}</span>
-                    </div>
-                    <p className="tree-card__availability-label">
-                      {commonName} needed for this project:
-                    </p>
-                  </div>
-                )}
-                {availability.available !== undefined && (
-                  <div className="tree-card__availability-item">
-                    <div className="tree-card__availability-circle">
-                      <span className="tree-card__availability-number">{availability.available}</span>
-                    </div>
-                    <p className="tree-card__availability-label">Available to buy</p>
-                  </div>
-                )}
-              </div>
 
               {/* Purchase Box */}
               {pricing.pricePerTree && (
@@ -166,7 +145,7 @@ const TreeCard = ({
                     className="tree-card__add-to-cart"
                     onClick={onAddToCart}
                   >
-                    Add to Cart
+                    {t('addToCart')}
                   </button>
                 </div>
               )}
